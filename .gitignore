@@ -1,0 +1,8 @@
+app/images
+app/fonts
+app/vendor.*
+app/z.*
+coverage
+node_modules
+temp
+tmp
