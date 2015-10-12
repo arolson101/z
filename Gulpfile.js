@@ -12,7 +12,7 @@ var WebpackDevServer = require("webpack-dev-server");
 var webpackConfig = require("./webpack.config.js");
 
 // enable typescript tests in mocha
-require('typescript-require');
+require('ts-node/register');
 
 
 gulp.task('pre-test', function () {

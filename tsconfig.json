@@ -6,10 +6,19 @@
         "noImplicitAny": true,
         "jsx": "react",
         "experimentalDecorators": true,
-        "outDir": "./temp"
+        "noEmit": true
     },
-    "exclude": [
-        "./node_modules/**/*.ts",
-        "./src/**/*.d.ts"
+    "filesGlob": [
+      "./src/**/*.ts",
+      "!./src/**/*.d.ts"
+    ],
+    "files": [
+        "./src/actions/action",
+        "./src/actions/addTodo.ts",
+        "./src/actions/index.ts",
+        "./src/components/index.ts",
+        "./src/containers/index.ts",
+        "./src/index.ts",
+        "./src/state.ts"
     ]
 }
