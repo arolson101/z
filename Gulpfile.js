@@ -17,15 +17,18 @@ require('ts-node/register');
 
 gulp.task('pre-test', function () {
     var tsResult = gulp.src('src/**/*.ts')
+//        .pipe(sourcemaps.init())
         .pipe(ts({module: 'commonjs'}));
 
     return tsResult.js
         // rename the js back to ts so that the require hook can find them
         .pipe(rename(function (path) { path.extname = ".ts" }))
+//        .pipe(sourcemaps.write())
         // insert ignore statements on ts->js boilerplate
         .pipe(insert.transform(function(contents, file) {
             [
-                "var __extends = "
+                "var __extends = ",
+                "function __export(",
             ].forEach(function(ignore) {
                 contents = contents.replace(ignore, "/* istanbul ignore next */ " + ignore);
             });

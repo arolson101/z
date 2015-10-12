@@ -2,14 +2,14 @@
 
 import { expect } from 'chai';
 
-var z = require('../src');
+import { todoApp, initialState, addTodo } from "../src/index";
 
 describe('z', function() {
-	it('should be ok', function() {
-		expect(z.foo(0)).to.equal(41);
-		expect(z.foo(1)).to.equal(42);
-		expect(z.bar()).to.equal(41);
-		var b = new z.Bar();
-		b.bar();
+	it('can add a todo', function() {
+		var state = todoApp();
+		console.log("initial state: ", state);
+		expect(state).to.deep.equal(initialState);
+		
+		var state2 = todoApp(state, addTodo("new"));
 	});
 });

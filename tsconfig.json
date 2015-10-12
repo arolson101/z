@@ -6,7 +6,7 @@
         "noImplicitAny": true,
         "jsx": "react",
         "experimentalDecorators": true,
-        "noEmit": true
+        "outDir": "./temp"
     },
     "filesGlob": [
       "./src/**/*.ts",
