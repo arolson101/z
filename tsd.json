@@ -19,6 +19,12 @@
     },
     "redux-thunk/redux-thunk.d.ts": {
       "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+    },
+    "es6-collections/es6-collections.d.ts": {
+      "commit": "961b76f37bdfcff459cab9ed9fd3f204f0633d5e"
+    },
+    "es6-promise/es6-promise.d.ts": {
+      "commit": "961b76f37bdfcff459cab9ed9fd3f204f0633d5e"
     }
   }
 }

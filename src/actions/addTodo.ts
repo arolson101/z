@@ -1,4 +1,6 @@
 ///<reference path="../../typings/tsd.d.ts"/>
+"use strict";
+
 import { Action, ActionType } from "./action";
 
 export interface AddTodo extends Action {
