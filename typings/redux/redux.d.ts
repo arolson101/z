@@ -5,45 +5,45 @@
 
 declare module Redux {
 
-    interface ActionCreator extends Function {
-        (...args: any[]): any;
+    interface ActionCreator<Action> extends Function {
+        (...args: any[]): Action;
     }
 
-    interface Reducer extends Function {
-        (state: any, action: any): any;
+    interface Reducer<State, Action> extends Function {
+        (state?: State, action?: Action): State;
     }
 
-    interface Dispatch extends Function {
-        (action: any): any;
+    interface Dispatch<Action> extends Function {
+        (action: Action): any;
     }
 
-    interface StoreMethods {
-        dispatch: Dispatch;
-        getState(): any;
+    interface StoreMethods<State, Action> {
+        dispatch: Dispatch<Action>;
+        getState(): State;
     }
 
 
-    interface MiddlewareArg {
-        dispatch: Dispatch;
+    interface MiddlewareArg<Action> {
+        dispatch: Dispatch<Action>;
         getState: Function;
     }
 
-    interface Middleware extends Function {
-        (obj: MiddlewareArg): Function;
+    interface Middleware<Action> extends Function {
+        (obj: MiddlewareArg<Action>): Function;
     }
 
-    class Store {
-        getReducer(): Reducer;
-        replaceReducer(nextReducer: Reducer): void;
-        dispatch(action: any): any;
-        getState(): any;
+    class Store<State, Action> {
+        getReducer(): Reducer<State, Action>;
+        replaceReducer(nextReducer: Reducer<State, Action>): void;
+        dispatch(action: Action): State;
+        getState(): State;
         subscribe(listener: Function): Function;
     }
 
-    function createStore(reducer: Reducer, initialState?: any): Store;
-    function bindActionCreators<T>(actionCreators: T, dispatch: Dispatch): T;
-    function combineReducers(reducers: any): Reducer;
-    function applyMiddleware(...middleware: Middleware[]): Function;
+    function createStore<State, Action>(reducer: Reducer<State, Action>, initialState?: State): Store<State, Action>;
+    function bindActionCreators<T, Action>(actionCreators: T, dispatch: Dispatch<Action>): T;
+    function combineReducers<State, Action>(reducers: any): Reducer<State, Action>;
+    function applyMiddleware<Action>(...middleware: Middleware<Action>[]): Function;
     function compose<T extends Function>(...functions: Function[]): T;
 }
 
