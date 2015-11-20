@@ -4,10 +4,10 @@
 import { mutate } from "updraft";
 import { combineReducers } from "redux";
 import { ActionType, Action, nullAction } from "./actions/index";
-import {	Account, AccountChange,
-					Institution, InstitutionChange
+import { Account, AccountChange,
+				 Institution, InstitutionChange
 				} from "./types/index";
-import { SubState, manageSubState, Reducer } from "./util/subState";
+import { SubState, manageSubState } from "./util/subState";
 
 
 
@@ -16,7 +16,7 @@ export interface AppState {
 	institutions: SubState<Institution>;
 }
 
-export const appState = <Reducer<AppState>>combineReducers({
+export const appState = combineReducers<AppState, Action>({
   accounts: manageSubState<Account, AccountChange>(
 		ActionType.ADD_ACCOUNT,
 		ActionType.EDIT_ACCOUNT,

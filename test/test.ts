@@ -46,6 +46,6 @@ describe('z', function() {
 		let state4 = appState(state3, del);
 		expect(state4).to.deep.equal(state);
 	});
-	
+
 
 });

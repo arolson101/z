@@ -9,11 +9,7 @@ export interface SubState<Element> {
 	[dbid: number]: Element;
 }
 
-export interface Reducer<T> extends Redux.Reducer {
-	(state?: T, action?: Action): T;
-}
-
-export interface SubStateFunction<Element> extends Reducer<SubState<Element>> {
+export interface SubStateFunction<Element> extends Redux.Reducer<SubState<Element>, Action> {
 	(state?: SubState<Element>, action?: Action): SubState<Element>;
 }
 
