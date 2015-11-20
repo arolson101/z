@@ -15,11 +15,16 @@
       "!./src/**/*.d.ts"
     ],
     "files": [
-        "./src/actions/action",
-        "./src/actions/addTodo.ts",
+        "./src/actions/accountActions.ts",
+        "./src/actions/action.ts",
         "./src/actions/index.ts",
+        "./src/actions/institutionActions.ts",
         "./src/components/index.ts",
         "./src/containers/index.ts",
+        "./src/types/account.ts",
+        "./src/types/index.ts",
+        "./src/types/institution.ts",
+        "./src/util/subState.ts",
         "./src/index.ts",
         "./src/state.ts"
     ]

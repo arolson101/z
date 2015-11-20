@@ -41,7 +41,3 @@ export const accountSpec: AccountTableSpec = {
     visible: Column.Bool(),
   }
 };
-
-export interface AccountSet {
-  [dbid: number]: Account;
-}

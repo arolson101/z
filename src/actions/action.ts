@@ -2,9 +2,6 @@
 "use strict";
 
 export enum ActionType {
-	NONE,
-	ADD_TODO,
-
 	// institutionActions.ts
 	ADD_INSTITUTION,
 	EDIT_INSTITUTION,
@@ -21,5 +18,19 @@ export interface Action {
 }
 
 export let nullAction: Action = {
-	type: ActionType.NONE
+	type: undefined
 };
+
+export interface AddAction<Element, Mutator> extends Action {
+	id: number;
+	element: Element;
+}
+
+export interface EditAction<Element, Mutator> extends Action {
+	id: number;
+	edit: Mutator;
+}
+
+export interface DeleteAction<Element, Mutator> extends Action {
+	id: number;
+}

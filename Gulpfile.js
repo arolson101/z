@@ -32,6 +32,7 @@ gulp.task('pre-test', function () {
             ].forEach(function(ignore) {
                 contents = contents.replace(ignore, "/* istanbul ignore next */ " + ignore);
             });
+            contents = contents.replace(/(var _a(,|;))/g, "/* istanbul ignore next */ $1");
             return contents;
         }))
         // Covering files
