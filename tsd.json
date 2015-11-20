@@ -25,6 +25,12 @@
     },
     "es6-promise/es6-promise.d.ts": {
       "commit": "961b76f37bdfcff459cab9ed9fd3f204f0633d5e"
+    },
+    "rx/rx.d.ts": {
+      "commit": "16134c168d021351acb1673ee9659644fc58c424"
+    },
+    "rx/rx-lite.d.ts": {
+      "commit": "16134c168d021351acb1673ee9659644fc58c424"
     }
   }
 }
