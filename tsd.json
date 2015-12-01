@@ -31,6 +31,15 @@
     },
     "rx/rx-lite.d.ts": {
       "commit": "16134c168d021351acb1673ee9659644fc58c424"
+    },
+    "react/react.d.ts": {
+      "commit": "7a3d6944036902996b87981e6150900952b35628"
+    },
+    "react-redux/react-redux.d.ts": {
+      "commit": "7a3d6944036902996b87981e6150900952b35628"
+    },
+    "react-router/react-router.d.ts": {
+      "commit": "7a3d6944036902996b87981e6150900952b35628"
     }
   }
 }
