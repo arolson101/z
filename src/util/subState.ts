@@ -23,9 +23,7 @@ export function manageSubState<Element, ElementMutator>(add: ActionType, edit: A
 				let addAction = <AddAction<Element, ElementMutator>>action;
 				let id = addAction.id;
 				return mutate(state, {
-					$merge: {
-						[id]: addAction.element
-					}
+					[id]: { $set: addAction.element }
 				});
 			}
 			
