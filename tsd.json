@@ -40,6 +40,12 @@
     },
     "react-router/react-router.d.ts": {
       "commit": "7a3d6944036902996b87981e6150900952b35628"
+    },
+    "react/react-dom.d.ts": {
+      "commit": "7a3d6944036902996b87981e6150900952b35628"
+    },
+    "redux-devtools/redux-devtools.d.ts": {
+      "commit": "715df764419937a75a25dcd76bfc954157bc7b96"
     }
   }
 }

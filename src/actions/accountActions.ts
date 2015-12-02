@@ -3,6 +3,7 @@
 
 import { Action, ActionType, AddAction, EditAction, DeleteAction } from "./action";
 import { Account, AccountChange } from "../types/index";
+import { verify } from "updraft";
 
 export interface AddAccountAction extends AddAction<Account, AccountChange> {}
 export interface EditAccountAction extends EditAction<Account, AccountChange> {}

@@ -2,9 +2,7 @@
 "use strict";
 
 import { Column, Mutate as M, Query as Q } from "updraft";
-//import M = Updraft.Mutate;
-// import Q = Updraft.Query;
-// import Column = Updraft.Column;
+import { Collection } from "../util/index";
 
 export enum AccountType {
   CHECKING,
@@ -41,3 +39,5 @@ export const accountSpec: AccountTableSpec = {
     visible: Column.Bool(),
   }
 };
+
+export type AccountCollection = Collection<Account>;

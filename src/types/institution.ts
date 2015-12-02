@@ -2,9 +2,7 @@
 "use strict";
 
 import { Column, Mutate as M, Query as Q } from "updraft";
-// import M = Updraft.Mutate;
-// import Q = Updraft.Query;
-// import Column = Updraft.Column;
+import { Collection } from "../util/index";
 
 interface _Institution<id, str, bool> {
   dbid?: id;
@@ -49,6 +47,4 @@ export const institutionSpec: InstitutionTableSpec = {
   }
 };
 
-export interface InstitutionSet {
-  [dbid: number]: Institution;
-}
+export type InstitutionCollection = Collection<Institution>;

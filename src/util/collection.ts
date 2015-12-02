@@ -2,19 +2,19 @@
 "use strict";
 
 import { Action, ActionType, nullAction, AddAction, EditAction, DeleteAction } from "../actions/index";
-import { mutate } from "updraft";
+import { mutate, verify } from "updraft";
 
 
-export interface SubState<Element> {
+export interface Collection<Element> extends Object {
 	[dbid: number]: Element;
 }
 
-export interface SubStateFunction<Element> extends Redux.Reducer<SubState<Element>, Action> {
-	(state?: SubState<Element>, action?: Action): SubState<Element>;
+export interface CollectionFunction<Element> extends Redux.Reducer<Collection<Element>, Action> {
+	(state?: Collection<Element>, action?: Action): Collection<Element>;
 }
 
-export function manageSubState<Element, ElementMutator>(add: ActionType, edit: ActionType, del: ActionType): SubStateFunction<Element> {
-	return (state?: SubState<Element>, action?: Action): SubState<Element> => {
+export function manageCollection<Element, ElementMutator>(add: ActionType, edit: ActionType, del: ActionType): CollectionFunction<Element> {
+	return (state?: Collection<Element>, action?: Action): Collection<Element> => {
 		state = state || {};
 		action = action || nullAction;
 
@@ -22,6 +22,7 @@ export function manageSubState<Element, ElementMutator>(add: ActionType, edit: A
 		case add: {
 				let addAction = <AddAction<Element, ElementMutator>>action;
 				let id = addAction.id;
+				verify(id, "id must be specified");
 				return mutate(state, {
 					[id]: { $set: addAction.element }
 				});
@@ -30,6 +31,7 @@ export function manageSubState<Element, ElementMutator>(add: ActionType, edit: A
 		case edit: {
 				let editAction = <EditAction<Element, ElementMutator>>action;
 				let id = editAction.id;
+				verify(id, "id must be specified");
 				return mutate(state, {
 					[id]: editAction.edit
 				});
@@ -38,6 +40,7 @@ export function manageSubState<Element, ElementMutator>(add: ActionType, edit: A
 		case del: {
 				let delAction = <DeleteAction<Element, ElementMutator>>action;
 				let id = delAction.id;
+				verify(id, "id must be specified");
 				return mutate(state, {
 					$delete: [id]
 				});
