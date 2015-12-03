@@ -20,6 +20,7 @@ interface MainProps {
 	store: any;
 }
 
+const DEBUG_PANEL = false;
 
 class MainComponent extends React.Component<MainProps, any> {
 	render() {
@@ -33,9 +34,11 @@ class MainComponent extends React.Component<MainProps, any> {
 					</Router>
 				</Provider>
 			
+			{DEBUG_PANEL &&
         <DebugPanel top right bottom>
           <DevTools store={this.props.store} monitor={LogMonitor} />
         </DebugPanel>
+			}
 			</div>
 		);
 	}
@@ -72,7 +75,7 @@ type createStoreFunction<State, Action> = (reducer: Redux.Reducer<State, Action>
 export function main(root: HTMLElement) {
 	const composedCreateStore: createStoreFunction<AppState, Action> = compose(
 		//applyMiddleware(m1, m2, m3),
-		devTools()
+		DEBUG_PANEL ? devTools() : (x: any) => x
 	)(createStore);
 
 	const store = composedCreateStore(appState);
