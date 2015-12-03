@@ -1,7 +1,7 @@
 ///<reference path="../project.d.ts"/>
 "use strict";
 
-import { Action, ActionType, nullAction, AddAction, EditAction, DeleteAction } from "../actions/index";
+import { Action, nullAction, AddAction, EditAction, DeleteAction } from "../actions/index";
 import { mutate, verify } from "updraft";
 
 
@@ -13,7 +13,7 @@ export interface CollectionFunction<Element> extends Redux.Reducer<Collection<El
 	(state?: Collection<Element>, action?: Action): Collection<Element>;
 }
 
-export function manageCollection<Element, ElementMutator>(add: ActionType, edit: ActionType, del: ActionType): CollectionFunction<Element> {
+export function manageCollection<Element, ElementMutator>(add: string, edit: string, del: string): CollectionFunction<Element> {
 	return (state?: Collection<Element>, action?: Action): Collection<Element> => {
 		state = state || {};
 		action = action || nullAction;

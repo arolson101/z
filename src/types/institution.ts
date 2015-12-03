@@ -2,7 +2,6 @@
 "use strict";
 
 import { Column, Mutate as M, Query as Q } from "updraft";
-import { Collection } from "../util/index";
 
 interface _Institution<id, str, bool> {
   dbid?: id;
@@ -46,5 +45,3 @@ export const institutionSpec: InstitutionTableSpec = {
     password: Column.Text(),
   }
 };
-
-export type InstitutionCollection = Collection<Institution>;

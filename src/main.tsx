@@ -9,10 +9,9 @@ import { ReduxRouter } from "redux-router";
 import { devTools } from "redux-devtools";
 import { DevTools, DebugPanel, LogMonitor } from "redux-devtools/lib/react";
 
-import { Dashboard, EditAccount } from "./pages/index";
-import { Action, addAccount } from "./actions/index";
+import { Dashboard, EditAccount } from "./pages";
+import { Action, addAccount, AccountCollection } from "./actions";
 import { appState, AppState } from "./state";
-import { AccountCollection } from "./types/index";
 import { routerState, Router } from "./router";
 
 interface MainProps {
