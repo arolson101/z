@@ -2,9 +2,9 @@
 "use strict";
 
 import { combineReducers } from "redux";
-import { routerStateReducer } from "redux-router";
+import { routeReducer } from "redux-simple-router";
 
-import { Action } from "./actions";
+import { Action, nullAction } from "./actions";
 import { AccountCollection,
 				 accountCollectionReducer,
 				 InstitutionCollection,
@@ -13,13 +13,13 @@ import { AccountCollection,
 
 
 export interface AppState {
-	router: ReactRouter.RouterState;
+	routing: ReactRouter.RouterState;
 	accounts: AccountCollection;
 	institutions: InstitutionCollection;
 }
 
 export const appState = combineReducers<AppState, Action>({
-	router: routerStateReducer,
+	routing: routeReducer,
   accounts: accountCollectionReducer,
   institutions: institutionCollectionReducer, 
 });

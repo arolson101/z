@@ -5,5 +5,4 @@ export * from './pages/index';
 export * from './types/index';
 export * from './util/index';
 export * from './main';
-export * from './router';
 export * from './state';

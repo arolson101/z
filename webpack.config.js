@@ -35,7 +35,7 @@ module.exports = {
       "react-mixin",
 			"react-router",
       "redux",
-      "redux-router",
+      "redux-simple-router",
       "rrule",
       "select2",
       "string-hash",

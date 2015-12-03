@@ -5,14 +5,16 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { createStore, combineReducers, applyMiddleware, compose } from "redux";
 import { connect, Provider } from "react-redux";
-import { ReduxRouter } from "redux-router";
+import { syncReduxAndRouter } from "redux-simple-router";
 import { devTools } from "redux-devtools";
 import { DevTools, DebugPanel, LogMonitor } from "redux-devtools/lib/react";
+import { createHistory, createHashHistory } from "history";
 
-import { Dashboard, EditAccount } from "./pages";
-import { Action, addAccount, AccountCollection } from "./actions";
+import { App } from "./components/index";
+import { Dashboard, EditAccount } from "./pages/index";
+import { Action, addAccount, AccountCollection } from "./actions/index";
 import { appState, AppState } from "./state";
-import { routerState, Router } from "./router";
+import { Router, Route } from "react-router";
 
 interface MainProps {
 	store: any;
@@ -24,7 +26,11 @@ class MainComponent extends React.Component<MainProps, any> {
 		return (
 			<div>
 				<Provider store={this.props.store}>
-					<Router/>
+					<Router>
+						<Route path="/" component={App}>
+							<Route path="dash" component={Dashboard}/>
+						</Route>
+					</Router>
 				</Provider>
 			
         <DebugPanel top right bottom>
@@ -61,13 +67,18 @@ class AppAccountList extends React.Component<any, any> {
 	}
 }
 
+type createStoreFunction<State, Action> = (reducer: Redux.Reducer<State, Action>, initialState?: State) => Redux.Store<State, Action>
+
 export function main(root: HTMLElement) {
-const store: Redux.Store<AppState, Action> = compose(
+	const composedCreateStore: createStoreFunction<AppState, Action> = compose(
 		//applyMiddleware(m1, m2, m3),
-		routerState(),
 		devTools()
-	)(createStore)(appState);
-	//let store2= createStore(appState);
+	)(createStore);
+
+	const store = composedCreateStore(appState);
+	const history = createHashHistory();
+
+	syncReduxAndRouter(history, store);
 
 	store.dispatch(addAccount({dbid: 123, name: "foo"}));
 	console.log(store.getState());

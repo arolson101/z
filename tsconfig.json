@@ -33,7 +33,6 @@
         "./src/types/institution.ts",
         "./src/util/collection.ts",
         "./src/index.ts",
-        "./src/router.tsx",
         "./src/state.ts"
     ]
 }
