@@ -12,6 +12,7 @@ export class App extends Component<React.Props<any>> {
 			<div>
 				app
 				<Link to="/dash">dash</Link>
+				<Link to="/new">new</Link>
 				{this.props.children}
 			</div>
 		);

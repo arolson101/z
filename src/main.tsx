@@ -20,7 +20,7 @@ interface MainProps {
 	store: any;
 }
 
-const DEBUG_PANEL = false;
+const DEBUG_PANEL = true;
 
 class MainComponent extends React.Component<MainProps, any> {
 	render() {
@@ -30,6 +30,7 @@ class MainComponent extends React.Component<MainProps, any> {
 					<Router>
 						<Route path="/" component={App}>
 							<Route path="dash" component={Dashboard}/>
+							<Route path="new" component={EditAccount}/>
 						</Route>
 					</Router>
 				</Provider>
@@ -79,7 +80,7 @@ export function main(root: HTMLElement) {
 	)(createStore);
 
 	const store = composedCreateStore(appState);
-	const history = createHashHistory();
+	const history = createHistory();
 
 	syncReduxAndRouter(history, store);
 

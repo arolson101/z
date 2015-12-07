@@ -1,6 +1,10 @@
 ///<reference path="../project.d.ts"/>
 "use strict";
 
+import { updatePath } from "redux-simple-router";
+import { bindActionCreators } from "redux";
+export { bindActionCreators, updatePath };
+
 export interface Action {
 	type: string;
 }
