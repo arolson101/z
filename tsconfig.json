@@ -21,6 +21,7 @@
         "./src/actions/index.ts",
         "./src/actions/institutionActions.ts",
         "./src/components/app.tsx",
+        "./src/components/breadcrumbs.tsx",
         "./src/components/component.tsx",
         "./src/components/index.ts",
         "./src/containers/index.ts",
