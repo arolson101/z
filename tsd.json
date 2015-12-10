@@ -46,6 +46,9 @@
     },
     "redux-devtools/redux-devtools.d.ts": {
       "commit": "715df764419937a75a25dcd76bfc954157bc7b96"
+    },
+    "react-mixin/react-mixin.d.ts": {
+      "commit": "923c5431d9447db9d5cf41adc5914e3c94c1ff10"
     }
   }
 }

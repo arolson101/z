@@ -7,3 +7,15 @@ declare module "redux-simple-router" {
 	function routeReducer(state: any, action: any): any;
 	function updatePath(path: string): any;
 }
+
+declare module "redux-form" {
+	import { ClassDecorator } from "react-redux";
+
+	interface FormInfo {
+		form: string; // unique name for this form
+		fields: string[]; // all the fields in your form
+	}
+	
+	function reducer(state: any, action: any): any;
+	function reduxForm(info: FormInfo): ClassDecorator;
+}

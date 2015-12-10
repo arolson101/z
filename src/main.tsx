@@ -11,7 +11,7 @@ import { DevTools, DebugPanel, LogMonitor } from "redux-devtools/lib/react";
 import { createHistory, createHashHistory } from "history";
 
 import { App } from "./components/index";
-import { Dashboard, EditAccount } from "./pages/index";
+import { Dashboard, NewAccountPage } from "./pages/index";
 import { Action, addAccount, AccountCollection } from "./actions/index";
 import { appState, AppState } from "./state";
 import { Router, Route } from "react-router";
@@ -30,7 +30,7 @@ class MainComponent extends React.Component<MainProps, any> {
 					<Router>
 						<Route path="/" component={App}>
 							<Route path="dash" component={Dashboard}/>
-							<Route path="new" component={EditAccount}/>
+							<Route path="new" component={NewAccountPage}/>
 						</Route>
 					</Router>
 				</Provider>
