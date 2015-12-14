@@ -1,6 +1,8 @@
 ///<reference path="../typings/tsd.d.ts"/>
 ///<reference path="../node_modules/updraft/dist/updraft.d.ts"/>
 
+declare var __DEVELOPMENT__: boolean;
+
 
 declare module "redux-simple-router" {
 	function syncReduxAndRouter(history: any, store: any): any;

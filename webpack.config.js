@@ -76,8 +76,10 @@ module.exports = {
 
     // production defines
     new webpack.DefinePlugin({
-      DEBUG: production ? 0 : 1,
-      PRODUCTION: production ? 1 : 0,
+      __DEVELOPMENT__: production ? 0 : 1,
+      "process.env": {
+        NODE_ENV: JSON.stringify(production ? "production" : "development") 
+      }
     }),
 
     // separate vendor chunk

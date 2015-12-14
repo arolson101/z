@@ -6,7 +6,7 @@ import * as ReactDOM from "react-dom";
 import { createStore, combineReducers, applyMiddleware, compose } from "redux";
 import { connect, Provider } from "react-redux";
 import { syncReduxAndRouter } from "redux-simple-router";
-import { devTools } from "redux-devtools";
+import { devTools, persistState } from "redux-devtools";
 import { DevTools, DebugPanel, LogMonitor } from "redux-devtools/lib/react";
 import { createHistory, createHashHistory } from "history";
 
@@ -15,35 +15,6 @@ import { Dashboard, NewAccountPage } from "./pages/index";
 import { Action, addAccount, AccountCollection } from "./actions/index";
 import { appState, AppState } from "./state";
 import { Router, Route } from "react-router";
-
-interface MainProps {
-	store: any;
-}
-
-const DEBUG_PANEL = true;
-
-class MainComponent extends React.Component<MainProps, any> {
-	render() {
-		return (
-			<div>
-				<Provider store={this.props.store}>
-					<Router>
-						<Route path="/" component={App}>
-							<Route path="dash" component={Dashboard}/>
-							<Route path="new" component={NewAccountPage}/>
-						</Route>
-					</Router>
-				</Provider>
-			
-			{DEBUG_PANEL &&
-        <DebugPanel top right bottom>
-          <DevTools store={this.props.store} monitor={LogMonitor} />
-        </DebugPanel>
-			}
-			</div>
-		);
-	}
-}
 
 
 interface Props {
@@ -74,12 +45,21 @@ class AppAccountList extends React.Component<any, any> {
 type createStoreFunction<State, Action> = (reducer: Redux.Reducer<State, Action>, initialState?: State) => Redux.Store<State, Action>
 
 export function main(root: HTMLElement) {
-	const composedCreateStore: createStoreFunction<AppState, Action> = compose(
-		//applyMiddleware(m1, m2, m3),
-		DEBUG_PANEL ? devTools() : (x: any) => x
-	)(createStore);
+	const middleware: any[] = [];
 
-	const store = composedCreateStore(appState);
+	let finalCreateStore: createStoreFunction<AppState, Action>;
+	if (__DEVELOPMENT__) {
+		finalCreateStore = compose(
+			applyMiddleware(...middleware),
+			persistState(window.location.href.match(/[?&]debug_session=([^&]+)\b/)),
+			devTools()
+		)(createStore);
+	}
+	else {
+		finalCreateStore = applyMiddleware(...middleware)(createStore);
+	}
+
+	const store = finalCreateStore(appState);
 	const history = createHistory();
 
 	syncReduxAndRouter(history, store);
@@ -87,5 +67,22 @@ export function main(root: HTMLElement) {
 	store.dispatch(addAccount({dbid: 123, name: "foo"}));
 	console.log(store.getState());
 	
-	ReactDOM.render(<MainComponent store={store}/>, root);
+	ReactDOM.render(
+		<div>
+			<Provider store={store}>
+				<Router history={history}>
+					<Route path="/" component={App}>
+						<Route path="dash" component={Dashboard}/>
+						<Route path="new" component={NewAccountPage}/>
+					</Route>
+				</Router>
+			</Provider>
+		
+		{__DEVELOPMENT__ &&
+			<DebugPanel top right bottom>
+				<DevTools store={store} monitor={LogMonitor} visibleOnLoad={false}/>
+			</DebugPanel>
+		}
+		</div>
+		, root);
 }

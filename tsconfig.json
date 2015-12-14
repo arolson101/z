@@ -33,6 +33,7 @@
         "./src/types/index.ts",
         "./src/types/institution.ts",
         "./src/util/collection.ts",
+        "./src/util/mixin.ts",
         "./src/index.ts",
         "./src/state.ts"
     ]
