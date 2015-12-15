@@ -35,7 +35,7 @@ declare module Redux {
     class Store<State, Action> {
         getReducer(): Reducer<State, Action>;
         replaceReducer(nextReducer: Reducer<State, Action>): void;
-        dispatch(action: Action): State;
+        dispatch(action: Action | Function): State;
         getState(): State;
         subscribe(listener: Function): Function;
     }

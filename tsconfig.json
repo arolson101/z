@@ -19,6 +19,7 @@
         "./src/actions/accountActions.ts",
         "./src/actions/action.ts",
         "./src/actions/index.ts",
+        "./src/actions/i18nActions.ts",
         "./src/actions/institutionActions.ts",
         "./src/components/app.tsx",
         "./src/components/breadcrumbs.tsx",
@@ -35,6 +36,7 @@
         "./src/util/collection.ts",
         "./src/util/mixin.ts",
         "./src/index.ts",
+        "./src/i18n.ts",
         "./src/state.ts"
     ]
 }

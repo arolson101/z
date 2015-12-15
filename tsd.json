@@ -18,7 +18,7 @@
       "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
     },
     "redux-thunk/redux-thunk.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "56df28f76adb7c11c019282699afdc6e9b0a96f6"
     },
     "es6-collections/es6-collections.d.ts": {
       "commit": "961b76f37bdfcff459cab9ed9fd3f204f0633d5e"
@@ -49,6 +49,12 @@
     },
     "react-mixin/react-mixin.d.ts": {
       "commit": "923c5431d9447db9d5cf41adc5914e3c94c1ff10"
+    },
+    "i18next/i18next.d.ts": {
+      "commit": "56df28f76adb7c11c019282699afdc6e9b0a96f6"
+    },
+    "jquery/jquery.d.ts": {
+      "commit": "56df28f76adb7c11c019282699afdc6e9b0a96f6"
     }
   }
 }

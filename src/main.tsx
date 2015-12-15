@@ -9,12 +9,14 @@ import { syncReduxAndRouter } from "redux-simple-router";
 import { devTools, persistState } from "redux-devtools";
 import { DevTools, DebugPanel, LogMonitor } from "redux-devtools/lib/react";
 import { createHistory, createHashHistory } from "history";
+import * as thunk from "redux-thunk";
+import { Router, Route } from "react-router";
 
 import { App } from "./components/index";
 import { Dashboard, NewAccountPage } from "./pages/index";
 import { Action, addAccount, AccountCollection } from "./actions/index";
 import { appState, AppState } from "./state";
-import { Router, Route } from "react-router";
+import { i18nInit } from "./i18n";
 
 
 interface Props {
@@ -45,7 +47,7 @@ class AppAccountList extends React.Component<any, any> {
 type createStoreFunction<State, Action> = (reducer: Redux.Reducer<State, Action>, initialState?: State) => Redux.Store<State, Action>
 
 export function main(root: HTMLElement) {
-	const middleware: any[] = [];
+	const middleware: any[] = [thunk];
 
 	let finalCreateStore: createStoreFunction<AppState, Action>;
 	if (__DEVELOPMENT__) {
@@ -63,6 +65,8 @@ export function main(root: HTMLElement) {
 	const history = createHistory();
 
 	syncReduxAndRouter(history, store);
+
+	store.dispatch(i18nInit());
 
 	store.dispatch(addAccount({dbid: 123, name: "foo"}));
 	console.log(store.getState());

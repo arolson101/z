@@ -20,7 +20,7 @@ export function manageCollection<Element, ElementMutator>(add: string, edit: str
 
 		switch (action.type) {
 		case add: {
-				let addAction = <AddAction<Element, ElementMutator>>action;
+				let addAction = action as AddAction<Element, ElementMutator>;
 				let id = addAction.id;
 				verify(id, "id must be specified");
 				return mutate(state, {
@@ -29,7 +29,7 @@ export function manageCollection<Element, ElementMutator>(add: string, edit: str
 			}
 			
 		case edit: {
-				let editAction = <EditAction<Element, ElementMutator>>action;
+				let editAction = action as EditAction<Element, ElementMutator>;
 				let id = editAction.id;
 				verify(id, "id must be specified");
 				return mutate(state, {
@@ -38,7 +38,7 @@ export function manageCollection<Element, ElementMutator>(add: string, edit: str
 			}
 
 		case del: {
-				let delAction = <DeleteAction<Element, ElementMutator>>action;
+				let delAction = action as DeleteAction<Element, ElementMutator>;
 				let id = delAction.id;
 				verify(id, "id must be specified");
 				return mutate(state, {
