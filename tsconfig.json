@@ -26,6 +26,7 @@
         "./src/components/breadcrumbs.tsx",
         "./src/components/component.tsx",
         "./src/components/index.ts",
+        "./src/components/select2.tsx",
         "./src/containers/index.ts",
         "./src/pages/dashboard.tsx",
         "./src/pages/loginPage.tsx",

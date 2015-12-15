@@ -16,3 +16,5 @@
 /// <reference path="i18next/i18next.d.ts" />
 /// <reference path="jquery/jquery.d.ts" />
 /// <reference path="lodash/lodash.d.ts" />
+/// <reference path="react-bootstrap/react-bootstrap.d.ts" />
+/// <reference path="select2/select2.d.ts" />

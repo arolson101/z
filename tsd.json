@@ -58,6 +58,12 @@
     },
     "lodash/lodash.d.ts": {
       "commit": "24e12a7af994afa2226af70fbfae0adc78736a9e"
+    },
+    "react-bootstrap/react-bootstrap.d.ts": {
+      "commit": "24e12a7af994afa2226af70fbfae0adc78736a9e"
+    },
+    "select2/select2.d.ts": {
+      "commit": "24e12a7af994afa2226af70fbfae0adc78736a9e"
     }
   }
 }

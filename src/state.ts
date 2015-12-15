@@ -17,7 +17,7 @@ import { Action,
 				 fiReducer,
 				} from "./actions";
 
-export { i18nFunction };
+export { i18nFunction, FI };
 
 export interface AppState {
 	t: i18nFunction;
