@@ -4,6 +4,7 @@ export * from './actions/index';
 export * from './pages/index';
 export * from './types/index';
 export * from './util/index';
+export * from './fi';
 export * from './i18n';
 export * from './main';
 export * from './state';

@@ -15,3 +15,4 @@
 /// <reference path="react-mixin/react-mixin.d.ts" />
 /// <reference path="i18next/i18next.d.ts" />
 /// <reference path="jquery/jquery.d.ts" />
+/// <reference path="lodash/lodash.d.ts" />

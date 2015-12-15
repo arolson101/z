@@ -17,6 +17,7 @@ import { Dashboard, NewAccountPage } from "./pages/index";
 import { Action, addAccount, AccountCollection } from "./actions/index";
 import { appState, AppState } from "./state";
 import { i18nInit } from "./i18n";
+import { fiInit } from "./fi";
 
 
 interface Props {
@@ -67,6 +68,7 @@ export function main(root: HTMLElement) {
 	syncReduxAndRouter(history, store);
 
 	store.dispatch(i18nInit());
+	store.dispatch(fiInit());
 
 	store.dispatch(addAccount({dbid: 123, name: "foo"}));
 	console.log(store.getState());

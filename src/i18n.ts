@@ -5,6 +5,9 @@ import * as i18n from "i18next-client";
 
 import { Thunk, Dispatch, i18nLoaded, i18nFunction } from "./actions";
 
+require("file?name=/locales/translation.en-US.json!./locales/translation.dev.json");
+require("file?name=/locales/translation.en.json!./locales/translation.en.json");
+require("file?name=/locales/translation.dev.json!./locales/translation.en-US.json");
 
 function init() {
 	return new Promise((resolve, reject) => {

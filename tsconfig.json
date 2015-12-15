@@ -18,6 +18,7 @@
     "files": [
         "./src/actions/accountActions.ts",
         "./src/actions/action.ts",
+        "./src/actions/fiActions.ts",
         "./src/actions/index.ts",
         "./src/actions/i18nActions.ts",
         "./src/actions/institutionActions.ts",
@@ -36,6 +37,7 @@
         "./src/util/collection.ts",
         "./src/util/mixin.ts",
         "./src/index.ts",
+        "./src/fi.ts",
         "./src/i18n.ts",
         "./src/state.ts"
     ]

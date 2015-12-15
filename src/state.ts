@@ -13,6 +13,8 @@ import { Action,
 				 accountCollectionReducer,
 				 InstitutionCollection,
 				 institutionCollectionReducer,
+				 FI,
+				 fiReducer,
 				} from "./actions";
 
 export { i18nFunction };
@@ -22,6 +24,7 @@ export interface AppState {
 	routing: ReactRouter.RouterState;
 	accounts: AccountCollection;
 	institutions: InstitutionCollection;
+	filist: FI[];
 	form: any;
 }
 
@@ -30,5 +33,6 @@ export const appState = combineReducers<AppState, Action>({
 	routing: routeReducer,
   accounts: accountCollectionReducer,
   institutions: institutionCollectionReducer,
+	filist: fiReducer,
 	form: formReducer, 
 });

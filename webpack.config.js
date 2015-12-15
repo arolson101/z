@@ -60,7 +60,8 @@ module.exports = {
 
   module: {
     loaders: [
-      { test: /\.json$/, loader: 'json-loader' },
+      //{ test: /\.json/, loader: "file?name=/config/[name].[ext]" },
+      //{ test: /\.json$/, loader: 'json-loader' },
       //{ test: /\.ts$/, loader: 'ts-loader!ts-jsx-loader' },
       //{ test: /\.ts$/, loader: 'typescript-simple-loader' },
       //{ test: /\.tsx?$/, loader: 'awesome-typescript-loader?compiler=ntypescript' },
@@ -101,7 +102,12 @@ module.exports = {
     }),
   ],
 
-  resolveLoader: { root: __dirname + "/node_modules" },
+  resolveLoader: {
+    root: __dirname + "/node_modules",
+    alias: {
+      'copy': 'file-loader?name=/[name].[ext]',
+    }
+  },
 
   devtool: "source-map"
 };
