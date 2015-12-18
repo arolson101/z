@@ -29,7 +29,7 @@
     "addTitle": "Add Accounts",
     "editTitle": "Edit Accounts",
     "institutionLabel": "Institution",
-    "institutionPlaceholder": "",
+    "institutionPlaceholder": "Pre-defined institutions",
     "institutionHelp": "Select your institution from the list or enter the details below",
     "nameLabel": "Name",
     "namePlaceholder": "",

@@ -832,6 +832,7 @@ declare module "react-bootstrap" {
         multiple?: boolean;
         placeholder?: string;
         readOnly?: boolean;
+        rows?: number;
         type?: string;
         onChange?: Function; // TODO: Add more specific type 
         onKeyDown?: Function; // TODO: Add more specific type 

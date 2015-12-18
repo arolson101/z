@@ -3,17 +3,13 @@
 
 import * as React from "react";
 import { Input, InputProps } from "react-bootstrap";
+import { autobind } from "core-decorators";
+import { verify } from "updraft";
 
 
 interface Props extends InputProps {
-	onChange2(e: Select2ChangeEvent): any;
+	onChange?(e: JQueryEventObject): any;
 	opts: Select2Options;
-}
-
-
-export interface Select2ChangeEvent extends JQueryEventObject {
-	value: any;
-	prev: any;
 }
 
 
@@ -21,7 +17,7 @@ export class Select2 extends React.Component<Props, any> {
 	render() {
 		return (
 			<Input
-				{... this.props}
+				{...this.props}
 				type="select"
 				ref="input"
 				className="form-control"
@@ -34,21 +30,9 @@ export class Select2 extends React.Component<Props, any> {
 	componentDidMount() {
 	    var input = (this.refs["input"] as any).getInputDOMNode();
 	    var $input = $(input);
-	    $input.select2(this.props.opts);
-	    $input.data("prev", $input.val());
-	    $input.change(this.onChange);
-	}
-
-	onChange = (e: Select2ChangeEvent) => {
-	    var input = (this.refs["input"] as any).getInputDOMNode();
-	    var $input = $(input);
-			e.value = input.options[input.selectedIndex].value;
-	    e.prev = $input.data("prev");
-	    $input.data("prev", $input.val());
-
-		if(this.props.onChange2) {
-			this.props.onChange2(e);
-		}
+	    $input.select2($.extend({placeholder: this.props.placeholder} as Select2Options, this.props.opts));
+			verify(this.props.onChange, "onChange not specified");
+			$input.change(this.props.onChange);
 	}
 
 	componentWillUnmount() {
@@ -56,5 +40,4 @@ export class Select2 extends React.Component<Props, any> {
 	    var $input = $(input);
 	    $input.select2("destroy");
 	}
-
 }

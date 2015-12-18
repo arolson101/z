@@ -18,3 +18,6 @@
 /// <reference path="lodash/lodash.d.ts" />
 /// <reference path="react-bootstrap/react-bootstrap.d.ts" />
 /// <reference path="select2/select2.d.ts" />
+/// <reference path="core-decorators/core-decorators.d.ts" />
+/// <reference path="react-ladda/react-ladda.d.ts" />
+/// <reference path="react-fa/react-fa.d.ts" />

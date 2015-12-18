@@ -12,7 +12,7 @@ export enum AccountType {
 }
 
 
-interface _Account<key, id, str, tAccountType, bool> {
+export interface _Account<key, id, str, tAccountType, bool> {
   dbid?: key;
   institution?: id;
   name?: str;

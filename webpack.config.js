@@ -19,6 +19,7 @@ module.exports = {
 
       "bootstrap",
       "bootstrap-datepicker/dist/js/bootstrap-datepicker.js",
+      "core-decorators",
       "filist",
       "history",
       "i18next-client",
@@ -31,7 +32,8 @@ module.exports = {
       "react",
       "react-dom",
       "react-bootstrap",
-      //"react-fa",
+      "react-fa",
+      "react-ladda",
       "react-mixin",
 			"react-router",
       "redux",

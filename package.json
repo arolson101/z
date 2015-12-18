@@ -12,6 +12,7 @@
   "dependencies": {
     "bootstrap": "^3.3.6",
     "bootstrap-datepicker": "^1.4.1",
+    "core-decorators": "^0.9.1",
     "filist": "^1.0.1",
     "gulp-insert": "^0.5.0",
     "history": "^1.13.1",
@@ -25,6 +26,8 @@
     "react": "^0.14.3",
     "react-bootstrap": "^0.27.1",
     "react-dom": "^0.14.3",
+    "react-fa": "^4.0.0",
+    "react-ladda": "^4.0.0",
     "react-mixin": "^3.0.3",
     "react-redux": "^3.1.0",
     "react-router": "^1.0.0-rc3",
