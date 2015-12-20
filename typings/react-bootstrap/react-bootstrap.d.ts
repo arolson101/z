@@ -168,6 +168,15 @@ declare module "react-bootstrap" {
     interface AccordionClass extends  React.ComponentClass<AccordionProps> { }
     var Accordion: AccordionClass;
 
+    // <Collapse />
+    // ----------------------------------------
+    interface CollapseProps extends React.Props<CollapseClass> {
+        in?: boolean;
+    }
+    interface Collapse extends React.ReactElement<CollapseProps> { }
+    interface CollapseClass extends  React.ComponentClass<CollapseProps> { }
+    var Collapse: CollapseClass;
+
 
     // <PanelGroup />
     // ----------------------------------------
@@ -833,6 +842,7 @@ declare module "react-bootstrap" {
         placeholder?: string;
         readOnly?: boolean;
         rows?: number;
+        style?: React.CSSProperties;
         type?: string;
         onChange?: Function; // TODO: Add more specific type 
         onKeyDown?: Function; // TODO: Add more specific type 

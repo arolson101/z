@@ -21,6 +21,7 @@ export class Select2 extends React.Component<Props, any> {
 				type="select"
 				ref="input"
 				className="form-control"
+				style={{width: "100%"}}
 			>
 				{this.props.children}
 			</Input>
