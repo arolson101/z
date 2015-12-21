@@ -16,6 +16,7 @@ declare module ReduxForm {
 	interface Info {
 		form: string; // unique name for this form
 		fields: string[]; // all the fields in your form
+		validate: Function;
 	}
 	
 	interface Field {

@@ -2,7 +2,7 @@
 "use strict";
 
 import * as React from "react";
-import {Alert, Panel, Button, Input, Label, Modal, Row, Col, Table} from "react-bootstrap";
+import {Alert, Panel, Button, Collapse, Grid, Input, Label, Modal, Row, Col, Table} from "react-bootstrap";
 import * as Icon from "react-fa";
 import * as LaddaButton from "react-ladda";
 import { connect } from "react-redux";
@@ -44,11 +44,6 @@ interface EditAccountProps extends ReduxForm.Props {
 		username: ReduxForm.Field;
 		password: ReduxForm.Field;
 		
-		addAcct_name: ReduxForm.Field;
-		addAcct_type: ReduxForm.Field;
-		addAcct_number: ReduxForm.Field;
-		addAcct_visible: ReduxForm.Field;
-		
 		accounts: AccountFieldArray;
 		
 		// index signature to make typescript happy
@@ -78,13 +73,26 @@ const keys = [
 
   "username",
   "password",
-	
-	"addAcct_name",
-	"addAcct_type",
-	"addAcct_number",
-	"addAcct_visible",
 ];
 
+
+function validate(values: any): Object {
+  const errors = { accounts: [] as any[] };
+  const accountNames: any = {};
+  const accountNumbers: any = {};
+  values.accounts.forEach((account: Account, idx: number) => {
+    if (!account.name) {
+    }
+    else if (account.name in accountNames) {
+      errors.accounts[accountNames[account.name]].name = "Must be unique";
+      errors.accounts[idx].name = "Must be unique";
+    }
+    else {
+      accountNames[account.name] = idx;
+    }
+  });
+  return errors;
+}
 
 
 @historyMixin
@@ -95,7 +103,8 @@ const keys = [
 		"accounts[].type",
 		"accounts[].number",
 		"accounts[].visible"
-	]
+	],
+  validate
 })
 @connect(
 	(state: AppState) => ({filist: state.filist, t: state.t}),
@@ -121,7 +130,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 		);
 
 		return (
-			<form>
+			<Grid>
 			
 				<Select2
 					label={t("accountDialog.institutionLabel")}
@@ -172,10 +181,9 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 					type="checkbox"
 					label={t("accountDialog.enableOnline")}
 					{...fields.online}
-					wrapperClassName="col-xs-12"
 				/>
 				
-				{fields.online.checked &&
+				<Collapse in={fields.online.checked}>
 					<div>
 						<Panel header={t("accountDialog.ofxInfo")}>
 							<Input
@@ -256,66 +264,72 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 							</Alert>
 						}
 					</div>					
-				}
+				</Collapse>
 
 				<hr/>
 
-				<Input label="--Accounts">
-					<Table hover={true}>
-						<tfoot>
-							<tr>
-								<td>
-									<Input type="select" {...fields.addAcct_type}>
-										<option id="checking">checking</option>
-										<option id="savings">savings</option>
-									</Input>
-								</td>
-								<td>
-									<Input type="text" {...fields.addAcct_name}/>
-								</td>
-								<td>
-									<Input type="text" {...fields.addAcct_number}/>
-								</td>
-								<td>
-									<Button type="button" onClick={this.onAddAccount}><Icon name="plus"/></Button>
-								</td>
-							</tr>
-						</tfoot>
+				<Panel header="---Accounts">
+					<Table>
+            <thead>
+              <tr>
+                <th>visible</th>
+                <th>type</th>
+                <th>number</th>
+                <th>name</th>
+                <th></th>
+              </tr>
+            </thead>
 						<tbody>
-							{fields.accounts.map(this.drawAccount)}
+							{fields.accounts.map((account: AccountField, index: number) =>
+                <tr key={index}>
+                  <td>
+                    <Input
+                      type="text"
+                      placeholder="visible"
+                      {...account.visible}
+                    />
+                  </td>
+                  <td>
+                    <Input
+                      type="text"
+                      placeholder="type"
+                      {...account.type}
+                    />
+                  </td>
+                  <td>
+                    <Input
+                      type="text"
+                      placeholder="name"
+                      bsStyle={account.name.error ? "error" : null}
+                      hasFeedback
+                      {...account.name}
+                    />
+                  </td>
+                  <td>
+                    <Input
+                      type="text"
+                      placeholder="number"
+                      {...account.number}
+                    />
+                  </td>
+                  <td>
+                    <Button type="button"><Icon name="trash-o"/></Button>
+                  </td>
+                </tr>
+              )}
 						</tbody>
 					</Table>
-				</Input>
+          <Button type="button" onClick={() => fields.accounts.addField()}><Icon name="plus"/></Button>
+				</Panel>
 
 				<div key="footer" className="modal-footer">
 					<Button onClick={this.onClose}>{t("accountDialog.close")}</Button>
 					<Button bsStyle="primary" onClick={this.onSubmit} disabled={!canSave}>{t("accountDialog.save")}</Button>
 				</div>
 
-			</form>
+			</Grid>
 		);
 	}
-	
-	drawAccount(account: AccountField, index: number) {
-		return <tr key={index}>
-								<td>{index}</td>
-								<td><Input type="text" {...account.name}/></td>
-								<td><Input type="text" {...account.number}/></td>
-								<td></td>
-							</tr>
-	}
-	
-	@autobind
-	onAddAccount() {
-		const acct: Account = {
-			name: this.props.fields.addAcct_name.value as string,
-			number: this.props.fields.addAcct_number.value as string,
-			type: AccountType.CHECKING, //this.props.fields.addAcct_type.value as string,
-			visible: this.props.fields.addAcct_visible.value as boolean,
-		};
-		this.props.fields.accounts.addField(acct);
-	}
-
 	
 	@autobind
 	onClose() {
