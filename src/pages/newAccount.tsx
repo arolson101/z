@@ -132,48 +132,64 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 		return (
 			<Grid>
 			
-				<Select2
-					label={t("accountDialog.institutionLabel")}
-					help={t("accountDialog.institutionHelp")}
-					placeholder={t("accountDialog.institutionPlaceholder")}
-					opts={{allowClear:true}}
-					{...fields.institution}
-				>
-					{_.map(filist, fi => <option value={fi.id.toString()} key={fi.id}>{fi.name}</option>)}
-				</Select2>
+        <Row>
+          <Col xs={12}>
+            <Select2
+              label={t("accountDialog.institutionLabel")}
+              help={t("accountDialog.institutionHelp")}
+              placeholder={t("accountDialog.institutionPlaceholder")}
+              opts={{allowClear:true}}
+              {...fields.institution}
+            >
+              {_.map(filist, fi => <option value={fi.id.toString()} key={fi.id}>{fi.name}</option>)}
+            </Select2>
+          </Col>
+        </Row>
 
 				<hr/>
 
-				<Input
-					type="text"
-					label={t("accountDialog.nameLabel")}
-					help={t("accountDialog.nameHelp")}
-					placeholder={t("accountDialog.namePlaceholder")}
-					{...fields.name}
-				/>
+        <Row>
+          <Col xs={12} md={6}>
+            <Input
+              type="text"
+              label={t("accountDialog.nameLabel")}
+              help={t("accountDialog.nameHelp")}
+              placeholder={t("accountDialog.namePlaceholder")}
+              {...fields.name}
+            />
+          </Col>
 
-				<Input
-					type="text"
-					label={t("accountDialog.webLabel")}
-					placeholder={t("accountDialog.webPlaceholder")}
-					{...fields.web}
-				/>
+          <Col xs={12} md={6}>
+            <Input
+              type="text"
+              label={t("accountDialog.webLabel")}
+              placeholder={t("accountDialog.webPlaceholder")}
+              {...fields.web}
+            />
+          </Col>
+        </Row>
 
-				<Input
-					type="textarea"
-					rows={4}
-					label={t("accountDialog.addressLabel")}
-					placeholder={t("accountDialog.addressPlaceholder")}
-					{...fields.address}
-				/>
+        <Row>
+          <Col xs={12} md={6}>
+            <Input
+              type="textarea"
+              rows={4}
+              label={t("accountDialog.addressLabel")}
+              placeholder={t("accountDialog.addressPlaceholder")}
+              {...fields.address}
+            />
+          </Col>
 
-				<Input
-					type="textarea"
-					rows={4}
-					label={t("accountDialog.notesLabel")}
-					placeholder={t("accountDialog.notesPlaceholder")}
-					{...fields.notes}
-				/>
+          <Col xs={12} md={6}>
+            <Input
+              type="textarea"
+              rows={4}
+              label={t("accountDialog.notesLabel")}
+              placeholder={t("accountDialog.notesPlaceholder")}
+              {...fields.notes}
+            />
+          </Col>
+        </Row>
 
 				<hr/>
 
@@ -186,47 +202,61 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 				<Collapse in={fields.online.checked}>
 					<div>
 						<Panel header={t("accountDialog.ofxInfo")}>
-							<Input
-								type="text"
-								label={t("accountDialog.fidLabel")}
-								help={t("accountDialog.fidHelp")}
-								placeholder={t("accountDialog.fidPlaceholder")}
-								{...fields.fid}
-							/>
-	
-							<Input
-								type="text"
-								label={t("accountDialog.orgLabel")}
-								help={t("accountDialog.orgHelp")}
-								placeholder={t("accountDialog.orgPlaceholder")}
-								{...fields.org}
-							/>
-	
-							<Input
-								type="text"
-								label={t("accountDialog.ofxLabel")}
-								help={t("accountDialog.ofxHelp")}
-								placeholder={t("accountDialog.ofxPlaceholder")}
-								{...fields.ofx}
-							/>
+              <Row>
+                <Col xs={6} md={3}>
+                  <Input
+                    type="text"
+                    label={t("accountDialog.fidLabel")}
+                    help={t("accountDialog.fidHelp")}
+                    placeholder={t("accountDialog.fidPlaceholder")}
+                    {...fields.fid}
+                  />
+                </Col>
+    
+                <Col xs={6} md={3}>
+                  <Input
+                    type="text"
+                    label={t("accountDialog.orgLabel")}
+                    help={t("accountDialog.orgHelp")}
+                    placeholder={t("accountDialog.orgPlaceholder")}
+                    {...fields.org}
+                  />
+                </Col>
+    
+                <Col xs={6} md={6}>
+                  <Input
+                    type="text"
+                    label={t("accountDialog.ofxLabel")}
+                    help={t("accountDialog.ofxHelp")}
+                    placeholder={t("accountDialog.ofxPlaceholder")}
+                    {...fields.ofx}
+                  />
+                </Col>
+              </Row>
 						</Panel>
 	
 						<Panel key="pass" header={t("accountDialog.userpassInfo")}>
-							<Input
-								type="text"
-								label={t("accountDialog.usernameLabel")}
-								help={t("accountDialog.usernameHelp")}
-								placeholder={t("accountDialog.usernamePlaceholder")}
-								{...fields.username}
-							/>
-	
-							<Input
-								type="text"
-								label={t("accountDialog.passwordLabel")}
-								help={t("accountDialog.passwordHelp")}
-								placeholder={t("accountDialog.passwordPlaceholder")}
-								{...fields.password}
-							/>
+              <Row>
+                <Col xs={6}>
+                  <Input
+                    type="text"
+                    label={t("accountDialog.usernameLabel")}
+                    help={t("accountDialog.usernameHelp")}
+                    placeholder={t("accountDialog.usernamePlaceholder")}
+                    {...fields.username}
+                  />
+                </Col>
+    
+                <Col xs={6}>
+                  <Input
+                    type="text"
+                    label={t("accountDialog.passwordLabel")}
+                    help={t("accountDialog.passwordHelp")}
+                    placeholder={t("accountDialog.passwordPlaceholder")}
+                    {...fields.password}
+                  />
+                </Col>
+              </Row>
 						</Panel>
 	
 						<Input label=" ">
