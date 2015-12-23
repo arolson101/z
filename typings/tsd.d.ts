@@ -24,3 +24,4 @@
 /// <reference path="safe-access/safe-access.d.ts" />
 /// <reference path="react/react-addons-css-transition-group.d.ts" />
 /// <reference path="react/react-addons-transition-group.d.ts" />
+/// <reference path="x-editable/x-editable.d.ts" />

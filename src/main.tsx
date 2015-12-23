@@ -19,8 +19,6 @@ import { appState, AppState } from "./state";
 import { i18nInit } from "./i18n";
 import { fiInit } from "./fi";
 
-require("./z.css");
-
 interface Props {
 	accounts: AccountCollection;
 }

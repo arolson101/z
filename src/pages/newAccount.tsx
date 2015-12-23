@@ -15,7 +15,7 @@ import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
 
 import { AppState, FI, i18nFunction } from "../state";
 import { Account, AccountType, _Account } from "../types";
-import { Component, Select2, FadeTransitionGroup } from "../components";
+import { Component, Select2, FadeTransitionGroup, XTextForm, XSelect } from "../components";
 import { mixin, historyMixin } from "../util";
 import { bindActionCreators, addAccount, updatePath } from "../actions";
 
@@ -161,7 +161,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 		let canAdd = _.all(addAccountKeys, (key: string) => (fields[key] as ReduxForm.Field).dirty && !(fields[key] as ReduxForm.Field).error);
 		
 		const wrapProps = (field: ReduxForm.Field) => {
-			let props: any = $.extend({}, field);
+			let props: any = _.extend({}, field);
 			if (field.error) {
 				props.bsStyle = "error";
 				props.help = field.error;
@@ -341,34 +341,16 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 							{fields.accounts.map((account: AccountField, index: number) =>
                 <tr key={index}>
                   <td>
-                    <Input
-                      type="text"
-                      placeholder="---visible"
-                      {...account.visible}
-                    />
+                    <XTextForm {...account.visible}/>
                   </td>
                   <td>
-                    <Input
-                      type="text"
-                      placeholder="--type"
-                      {...account.type}
-                    />
+                    <XTextForm {...account.type}/>
                   </td>
                   <td>
-                    <Input
-                      type="text"
-                      placeholder="--name"
-                      bsStyle={account.name.error ? "error" : null}
-                      hasFeedback
-                      {...account.name}
-                    />
+                    <XTextForm {...account.name}/>
                   </td>
                   <td>
-                    <Input
-                      type="text"
-                      placeholder="--number"
-                      {...account.number}
-                    />
+                    <XTextForm {...account.number}/>
                   </td>
                   <td>
                     <Button type="button" bsStyle="danger" onClick={() => fields.accounts.removeField(index)}><Icon name="trash-o"/></Button>
@@ -420,7 +402,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 						<Row>
 							<Col xs={12}>
 								<Button
-									type="button" 
+									type="button"
 									active={this.state.gettingAccounts} 
 									disabled={!canGetAccounts} 
 									onClick={this.onGetAccountList}

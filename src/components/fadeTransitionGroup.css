@@ -1,0 +1,17 @@
+.fadeTransition-enter {
+  opacity: 0.01;
+  transition: opacity .5s ease-in;
+}
+
+.fadeTransition-enter.fadeTransition-enter-active {
+  opacity: 1;
+}
+
+.fadeTransition-leave {
+  opacity: 1;
+  transition: opacity .5s ease-in;
+}
+
+.fadeTransition-leave.fadeTransition-leave-active {
+  opacity: 0.01;
+}
