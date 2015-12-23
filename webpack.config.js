@@ -40,6 +40,7 @@ module.exports = {
       "redux-form",
       "redux-simple-router",
       "rrule",
+      "safe-access",
       "select2",
       "string-hash",
       "sortablejs",

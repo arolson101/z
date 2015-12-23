@@ -13,6 +13,33 @@ declare module "redux-simple-router" {
 
 
 declare module ReduxForm {
+
+  interface Action {
+    type: string;
+    form: string;
+    field: string;
+    value?: string;
+    touch?: boolean;
+  }
+
+  interface ActionTypes {
+    ADD_ARRAY_VALUE: string;
+    BLUR: string;
+    CHANGE: string;
+    DESTROY: string;
+    FOCUS: string;
+    INITIALIZE: string;
+    REMOVE_ARRAY_VALUE: string;
+    RESET: string;
+    START_ASYNC_VALIDATION: string;
+    START_SUBMIT: string;
+    STOP_ASYNC_VALIDATION: string;
+    STOP_SUBMIT: string;
+    SUBMIT_FAILED: string;
+    TOUCH: string;
+    UNTOUCH: string;
+  }
+  
 	interface Info {
 		form: string; // unique name for this form
 		fields: string[]; // all the fields in your form
@@ -40,16 +67,16 @@ declare module ReduxForm {
 		visited: boolean;
 	}
 	
+	type FieldOpt = Field | FieldArray<FieldSet>;
+	
 	interface FieldSet {
-		[fieldName: string]: Field;
+		[fieldName: string]: FieldOpt;
 	}
 	
 	interface FieldArray<T> extends Array<T> {
 		addField(value?: any, index?: number): any;
 		removeField(index?: number): any;
 	}
-	
-	type FieldOpt = Field | FieldArray<FieldSet>;
 	
 	interface Props {
 		active: string;
@@ -58,7 +85,7 @@ declare module ReduxForm {
 		destroyForm: Function;
 		dirty?: boolean;
 		error?: string;
-		fields?: { [fieldName: string]: FieldOpt };
+		fields?: FieldSet;
 		handleSubmit?(e: any): any;
 		initializeForm?(data: Object): any;
 		invalid: boolean;
@@ -75,11 +102,20 @@ declare module ReduxForm {
 		values: {
 			[fieldName: string]: string;
 		}
-	}	
+	}
+  
+  interface ReducerPluginSet {
+    [formName: string]: Redux.Reducer<any, any>;
+  }
 }
 
 declare module "redux-form" {
 	import { ClassDecorator } from "react-redux";
+  module reducer {
+    function plugin(plugins: ReduxForm.ReducerPluginSet): any;
+  }
 	function reducer(state: any, action: any): any;
 	function reduxForm(info: ReduxForm.Info, mapStateToProps?: Function, mapDispatchToProps?: Object): ClassDecorator;
+  var actionTypes: ReduxForm.ActionTypes;
+  function change(form: string, field: string, value: string): any;
 }

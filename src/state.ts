@@ -3,7 +3,7 @@
 
 import { combineReducers } from "redux";
 import { routeReducer } from "redux-simple-router";
-import { reducer as formReducer } from "redux-form";
+import * as reduxForm from "redux-form";
 
 import { Action,
 				 nullAction,
@@ -34,5 +34,5 @@ export const appState = combineReducers<AppState, Action>({
   accounts: accountCollectionReducer,
   institutions: institutionCollectionReducer,
 	filist: fiReducer,
-	form: formReducer, 
+	form: reduxForm.reducer,
 });

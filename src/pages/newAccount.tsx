@@ -1,12 +1,13 @@
 ///<reference path="../project.d.ts"/>
 "use strict";
 
+import access = require("safe-access");
 import * as React from "react";
 import {Alert, Panel, Button, Collapse, Grid, Input, Label, Modal, Row, Col, Table} from "react-bootstrap";
 import * as Icon from "react-fa";
 import * as LaddaButton from "react-ladda";
 import { connect } from "react-redux";
-import { reduxForm } from "redux-form";
+import * as reduxForm from "redux-form";
 import * as reactMixin from "react-mixin";
 import { History } from "react-router";
 import { autobind } from "core-decorators";
@@ -24,6 +25,7 @@ interface EditAccountProps extends ReduxForm.Props {
 	isNew?: boolean;
 	addAccount?: (account: Account) => any;
 	updatePath?: (path: string) => any;
+	change?: (form: string, field: string, value: string) => any;
 	t: i18nFunction;
 	filist: FI[];
 	history: ReactRouter.History;
@@ -56,6 +58,8 @@ interface State {
 	gettingAccountsSuccess?: number;
 	gettingAccountsError?: boolean;
 }
+
+const FORM_NAME = "newAccount";
 
 const keys = [
   "name",
@@ -96,8 +100,8 @@ function validate(values: any): Object {
 
 
 @historyMixin
-@reduxForm({
-	form: "newAccount",
+@reduxForm.reduxForm({
+	form: FORM_NAME,
 	fields: [...keys,
 		"accounts[].name",
 		"accounts[].type",
@@ -108,7 +112,7 @@ function validate(values: any): Object {
 })
 @connect(
 	(state: AppState) => ({filist: state.filist, t: state.t}),
-	(dispatch: Redux.Dispatch<any>) => bindActionCreators({ addAccount, updatePath }, dispatch)
+	(dispatch: Redux.Dispatch<any>) => bindActionCreators({ addAccount, updatePath, change: reduxForm.change }, dispatch)
 )
 export class NewAccountPage extends React.Component<EditAccountProps, State> {
 	id: number = 25;
@@ -140,8 +144,10 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
               placeholder={t("accountDialog.institutionPlaceholder")}
               opts={{allowClear:true}}
               {...fields.institution}
+              onChange={this.onInstitutionChange}
             >
-              {_.map(filist, fi => <option value={fi.id.toString()} key={fi.id}>{fi.name}</option>)}
+              <option value="0"/>
+              {_.map(filist, fi => <option value={this.optionValueForFi(fi)} key={fi.id}>{fi.name}</option>)}
             </Select2>
           </Col>
         </Row>
@@ -360,7 +366,61 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 			</Grid>
 		);
 	}
+  
+  optionValueForFi(fi: FI): string {
+    return fi.id + 1 as any;
+  }
+  
+  fiForOptionValue(value: string | boolean): FI {
+    if (!value) {
+      return null;
+    }
+    let v: number = parseInt(value as string, 10);
+    v--;
+    return this.props.filist[v];
+  }
 	
+  @autobind  
+  onInstitutionChange(e: Event) {
+    const { fields, change } = this.props;
+    fields.institution.onChange(e);
+    
+    type FiFunction = (fi: FI) => string;
+    const oldFi = this.fiForOptionValue(fields.institution.value);
+    const newFi = this.fiForOptionValue((e.target as any).value);
+    const initField = (stateKey: string, fiProp?: string | FiFunction) => {
+      fiProp = fiProp || stateKey;
+      let getValue: FiFunction = fiProp as FiFunction;
+      if (typeof fiProp !== "function") {
+        getValue = (fi: FI) => access(fi, fiProp as string); 
+      }
+      let field = fields[stateKey] as ReduxForm.Field;
+      if (!field.value || field.value == getValue(oldFi)) {
+        let value = getValue(newFi);
+        change(FORM_NAME, stateKey, value);
+      }
+    }
+    
+    initField("name");
+    initField("web", "profile.siteURL");
+    initField("address", function(fi: FI): string {
+      let address = "";
+      if(fi && fi.profile) {
+        if(fi.profile.address1) { address += fi.profile.address1 + "\n"; }
+        if(fi.profile.address2) { address += fi.profile.address2 + "\n"; }
+        if(fi.profile.address3) { address += fi.profile.address3 + "\n"; }
+        if(fi.profile.city)     { address += fi.profile.city + ", "; }
+        if(fi.profile.state)    { address += fi.profile.state + " "; }
+        if(fi.profile.zip)      { address += fi.profile.zip + "\n"; }
+        if(fi.profile.country)  { address += fi.profile.country; }
+      }
+      return address;
+    });
+    initField("fid");
+    initField("org");
+    initField("ofx");
+  }
+  
 	@autobind
 	onClose() {
 	}
