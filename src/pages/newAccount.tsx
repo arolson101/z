@@ -15,7 +15,7 @@ import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
 
 import { AppState, FI, i18nFunction } from "../state";
 import { Account, AccountType, _Account } from "../types";
-import { Component, Select2, FadeTransitionGroup, XTextForm, XSelect } from "../components";
+import { Component, Select2, FadeTransitionGroup, XTextForm, XSelect, EnumSelect } from "../components";
 import { mixin, historyMixin } from "../util";
 import { bindActionCreators, addAccount, updatePath } from "../actions";
 
@@ -363,24 +363,17 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 								<td>
 									<Input
 										type="text"
-										placeholder="--type"
+										placeholder="--visible"
 										{...wrapProps(fields.addAccount_visible)}
 									/>
 								</td>
 								<td>
-									<Input
-										type="text"
-										placeholder="--type"
-										{...wrapProps(fields.addAccount_type)}
-									/>
+									<EnumSelect {...wrapProps(fields.addAccount_type)} enum={AccountType} tfcn={(name) => this.props.t("AccountTypes." + name)}/>
 								</td>
 								<td>
 									<Input
 										type="text"
 										placeholder="--name"
-										bsStyle={fields.addAccount_name.error ? "error" : null}
-										help={fields.addAccount_name.error || null}
-										hasFeedback
 										{...wrapProps(fields.addAccount_name)}
 									/>
 								</td>
