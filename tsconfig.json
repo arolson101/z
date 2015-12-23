@@ -25,6 +25,7 @@
         "./src/components/app.tsx",
         "./src/components/breadcrumbs.tsx",
         "./src/components/component.tsx",
+        "./src/components/fadeTransitionGroup.ts",
         "./src/components/index.ts",
         "./src/components/select2.tsx",
         "./src/containers/index.ts",

@@ -19,6 +19,7 @@ import { appState, AppState } from "./state";
 import { i18nInit } from "./i18n";
 import { fiInit } from "./fi";
 
+require("./z.css");
 
 interface Props {
 	accounts: AccountCollection;
@@ -70,9 +71,6 @@ export function main(root: HTMLElement) {
 	store.dispatch(i18nInit());
 	store.dispatch(fiInit());
 
-	store.dispatch(addAccount({dbid: 123, name: "foo"}));
-	console.log(store.getState());
-	
 	ReactDOM.render(
 		<div>
 			<Provider store={store}>

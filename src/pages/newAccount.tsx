@@ -11,10 +11,11 @@ import * as reduxForm from "redux-form";
 import * as reactMixin from "react-mixin";
 import { History } from "react-router";
 import { autobind } from "core-decorators";
+import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
 
 import { AppState, FI, i18nFunction } from "../state";
 import { Account, AccountType, _Account } from "../types";
-import { Component, Select2 } from "../components";
+import { Component, Select2, FadeTransitionGroup } from "../components";
 import { mixin, historyMixin } from "../util";
 import { bindActionCreators, addAccount, updatePath } from "../actions";
 
@@ -45,6 +46,11 @@ interface EditAccountProps extends ReduxForm.Props {
 
 		username: ReduxForm.Field;
 		password: ReduxForm.Field;
+
+		addAccount_visible: ReduxForm.Field;
+		addAccount_type: ReduxForm.Field;
+		addAccount_number: ReduxForm.Field;
+		addAccount_name: ReduxForm.Field;
 		
 		accounts: AccountFieldArray;
 		
@@ -61,7 +67,7 @@ interface State {
 
 const FORM_NAME = "newAccount";
 
-const keys = [
+const institutionKeys = [
   "name",
   "web",
   "address",
@@ -79,22 +85,36 @@ const keys = [
   "password",
 ];
 
+const accountKeys = [
+	"name",
+	"type",
+	"number",
+	"visible"
+];
+
+const addAccountKeys = accountKeys.map(x => "addAccount_" + x);
 
 function validate(values: any): Object {
-  const errors = { accounts: [] as any[] };
+  const errors: any = { accounts: [] as any[] };
   const accountNames: any = {};
   const accountNumbers: any = {};
-  values.accounts.forEach((account: Account, idx: number) => {
-    if (!account.name) {
-    }
-    else if (account.name in accountNames) {
-      errors.accounts[accountNames[account.name]].name = "Must be unique";
-      errors.accounts[idx].name = "Must be unique";
-    }
-    else {
-      accountNames[account.name] = idx;
-    }
-  });
+	
+	let checkUnique = (key: string) => {
+		const field = "addAccount_" + key;
+		if (!(field in values)) {
+			return;
+		}
+		const value = values[field]; 
+		let found = _.any(values.accounts, (account: any) => account[key] == value);
+		if (found) {
+			errors[field] = "must be unique";
+			return;
+		}
+	};
+	
+	checkUnique("name");
+	checkUnique("number");
+	
   return errors;
 }
 
@@ -102,21 +122,26 @@ function validate(values: any): Object {
 @historyMixin
 @reduxForm.reduxForm({
 	form: FORM_NAME,
-	fields: [...keys,
-		"accounts[].name",
-		"accounts[].type",
-		"accounts[].number",
-		"accounts[].visible"
+	fields: [
+		...institutionKeys,
+		...addAccountKeys,
+		...accountKeys.map(x => "accounts[]." + x)
 	],
+	initialValues: {
+		online: true,
+		accounts: []
+	},
   validate
 })
 @connect(
 	(state: AppState) => ({filist: state.filist, t: state.t}),
-	(dispatch: Redux.Dispatch<any>) => bindActionCreators({ addAccount, updatePath, change: reduxForm.change }, dispatch)
+	(dispatch: Redux.Dispatch<any>) => bindActionCreators({
+		addAccount,
+		updatePath,
+		change: reduxForm.change
+	}, dispatch)
 )
 export class NewAccountPage extends React.Component<EditAccountProps, State> {
-	id: number = 25;
-	
 	constructor() {
 		super();
 		this.state = {}
@@ -128,10 +153,22 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 		const { filist, t } = this.props;
     const canSave = false; //(fields.name.value && fields.accounts.length > 0);
 		const canGetAccounts: boolean = (
-			fields.ofx.value != "" &&
-			fields.username.value != "" &&
-			fields.password.value != ""
+			fields.ofx.value as boolean &&
+			fields.username.value as boolean &&
+			fields.password.value as boolean
 		);
+		
+		let canAdd = _.all(addAccountKeys, (key: string) => (fields[key] as ReduxForm.Field).dirty && !(fields[key] as ReduxForm.Field).error);
+		
+		const wrapProps = (field: ReduxForm.Field) => {
+			let props: any = $.extend({}, field);
+			if (field.error) {
+				props.bsStyle = "error";
+				props.help = field.error;
+			}
+			props.hasFeedback = true;
+			return props;
+		};
 
 		return (
 			<Grid>
@@ -265,21 +302,6 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
               </Row>
 						</Panel>
 	
-						<Input label=" ">
-							<Row>
-								<Col xs={12}>
-									<span className="pull-right">
-										{/*<LaddaButton 
-											active={this.state.gettingAccounts} 
-											disabled={!canGetAccounts} 
-											onClick={this.onGetAccountList}
-											>
-												{t("accountDialog.getAccountList")}
-										</LaddaButton>*/}
-									</span>
-								</Col>
-							</Row>
-						</Input>
 						{this.state.gettingAccountsSuccess &&
 							<Alert
 								bsStyle="success"
@@ -308,34 +330,34 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 					<Table>
             <thead>
               <tr>
-                <th>visible</th>
-                <th>type</th>
-                <th>number</th>
-                <th>name</th>
+                <th>--visible</th>
+                <th>--type</th>
+                <th>--name</th>
+                <th>--number</th>
                 <th></th>
               </tr>
             </thead>
-						<tbody>
+						<FadeTransitionGroup component="tbody">
 							{fields.accounts.map((account: AccountField, index: number) =>
                 <tr key={index}>
                   <td>
                     <Input
                       type="text"
-                      placeholder="visible"
+                      placeholder="---visible"
                       {...account.visible}
                     />
                   </td>
                   <td>
                     <Input
                       type="text"
-                      placeholder="type"
+                      placeholder="--type"
                       {...account.type}
                     />
                   </td>
                   <td>
                     <Input
                       type="text"
-                      placeholder="name"
+                      placeholder="--name"
                       bsStyle={account.name.error ? "error" : null}
                       hasFeedback
                       {...account.name}
@@ -344,18 +366,71 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
                   <td>
                     <Input
                       type="text"
-                      placeholder="number"
+                      placeholder="--number"
                       {...account.number}
                     />
                   </td>
                   <td>
-                    <Button type="button"><Icon name="trash-o"/></Button>
+                    <Button type="button" bsStyle="danger" onClick={() => fields.accounts.removeField(index)}><Icon name="trash-o"/></Button>
                   </td>
                 </tr>
               )}
-						</tbody>
+						</FadeTransitionGroup>
+						<tfoot>
+							<tr>
+								<td>
+									<Input
+										type="text"
+										placeholder="--type"
+										{...wrapProps(fields.addAccount_visible)}
+									/>
+								</td>
+								<td>
+									<Input
+										type="text"
+										placeholder="--type"
+										{...wrapProps(fields.addAccount_type)}
+									/>
+								</td>
+								<td>
+									<Input
+										type="text"
+										placeholder="--name"
+										bsStyle={fields.addAccount_name.error ? "error" : null}
+										help={fields.addAccount_name.error || null}
+										hasFeedback
+										{...wrapProps(fields.addAccount_name)}
+									/>
+								</td>
+								<td>
+									<Input
+										type="text"
+										placeholder="--number"
+										{...wrapProps(fields.addAccount_number)}
+									/>
+								</td>
+								<td>
+									<Button type="button" onClick={this.onAddAccount} disabled={!canAdd}><Icon name="plus"/></Button>
+								</td>
+							</tr>
+						</tfoot>
 					</Table>
-          <Button type="button" onClick={() => fields.accounts.addField()}><Icon name="plus"/></Button>
+					
+					<Collapse in={fields.online.checked}>
+						<Row>
+							<Col xs={12}>
+								<Button
+									type="button" 
+									active={this.state.gettingAccounts} 
+									disabled={!canGetAccounts} 
+									onClick={this.onGetAccountList}
+									>
+										<Icon name={this.state.gettingAccounts ? "fa-spinner fa-pulse" : "download"}/>
+										{" " + t("accountDialog.getAccountList")}
+								</Button>
+							</Col>
+						</Row>
+					</Collapse>
 				</Panel>
 
 				<div key="footer" className="modal-footer">
@@ -420,6 +495,25 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
     initField("org");
     initField("ofx");
   }
+	
+	@autobind
+	onAddAccount() {
+		const { fields, change } = this.props;
+		let account: any = {};
+		let keys = ["name", "type", "number", "visible"];
+		
+		keys.forEach((key: string) => {
+			const field = "addAccount_" + key;
+			account[key] = (fields[field] as ReduxForm.Field).value;
+			change(FORM_NAME, field, "");
+		});
+
+		fields.accounts.addField(account);
+
+		keys.forEach((key: string) => {
+			change(FORM_NAME, "addAccount_" + key, "");
+		});
+	}
   
 	@autobind
 	onClose() {
@@ -430,8 +524,8 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 	}
 	
 	onAdd() {
-		this.props.addAccount({dbid: this.id, name: "foo " + this.id});
-		this.id++;
+		// this.props.addAccount({dbid: this.id, name: "foo " + this.id});
+		// this.id++;
 		this.props.history.replace("/");
 	}
 	

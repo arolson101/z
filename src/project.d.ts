@@ -43,7 +43,20 @@ declare module ReduxForm {
 	interface Info {
 		form: string; // unique name for this form
 		fields: string[]; // all the fields in your form
-		validate: Function;
+		asyncBlurFields?: string[];
+		asyncValidate?: (values: Object, dispatch: Function, props: Object) => Promise<any>;
+		destroyOnUnmount?: boolean;
+		formKey?: string;
+		getFormState?: Function;
+		initialValues?: any;
+		onSubmit?: Function;
+		propNamespace?: string;
+		readonly?: boolean;
+		reduxMountPoint?: string;
+		returnRejectedSubmitPromise?: boolean;
+		touchOnBlur?: boolean;
+		touchOnChange?: boolean;
+		validate?: (values: Object, props: Object) => Object;
 	}
 	
 	interface Field {
@@ -117,5 +130,21 @@ declare module "redux-form" {
 	function reducer(state: any, action: any): any;
 	function reduxForm(info: ReduxForm.Info, mapStateToProps?: Function, mapDispatchToProps?: Object): ClassDecorator;
   var actionTypes: ReduxForm.ActionTypes;
-  function change(form: string, field: string, value: string): any;
+	
+  function blur(form: string, field: string, value: string): ReduxForm.Action;
+  function change(form: string, field: string, value: string): ReduxForm.Action;
+  function changeWithKey(form: string, formKey: string, field: string, value: string): ReduxForm.Action;
+  function focus(form: string, field: string): ReduxForm.Action;
+  function initialize(form: string, data: Object, fields: string[]): ReduxForm.Action;
+  function initializeWithKey(form: string, formKey: string, data: Object, fields: string[]): ReduxForm.Action;
+  function reset(form: string): ReduxForm.Action;
+  function startAsyncValidation(form: string): ReduxForm.Action;
+  function startSubmit(form: string): ReduxForm.Action;
+  function stopSubmit(form: string, errors: Object): ReduxForm.Action;
+  function stopAsyncValidation(form: string, errors: Object): ReduxForm.Action;
+  function touch(form: string, ...fields: string[]): ReduxForm.Action;
+  function touchWithKey(form: string, formKey: string, ...fields: string[]): ReduxForm.Action;
+  function untouch(form: string, ...fields: string[]): ReduxForm.Action;
+  function untouchWithKey(form: string, formKey: string, ...fields: string[]): ReduxForm.Action;
+  function destroy(form: string, field: string, value: string): ReduxForm.Action;
 }

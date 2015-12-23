@@ -22,3 +22,5 @@
 /// <reference path="react-ladda/react-ladda.d.ts" />
 /// <reference path="react-fa/react-fa.d.ts" />
 /// <reference path="safe-access/safe-access.d.ts" />
+/// <reference path="react/react-addons-css-transition-group.d.ts" />
+/// <reference path="react/react-addons-transition-group.d.ts" />
