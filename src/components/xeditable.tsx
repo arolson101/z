@@ -6,12 +6,14 @@ import * as ReactDOM from "react-dom";
 import { Component } from "./component";
 
 
-interface Props extends React.Props<any>, XEditable.Options {
-    onChange?: (newValue: any) => void;
+interface ChangeProps {
+	onChange?: (newValue: any) => void;
 }
 
+interface Props extends React.Props<any>, ChangeProps {}
+interface XEditableProps extends Props, XEditable.Options {}
 
-export class XEditable extends Component<Props> {
+export class XEditable extends Component<XEditableProps> {
     render() {
         return <a href="#" ref="a">
             {this.props.children}
@@ -35,22 +37,39 @@ export class XEditable extends Component<Props> {
 }
 
 
-export class XSelect extends Component<Props> {
-		render() {
-			return <XEditable {...this.props} type="select">{this.props.children}</XEditable>;
-		}
+interface XSelectProps extends Props, XEditable.SelectOptions {}
+
+export class XSelect extends Component<XSelectProps> {
+	render() {
+		return <XEditable {...this.props} type="select">{this.props.children}</XEditable>;
+	}
 }
 
 
-export class XText extends Component<Props> {
-		render() {
-			return <XEditable {...this.props} type="text">{this.props.children}</XEditable>;
-		}
+interface XSelectFormProps extends ReduxForm.Field, React.Props<any> {
+	source: { 
+		value: number;
+		text: string;
+	}[]; 
 }
 
+export class XSelectForm extends Component<XSelectFormProps> {
+	render() {
+		return <XSelect {...this.props as any}>{this.props.children}</XSelect>;
+	}
+}
+
+
+interface XTextProps extends Props, XEditable.TextOptions {}
+
+export class XText extends Component<XTextProps> {
+	render() {
+		return <XEditable {...this.props} type="text">{this.props.children}</XEditable>;
+	}
+}
 
 export class XTextForm extends Component<ReduxForm.Field> {
-		render() {
-			return <XText mode="inline" onChange={this.props.onChange}>{this.props.value}</XText>;
-		}
+	render() {
+		return <XText mode="inline" onChange={this.props.onChange}>{this.props.value}</XText>;
+	}
 }

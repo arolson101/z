@@ -15,8 +15,8 @@ import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
 
 import { AppState, FI, i18nFunction } from "../state";
 import { Account, AccountType, _Account } from "../types";
-import { Component, Select2, FadeTransitionGroup, XTextForm, XSelect, EnumSelect } from "../components";
-import { mixin, historyMixin } from "../util";
+import { Component, Select2, FadeTransitionGroup, XTextForm, XSelectForm, EnumSelect } from "../components";
+import { mixin, historyMixin, EnumEx } from "../util";
 import { bindActionCreators, addAccount, updatePath } from "../actions";
 
 interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field, ReduxForm.Field, ReduxForm.Field, ReduxForm.Field, ReduxForm.Field> {}
@@ -169,6 +169,8 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 			props.hasFeedback = true;
 			return props;
 		};
+		
+		const AccountTypes_t = (name: string) => this.props.t("AccountTypes." + name);
 
 		return (
 			<Grid>
@@ -344,7 +346,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
                     <XTextForm {...account.visible}/>
                   </td>
                   <td>
-                    <XTextForm {...account.type}/>
+                    <XSelectForm {...account.type} source={EnumEx.map(AccountType, (name: string, value: number) => ({value: value, text: AccountTypes_t(name)}))}/>
                   </td>
                   <td>
                     <XTextForm {...account.name}/>
@@ -368,7 +370,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 									/>
 								</td>
 								<td>
-									<EnumSelect {...wrapProps(fields.addAccount_type)} enum={AccountType} tfcn={(name) => this.props.t("AccountTypes." + name)}/>
+									<EnumSelect {...wrapProps(fields.addAccount_type)} enum={AccountType} tfcn={AccountTypes_t}/>
 								</td>
 								<td>
 									<Input
