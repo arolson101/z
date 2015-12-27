@@ -3,7 +3,7 @@
 
 import access = require("safe-access");
 import * as React from "react";
-import {Alert, Panel, Button, Collapse, Grid, Input, Label, Modal, Row, Col, Table} from "react-bootstrap";
+import {Alert, Panel, Button, Collapse, Grid, Input, Label, Modal, OverlayTrigger, Row, Col, Table, Tooltip} from "react-bootstrap";
 import * as Icon from "react-fa";
 import * as LaddaButton from "react-ladda";
 import { connect } from "react-redux";
@@ -15,7 +15,15 @@ import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
 
 import { AppState, FI, i18nFunction } from "../state";
 import { Account, AccountType, _Account } from "../types";
-import { Component, Select2, FadeTransitionGroup, XTextForm, XSelectForm, EnumSelect } from "../components";
+import {
+	Component,
+	Select2,
+	FadeTransitionGroup,
+	ImageCheckbox,
+	XTextForm,
+	XSelectForm,
+	EnumSelect
+ } from "../components";
 import { mixin, historyMixin, EnumEx } from "../util";
 import { bindActionCreators, addAccount, updatePath } from "../actions";
 
@@ -60,6 +68,7 @@ interface EditAccountProps extends ReduxForm.Props {
 }
 
 interface State {
+	userPressedAddAccount?: boolean;
 	gettingAccounts?: boolean;
 	gettingAccountsSuccess?: number;
 	gettingAccountsError?: boolean;
@@ -99,21 +108,31 @@ function validate(values: any): Object {
   const accountNames: any = {};
   const accountNumbers: any = {};
 	
-	let checkUnique = (key: string) => {
-		const field = "addAccount_" + key;
-		if (!(field in values)) {
-			return;
-		}
-		const value = values[field]; 
-		let found = _.any(values.accounts, (account: any) => account[key] == value);
-		if (found) {
-			errors[field] = "must be unique";
+	let checkNonempty = (key: string) => {
+		if (!values[key]) {
+			errors[key] = "accountDialog.validate.nonempty";
 			return;
 		}
 	};
 	
-	checkUnique("name");
-	checkUnique("number");
+	checkNonempty("name");
+	
+	let checkUniqueAccountField = (key: string) => {
+		const field = "addAccount_" + key;
+		const value = values[field]; 
+		let found = _.any(values.accounts, (account: any) => account[key] == value);
+		if (found) {
+			errors[field] = "accountDialog.validate.unique";
+			return;
+		}
+	};
+	
+	checkUniqueAccountField("name");
+	checkUniqueAccountField("number");
+	
+	if (!values.accounts.length) {
+		errors["accounts"] = "accountDialog.validate.noAccounts";
+	}
 	
   return errors;
 }
@@ -129,6 +148,8 @@ function validate(values: any): Object {
 	],
 	initialValues: {
 		online: true,
+		addAccount_visible: true,
+		addAccount_type: AccountType.CHECKING,
 		accounts: []
 	},
   validate
@@ -148,29 +169,25 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 	}
 	
 	render() {
-		const { fields } = this.props;
-		const handleSubmit = () => this.onAdd();
-		const { filist, t } = this.props;
-    const canSave = false; //(fields.name.value && fields.accounts.length > 0);
+		const { fields, filist, t, handleSubmit } = this.props;
 		const canGetAccounts: boolean = (
 			fields.ofx.value as boolean &&
 			fields.username.value as boolean &&
 			fields.password.value as boolean
 		);
 		
-		let canAdd = _.all(addAccountKeys, (key: string) => (fields[key] as ReduxForm.Field).dirty && !(fields[key] as ReduxForm.Field).error);
-		
-		const wrapProps = (field: ReduxForm.Field) => {
+		const wrapProps = (field: ReduxForm.Field, supressEmptyError?: boolean) => {
 			let props: any = _.extend({}, field);
-			if (field.error) {
+			const isEmpty = (field.value === undefined || field.value === "")
+			if (field.error && field.touched && (!supressEmptyError || !isEmpty)) {
 				props.bsStyle = "error";
-				props.help = field.error;
+				props.help = t(field.error);
 			}
 			props.hasFeedback = true;
 			return props;
 		};
 		
-		const AccountTypes_t = (name: string) => this.props.t("AccountTypes." + name);
+		const AccountTypes_t = (name: string) => t("AccountTypes." + name);
 
 		return (
 			<Grid>
@@ -186,12 +203,12 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
               onChange={this.onInstitutionChange}
             >
               <option value="0"/>
-              {_.map(filist, fi => <option value={this.optionValueForFi(fi)} key={fi.id}>{fi.name}</option>)}
+              {_.map(filist, fi =>
+								<option value={this.optionValueForFi(fi)} key={fi.id}>{fi.name}</option>
+							)}
             </Select2>
           </Col>
         </Row>
-
-				<hr/>
 
         <Row>
           <Col xs={12} md={6}>
@@ -200,7 +217,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
               label={t("accountDialog.nameLabel")}
               help={t("accountDialog.nameHelp")}
               placeholder={t("accountDialog.namePlaceholder")}
-              {...fields.name}
+              {...wrapProps(fields.name)}
             />
           </Col>
 
@@ -235,8 +252,6 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
             />
           </Col>
         </Row>
-
-				<hr/>
 
 				<Input
 					type="checkbox"
@@ -280,7 +295,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
               </Row>
 						</Panel>
 	
-						<Panel key="pass" header={t("accountDialog.userpassInfo")}>
+						<Panel header={t("accountDialog.userpassInfo")}>
               <Row>
                 <Col xs={6}>
                   <Input
@@ -326,72 +341,76 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 					</div>					
 				</Collapse>
 
-				<hr/>
-
-				<Panel header="---Accounts">
+				<Panel header={t("accountDialog.accounts")}>
 					<Table>
             <thead>
               <tr>
-                <th>--visible</th>
-                <th>--type</th>
-                <th>--name</th>
-                <th>--number</th>
+                <th>{t("accountDialog.accountVisible")}</th>
+                <th>{t("accountDialog.accountType")}</th>
+                <th>{t("accountDialog.accountName")}</th>
+                <th>{t("accountDialog.accountNumber")}</th>
                 <th></th>
               </tr>
             </thead>
 						<FadeTransitionGroup component="tbody">
-							{fields.accounts.map((account: AccountField, index: number) =>
-                <tr key={index}>
-                  <td>
-                    <XTextForm {...account.visible}/>
+							{fields.accounts.map((account: AccountField, index: number) => {
+								const tdStyle = {style: {verticalAlign: "middle"}};
+								return <tr key={index}>
+                  <td {...tdStyle}>
+                    <ImageCheckbox on="eye" off="eye-slash" {...account.visible}/>
                   </td>
-                  <td>
+                  <td {...tdStyle}>
                     <XSelectForm {...account.type} source={EnumEx.map(AccountType, (name: string, value: number) => ({value: value, text: AccountTypes_t(name)}))}/>
                   </td>
-                  <td>
+                  <td {...tdStyle}>
                     <XTextForm {...account.name}/>
                   </td>
-                  <td>
+                  <td {...tdStyle}>
                     <XTextForm {...account.number}/>
                   </td>
-                  <td>
+                  <td {...tdStyle}>
                     <Button type="button" bsStyle="danger" onClick={() => fields.accounts.removeField(index)}><Icon name="trash-o"/></Button>
                   </td>
                 </tr>
-              )}
+							})}
 						</FadeTransitionGroup>
 						<tfoot>
 							<tr>
 								<td>
-									<Input
-										type="text"
-										placeholder="--visible"
-										{...wrapProps(fields.addAccount_visible)}
-									/>
+									<ImageCheckbox on="eye" off="eye-slash" {...fields.addAccount_visible}/>
 								</td>
 								<td>
-									<EnumSelect {...wrapProps(fields.addAccount_type)} enum={AccountType} tfcn={AccountTypes_t}/>
+									<EnumSelect {...fields.addAccount_type} enum={AccountType} tfcn={AccountTypes_t}/>
 								</td>
 								<td>
 									<Input
 										type="text"
-										placeholder="--name"
-										{...wrapProps(fields.addAccount_name)}
+										placeholder={t("accountDialog.accountNamePlaceholder")}
+										{...wrapProps(fields.addAccount_name, !this.state.userPressedAddAccount)}
 									/>
 								</td>
 								<td>
 									<Input
 										type="text"
-										placeholder="--number"
-										{...wrapProps(fields.addAccount_number)}
+										placeholder={t("accountDialog.accountNumberPlaceholder")}
+										{...wrapProps(fields.addAccount_number, !this.state.userPressedAddAccount)}
 									/>
 								</td>
 								<td>
-									<Button type="button" onClick={this.onAddAccount} disabled={!canAdd}><Icon name="plus"/></Button>
+									<Button
+										type="button"
+										onClick={this.onAddAccount}
+									>
+										<Icon name="plus"/>
+									</Button>
 								</td>
 							</tr>
 						</tfoot>
 					</Table>
+
+					{this.props.submitFailed && fields.accounts.length == 0 &&
+						<Alert bsStyle="danger">{t("accountDialog.validate.noAccounts")}</Alert>
+					}
 					
 					<Collapse in={fields.online.checked}>
 						<Row>
@@ -410,9 +429,14 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 					</Collapse>
 				</Panel>
 
-				<div key="footer" className="modal-footer">
+				<div className="modal-footer">
 					<Button onClick={this.onClose}>{t("accountDialog.close")}</Button>
-					<Button bsStyle="primary" onClick={this.onSubmit} disabled={!canSave}>{t("accountDialog.save")}</Button>
+					<Button
+						bsStyle="primary"
+						onClick={handleSubmit(this.onSave)}
+					>
+						{t("accountDialog.save")}
+					</Button>
 				</div>
 
 			</Grid>
@@ -475,32 +499,61 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 	
 	@autobind
 	onAddAccount() {
-		const { fields, change } = this.props;
-		let account: any = {};
-		let keys = ["name", "type", "number", "visible"];
+		const { fields, change, touch, untouch } = this.props;
 		
-		keys.forEach((key: string) => {
-			const field = "addAccount_" + key;
-			account[key] = (fields[field] as ReduxForm.Field).value;
-			change(FORM_NAME, field, "");
-		});
+		if (fields.addAccount_name.invalid || fields.addAccount_number.invalid) {
+			touch(...addAccountKeys);
+			this.setState({userPressedAddAccount: true});
+			return;
+		}
+
+		let account: Account = {
+			visible: fields.addAccount_visible.value as boolean,
+			type: fields.addAccount_type.value as any,
+			name: fields.addAccount_name.value as string,
+			number: fields.addAccount_number.value as string,
+		};
 
 		fields.accounts.addField(account);
+		
+		change(FORM_NAME, "addAccount_visible", true as any);
+		change(FORM_NAME, "addAccount_type", AccountType.CHECKING as any);
+		change(FORM_NAME, "addAccount_name", "");
+		change(FORM_NAME, "addAccount_number", "");
 
-		keys.forEach((key: string) => {
-			change(FORM_NAME, "addAccount_" + key, "");
+		accountKeys.forEach((key: string) => {
+			untouch(FORM_NAME, "addAccount_" + key, "");
 		});
+		this.setState({userPressedAddAccount: false});
 	}
   
 	@autobind
 	onClose() {
+		this.props.history.replace("/");
 	}
+	
+	// canSave(): ActiveButtonProps {
+	// 	const { fields, t } = this.props;
+	// 	let enabled = true;
+	// 	let reason = "";
+	// 	if (!fields.name.value) {
+	// 		enabled = false;
+	// 		reason = t("accountDialog.canSaveReason.noName");
+	// 	}
+	// 	else if (!fields.accounts.length) {
+	// 		enabled = false;
+	// 		reason = t("accountDialog.canSaveReason.noAccounts");
+	// 	}
+	// 	return {
+	// 		enabled,
+	// 		reason,
+	// 		id: "canSave",
+	// 		title: t("accountDialog.errorTitle")
+	// 	}
+	// }
 	
 	@autobind
-	onSubmit(e: React.FormEvent) {
-	}
-	
-	onAdd() {
+	onSave(e: React.FormEvent) {
 		// this.props.addAccount({dbid: this.id, name: "foo " + this.id});
 		// this.id++;
 		this.props.history.replace("/");

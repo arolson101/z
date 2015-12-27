@@ -67,13 +67,29 @@
     "successGettingAccountsMessage": "Found __numAccounts__ accounts",
     "toggleVisTooltip": "Show or hide account from sidebar",
     "accounts": "Accounts",
+		"accountVisible": "Visible",
+		"accountType": "Type",
+		"accountName": "Name",
+		"accountNamePlaceholder": "Value Checking",
+		"accountNumber": "Number",
+		"accountNumberPlaceholder": "123456",
     "addAccount": "Add",
+		"validate": {
+			"nonempty": "Cannot be empty",
+			"unique": "Must be unique",
+			"noAccounts": "You must add at least one account"
+		},
     "add": {
       "typePlaceholder": "Type",
       "idPlaceholder": "Number",
       "namePlaceholder": "Name"
     },
     "validateNotEmpty": "Cannot be empty",
+		"errorTitle": "Error",
+		"canSaveReason": {
+			"noName": "'Name' cannot be blank",
+			"noAccounts": "You must add at least one account"
+		},
     "save": "Save",
     "close": "Cancel"
   },

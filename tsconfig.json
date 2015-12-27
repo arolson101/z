@@ -27,6 +27,7 @@
         "./src/components/component.tsx",
         "./src/components/enumSelect.tsx",
         "./src/components/fadeTransitionGroup.tsx",
+        "./src/components/imageCheckbox.tsx",
         "./src/components/index.ts",
         "./src/components/select2.tsx",
         "./src/components/xeditable.tsx",
