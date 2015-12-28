@@ -3,6 +3,7 @@
 
 import { Column, Mutate as M, Query as Q } from "updraft";
 
+// see ofx4js.domain.data.banking.AccountType
 export enum AccountType {
   CHECKING,
   SAVINGS,
@@ -11,6 +12,9 @@ export enum AccountType {
   CREDITCARD,
 }
 
+export module AccountType {
+	export function parse(idx: string): AccountType { return (AccountType as any)[idx]; }
+}
 
 export interface _Account<key, id, str, tAccountType, bool> {
   dbid?: key;

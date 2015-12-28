@@ -1,17 +1,17 @@
 ///<reference path="../project.d.ts"/>
 "use strict";
 
-import access = require("safe-access");
+import { autobind } from "core-decorators";
+import * as ofx4js from "ofx4js";
 import * as React from "react";
+import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
 import {Alert, Panel, Button, Collapse, Grid, Input, Label, Modal, OverlayTrigger, Row, Col, Table, Tooltip} from "react-bootstrap";
 import * as Icon from "react-fa";
 import * as LaddaButton from "react-ladda";
 import { connect } from "react-redux";
-import * as reduxForm from "redux-form";
-import * as reactMixin from "react-mixin";
 import { History } from "react-router";
-import { autobind } from "core-decorators";
-import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
+import * as reduxForm from "redux-form";
+import access = require("safe-access");
 
 import { AppState, FI, i18nFunction } from "../state";
 import { Account, AccountType, _Account } from "../types";
@@ -24,8 +24,9 @@ import {
 	XSelectForm,
 	EnumSelect
  } from "../components";
-import { mixin, historyMixin, EnumEx } from "../util";
+import { historyMixin, EnumEx } from "../util";
 import { bindActionCreators, addAccount, updatePath } from "../actions";
+import { readAccountProfiles } from "../online";
 
 interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field, ReduxForm.Field, ReduxForm.Field, ReduxForm.Field, ReduxForm.Field> {}
 interface AccountFieldArray extends ReduxForm.FieldArray<AccountField> {} 
@@ -71,7 +72,7 @@ interface State {
 	userPressedAddAccount?: boolean;
 	gettingAccounts?: boolean;
 	gettingAccountsSuccess?: number;
-	gettingAccountsError?: boolean;
+	gettingAccountsError?: string;
 }
 
 const FORM_NAME = "newAccount";
@@ -152,7 +153,11 @@ function validate(values: any): Object {
 export class NewAccountPage extends React.Component<EditAccountProps, State> {
 	constructor() {
 		super();
-		this.state = {}
+		this.state = {
+			gettingAccounts: false,
+      gettingAccountsSuccess: null,
+      gettingAccountsError: null
+		};
 	}
 	
 	render() {
@@ -331,26 +336,6 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
                 </Col>
               </Row>
 						</Panel>
-	
-						{this.state.gettingAccountsSuccess &&
-							<Alert
-								bsStyle="success"
-								onDismiss={() => this.setState({gettingAccountsSuccess: 0})}
-								dismissAfter={2000}
-								>
-								<h4>{t("accountDialog.successGettingAccounts")}</h4>
-								<p>{t("accountDialog.successGettingAccountsMessage", {numAccounts: this.state.gettingAccountsSuccess})}</p>
-							</Alert>
-						}
-						{this.state.gettingAccountsError &&
-							<Alert
-								bsStyle="danger"
-								onDismiss={() => this.setState({gettingAccountsError: null})}
-								>
-								<h4>{t("accountDialog.errorGettingAccounts")}</h4>
-								<p>{this.state.gettingAccountsError}</p>
-							</Alert>
-						}
 					</div>					
 				</Collapse>
 
@@ -421,6 +406,25 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 						</tfoot>
 					</Table>
 
+					{this.state.gettingAccountsSuccess &&
+						<Alert
+							bsStyle="success"
+							onDismiss={() => this.setState({gettingAccountsSuccess: null})}
+							dismissAfter={2000}
+							>
+							<h4>{t("accountDialog.successGettingAccounts")}</h4>
+							<p>{t("accountDialog.successGettingAccountsMessage", {numAccounts: this.state.gettingAccountsSuccess})}</p>
+						</Alert>
+					}
+					{this.state.gettingAccountsError &&
+						<Alert
+							bsStyle="danger"
+							onDismiss={() => this.setState({gettingAccountsError: null})}
+							>
+							<h4>{t("accountDialog.errorGettingAccounts")}</h4>
+							<p>{this.state.gettingAccountsError}</p>
+						</Alert>
+					}
 					{this.props.submitFailed && fields.accounts.length == 0 &&
 						<Alert bsStyle="danger">{t("accountDialog.validate.noAccounts")}</Alert>
 					}
@@ -555,7 +559,47 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 		});
 		this.setState({userPressedAddAccount: false});
 	}
-  
+
+	@autobind
+  onGetAccountList() {
+		const { fields } = this.props;
+
+    this.setState({
+      gettingAccounts: true,
+      gettingAccountsSuccess: null,
+      gettingAccountsError: null
+    });
+
+    readAccountProfiles({
+      name: fields.name.value as string,
+      fid: fields.fid.value as string,
+      org: fields.org.value as string,
+      ofx: fields.ofx.value as string,
+      username: fields.username.value as string,
+      password: fields.password.value as string
+    })
+    .then(
+			(accounts: Account[]) => {
+				accounts.forEach((account: Account) => {
+					if (!_.any(fields.accounts, (a) => a.number.value == account.number)) {
+						fields.accounts.addField(account);
+					}
+				});
+
+				this.setState({
+					gettingAccounts: false,
+					gettingAccountsSuccess: accounts.length
+				});
+			},
+			(err) => {
+				this.setState({
+					gettingAccounts: false,
+					gettingAccountsError: err.toString()
+				});
+			}
+		);
+  }
+
 	@autobind
 	onClose() {
 		this.props.history.replace("/");
@@ -567,44 +611,4 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 		// this.id++;
 		this.props.history.replace("/");
 	}
-	
-
-	@autobind
-  onGetAccountList() {
-    // function convAccountType(acctType: ofx4js.domain.data.banking.AccountType): AccountType {
-    //   var str = ofx4js.domain.data.banking.AccountType[acctType];
-    //   return AccountType[str];
-    // }
-
-    // this.setState({
-    //   gettingAccounts: true,
-    //   gettingAccountsSuccess: 0,
-    //   gettingAccountsError: null
-    // });
-
-    // readAccountProfiles({
-    //   name: this.state.name,
-    //   fid: this.state.fid,
-    //   org: this.state.org,
-    //   ofx: this.state.ofx,
-    //   username: this.state.username,
-    //   password: this.state.password
-    // })
-    // .then((accounts: IAccount[]) => {
-    //   var resolvedAccounts = _.union(this.state.accounts, accounts);
-    //   resolvedAccounts = _.uniq(resolvedAccounts, account => account.number);
-    //   this.setState({
-    //     gettingAccounts: false,
-    //     gettingAccountsSuccess: accounts.length,
-    //     accounts: resolvedAccounts
-    //   });
-    // })
-    // .catch((err) => {
-    //   this.setState({
-    //     gettingAccounts: false,
-    //     gettingAccountsError: err.toString()
-    //   });
-    // });
-  }
-
 }

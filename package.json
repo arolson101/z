@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "webpack-dev-server --content-base app/ --inline --hot --history-api-fallback --no-info"
+    "serve": "webpack-dev-server --content-base app/ --inline --hot --history-api-fallback --no-info",
+		"chrome": "open -a Google\\ Chrome http://localhost:8765/webpack-dev-server/ --args --disable-web-security"
   },
   "author": "",
   "license": "ISC",

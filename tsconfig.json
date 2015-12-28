@@ -32,6 +32,8 @@
         "./src/components/select2.tsx",
         "./src/components/xeditable.tsx",
         "./src/containers/index.ts",
+        "./src/online/index.ts",
+        "./src/online/readAccountProfiles.ts",
         "./src/pages/dashboard.tsx",
         "./src/pages/loginPage.tsx",
         "./src/pages/index.ts",

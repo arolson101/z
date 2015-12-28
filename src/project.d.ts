@@ -1,5 +1,6 @@
 ///<reference path="../typings/tsd.d.ts"/>
 ///<reference path="../node_modules/filist/filist.d.ts"/>
+///<reference path="../node_modules/ofx4js/lib/ofx4js.d.ts"/>
 ///<reference path="../node_modules/updraft/dist/updraft.d.ts"/>
 
 declare var __DEVELOPMENT__: boolean;
