@@ -117,19 +117,6 @@ function validate(values: any): Object {
 	
 	checkNonempty("name");
 	
-	let checkUniqueAccountField = (key: string) => {
-		const field = "addAccount_" + key;
-		const value = values[field]; 
-		let found = _.any(values.accounts, (account: any) => account[key] == value);
-		if (found) {
-			errors[field] = "accountDialog.validate.unique";
-			return;
-		}
-	};
-	
-	checkUniqueAccountField("name");
-	checkUniqueAccountField("number");
-	
 	if (!values.accounts.length) {
 		errors["accounts"] = "accountDialog.validate.noAccounts";
 	}
@@ -176,14 +163,40 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 			fields.password.value as boolean
 		);
 		
-		const wrapProps = (field: ReduxForm.Field, supressEmptyError?: boolean) => {
-			let props: any = _.extend({}, field);
-			const isEmpty = (field.value === undefined || field.value === "")
-			if (field.error && field.touched && (!supressEmptyError || !isEmpty)) {
+		const wrapErrorHelper = (props: any, error: string) => {
+			if (error) {
 				props.bsStyle = "error";
-				props.help = t(field.error);
+				props.help = error;
 			}
 			props.hasFeedback = true;
+		};
+		
+		const wrapError = (field: ReduxForm.Field, supressEmptyError?: boolean) => {
+			let props: any = _.extend({}, field);
+			let error: string = null;
+			const isEmpty = (field.value === undefined || field.value === "")
+			if (field.error && field.touched && (!supressEmptyError || !isEmpty)) {
+				error = t(field.error);
+			}
+			wrapErrorHelper(props, error);
+			return props;
+		};
+		
+		const accountWrapError = (field: ReduxForm.Field) => {
+			let props: any = _.extend({}, field);
+			let fieldName = field.name.substring("addAccount_".length); 
+			let error: string = this.validateAccountField(field.value as string, fieldName, this.state.userPressedAddAccount);
+			wrapErrorHelper(props, error);
+			return props;
+		};
+		
+		const wrapValidator = (field: ReduxForm.Field, fieldName: string) => {
+			let props: any = _.extend({}, field);
+			props.validate = (value: string) => {
+				if (value != field.value) {
+					return this.validateAccountField(value, fieldName, true);
+				}
+			};
 			return props;
 		};
 		
@@ -217,7 +230,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
               label={t("accountDialog.nameLabel")}
               help={t("accountDialog.nameHelp")}
               placeholder={t("accountDialog.namePlaceholder")}
-              {...wrapProps(fields.name)}
+              {...wrapError(fields.name)}
             />
           </Col>
 
@@ -363,10 +376,10 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
                     <XSelectForm {...account.type} source={EnumEx.map(AccountType, (name: string, value: number) => ({value: value, text: AccountTypes_t(name)}))}/>
                   </td>
                   <td {...tdStyle}>
-                    <XTextForm {...account.name}/>
+                    <XTextForm {...wrapValidator(account.name, "name")}/>
                   </td>
                   <td {...tdStyle}>
-                    <XTextForm {...account.number}/>
+                    <XTextForm {...wrapValidator(account.number, "number")}/>
                   </td>
                   <td {...tdStyle}>
                     <Button type="button" bsStyle="danger" onClick={() => fields.accounts.removeField(index)}><Icon name="trash-o"/></Button>
@@ -386,14 +399,14 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 									<Input
 										type="text"
 										placeholder={t("accountDialog.accountNamePlaceholder")}
-										{...wrapProps(fields.addAccount_name, !this.state.userPressedAddAccount)}
+										{...accountWrapError(fields.addAccount_name)}
 									/>
 								</td>
 								<td>
 									<Input
 										type="text"
 										placeholder={t("accountDialog.accountNumberPlaceholder")}
-										{...wrapProps(fields.addAccount_number, !this.state.userPressedAddAccount)}
+										{...accountWrapError(fields.addAccount_number)}
 									/>
 								</td>
 								<td>
@@ -497,12 +510,28 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
     initField("ofx");
   }
 	
+	validateAccountField(value: string, fieldName: string, showEmptyError: boolean): string {
+		const { fields, t } = this.props;
+		let props: any = {};
+		let error: string = null;
+		if (showEmptyError && !value) {
+			return t("accountDialog.validate.nonempty");
+		}
+		else if (value && _.any(fields.accounts, (account: ReduxForm.FieldSet) => (account[fieldName] as ReduxForm.Field).value == value)) {
+			return t("accountDialog.validate.unique");
+		}
+	}
+
 	@autobind
 	onAddAccount() {
-		const { fields, change, touch, untouch } = this.props;
+		const { fields, t, change, touch, untouch } = this.props;
 		
-		if (fields.addAccount_name.invalid || fields.addAccount_number.invalid) {
-			touch(...addAccountKeys);
+		const check = (fieldName: string) => {
+			const field = fields["addAccount_" + fieldName] as ReduxForm.Field;
+			return this.validateAccountField(field.value as string, fieldName, true);
+		};
+		
+		if (check("name") || check("number")) {
 			this.setState({userPressedAddAccount: true});
 			return;
 		}
@@ -531,26 +560,6 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 	onClose() {
 		this.props.history.replace("/");
 	}
-	
-	// canSave(): ActiveButtonProps {
-	// 	const { fields, t } = this.props;
-	// 	let enabled = true;
-	// 	let reason = "";
-	// 	if (!fields.name.value) {
-	// 		enabled = false;
-	// 		reason = t("accountDialog.canSaveReason.noName");
-	// 	}
-	// 	else if (!fields.accounts.length) {
-	// 		enabled = false;
-	// 		reason = t("accountDialog.canSaveReason.noAccounts");
-	// 	}
-	// 	return {
-	// 		enabled,
-	// 		reason,
-	// 		id: "canSave",
-	// 		title: t("accountDialog.errorTitle")
-	// 	}
-	// }
 	
 	@autobind
 	onSave(e: React.FormEvent) {

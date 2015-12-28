@@ -75,8 +75,8 @@
 		"accountNumberPlaceholder": "123456",
     "addAccount": "Add",
 		"validate": {
-			"nonempty": "Cannot be empty",
-			"unique": "Must be unique",
+			"nonempty": "Required",
+			"unique": "Already used",
 			"noAccounts": "You must add at least one account"
 		},
     "add": {

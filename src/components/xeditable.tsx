@@ -70,6 +70,6 @@ export class XText extends Component<XTextProps> {
 
 export class XTextForm extends Component<ReduxForm.Field> {
 	render() {
-		return <XText mode="inline" onChange={this.props.onChange}>{this.props.value}</XText>;
+		return <XText mode="inline" onChange={this.props.onChange} {...this.props as any}>{this.props.value}</XText>;
 	}
 }
