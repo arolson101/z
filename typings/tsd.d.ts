@@ -25,3 +25,7 @@
 /// <reference path="react/react-addons-css-transition-group.d.ts" />
 /// <reference path="react/react-addons-transition-group.d.ts" />
 /// <reference path="x-editable/x-editable.d.ts" />
+/// <reference path="../node_modules/updraft/dist/updraft.d.ts" />
+/// <reference path="react-router/history.d.ts" />
+/// <reference path="../node_modules/ofx4js/lib/ofx4js.d.ts" />
+/// <reference path="../node_modules/filist/filist.d.ts" />
