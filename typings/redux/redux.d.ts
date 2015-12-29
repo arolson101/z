@@ -14,7 +14,7 @@ declare module Redux {
     }
 
     interface Dispatch<Action> extends Function {
-        (action: Action): any;
+        (action: Action | Function): any;
     }
 
     interface StoreMethods<State, Action> {

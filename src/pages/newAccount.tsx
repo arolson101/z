@@ -13,8 +13,10 @@ import { History } from "react-router";
 import * as reduxForm from "redux-form";
 import access = require("safe-access");
 
-import { AppState, FI, i18nFunction } from "../state";
-import { Account, AccountType, _Account } from "../types";
+import { AppState, FI, i18nFunction, UpdraftState } from "../state";
+import {
+	Account, AccountType, _Account, AccountTable, 
+	Institution, InstitutionTable } from "../types";
 import {
 	Component,
 	Select2,
@@ -25,7 +27,7 @@ import {
 	EnumSelect
  } from "../components";
 import { historyMixin, EnumEx } from "../util";
-import { bindActionCreators, addAccount, updatePath } from "../actions";
+import { bindActionCreators, addInstitution, addAccount, updatePath } from "../actions";
 import { readAccountProfiles } from "../online";
 
 interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field, ReduxForm.Field, ReduxForm.Field, ReduxForm.Field, ReduxForm.Field> {}
@@ -33,11 +35,13 @@ interface AccountFieldArray extends ReduxForm.FieldArray<AccountField> {}
 
 interface EditAccountProps extends ReduxForm.Props {
 	isNew?: boolean;
-	addAccount?: (account: Account) => any;
+	addAccount?: (table: AccountTable, item: Account) => Promise<any>;
+	addInstitution?: (table: InstitutionTable, item: Institution) => Promise<any>;
 	updatePath?: (path: string) => any;
 	change?: (form: string, field: string, value: string) => any;
 	t: i18nFunction;
 	filist: FI[];
+	updraft: UpdraftState;
 	history: ReactRouter.History;
 	fields: {
 		name: ReduxForm.Field;
@@ -143,9 +147,10 @@ function validate(values: any): Object {
   validate
 })
 @connect(
-	(state: AppState) => ({filist: state.filist, t: state.t}),
+	(state: AppState) => ({filist: state.filist, t: state.t, updraft: state.updraft}),
 	(dispatch: Redux.Dispatch<any>) => bindActionCreators({
 		addAccount,
+		addInstitution,
 		updatePath,
 		change: reduxForm.change
 	}, dispatch)
@@ -607,8 +612,14 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 	
 	@autobind
 	onSave(e: React.FormEvent) {
+		const { fields, updraft } = this.props;
 		// this.props.addAccount({dbid: this.id, name: "foo " + this.id});
-		// this.id++;
-		this.props.history.replace("/");
+		this.props.addInstitution(updraft.institutionTable, {
+			dbid: Date.now(),
+			name: fields.name.value as string
+		})
+		.then(() => {
+			this.props.history.replace("/dash");
+		});
 	}
 }

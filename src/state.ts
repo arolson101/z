@@ -19,7 +19,13 @@ import { Action,
 				 updraftReducer
 				} from "./actions";
 
-export { i18nFunction, FI };
+export {
+	i18nFunction,
+	FI,
+	AccountCollection,
+	InstitutionCollection,
+	UpdraftState
+};
 
 export interface AppState {
 	t: i18nFunction;

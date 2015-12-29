@@ -10,8 +10,8 @@ declare module "redux-thunk" {
 
     export interface Thunk<Action> extends Middleware<Action> { }
 
-    export interface ThunkInterface<Action> {
-        <T>(dispatch: Dispatch<Action>, getState?: () => T): any;
+    export interface ThunkInterface<Action, Result> {
+        <T>(dispatch: Dispatch<Action>, getState?: () => T): Result;
     }
 
     var thunk: Thunk<any>;
