@@ -3,6 +3,27 @@
 declare var __DEVELOPMENT__: boolean;
 
 
+// version 3 isn't in tsd (yet)
+declare module "redux-devtools" {
+	import * as React from "react";
+	class DevTools extends React.Component<any, any> {
+		instrument(): any;
+	}
+	export function createDevTools(arg: any): any;
+	export function persistState(sessionId: any, stateDeserializer?: Function, actionDeserializer?: Function): Function;
+}
+
+declare module "redux-devtools-log-monitor" {
+	import * as React from "react";
+	export default class LogMonitor extends React.Component<any, any> {}
+}
+
+declare module "redux-devtools-dock-monitor" {
+	import * as React from "react";
+	export default class DockMonitor extends React.Component<any, any> {}
+}
+
+
 declare module "redux-simple-router" {
 	function syncReduxAndRouter(history: any, store: any): any;
 	function routeReducer(state: any, action: any): any;

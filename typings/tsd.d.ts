@@ -11,7 +11,6 @@
 /// <reference path="react-redux/react-redux.d.ts" />
 /// <reference path="react-router/react-router.d.ts" />
 /// <reference path="react/react-dom.d.ts" />
-/// <reference path="redux-devtools/redux-devtools.d.ts" />
 /// <reference path="react-mixin/react-mixin.d.ts" />
 /// <reference path="i18next/i18next.d.ts" />
 /// <reference path="jquery/jquery.d.ts" />

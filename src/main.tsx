@@ -6,11 +6,14 @@ import * as ReactDOM from "react-dom";
 import { createStore, combineReducers, applyMiddleware, compose } from "redux";
 import { connect, Provider } from "react-redux";
 import { syncReduxAndRouter } from "redux-simple-router";
-import { devTools, persistState } from "redux-devtools";
-import { DevTools, DebugPanel, LogMonitor } from "redux-devtools/lib/react";
 import { createHistory, createHashHistory } from "history";
 import * as thunk from "redux-thunk";
 import { Router, Route } from "react-router";
+
+import { createDevTools, persistState } from "redux-devtools";
+import LogMonitor from "redux-devtools-log-monitor";
+import DockMonitor from "redux-devtools-dock-monitor";
+
 
 import { App } from "./components/index";
 import { Dashboard, NewAccountPage } from "./pages/index";
@@ -19,6 +22,12 @@ import { appState, AppState } from "./state";
 import { i18nInit } from "./i18n";
 import { fiInit } from "./fi";
 import { updraftInit } from "./updraft";
+
+const DevTools = createDevTools(
+	<DockMonitor toggleVisibilityKey="ctrl-h" changePositionKey="ctrl-q">
+		<LogMonitor theme="tomorrow"/>
+	</DockMonitor>
+);
 
 interface Props {
 	accounts: AccountCollection;
@@ -45,6 +54,15 @@ class AppAccountList extends React.Component<any, any> {
 	}
 }
 
+
+function getDebugSessionKey() {
+  // You can write custom logic here!
+  // By default we try to read the key from ?debug_session=<key> in the address bar
+  const matches = window.location.href.match(/[?&]debug_session=([^&]+)\b/);
+  return (matches && matches.length > 0)? matches[1] : null;
+}
+
+
 type createStoreFunction<State, Action> = (reducer: Redux.Reducer<State, Action>, initialState?: State) => Redux.Store<State, Action>
 
 export function main(root: HTMLElement) {
@@ -54,8 +72,8 @@ export function main(root: HTMLElement) {
 	if (__DEVELOPMENT__) {
 		finalCreateStore = compose(
 			applyMiddleware(...middleware),
-			persistState(window.location.href.match(/[?&]debug_session=([^&]+)\b/)),
-			devTools()
+			persistState(getDebugSessionKey()),
+			DevTools.instrument()
 		)(createStore);
 	}
 	else {
@@ -72,21 +90,19 @@ export function main(root: HTMLElement) {
 	store.dispatch(updraftInit());
 
 	ReactDOM.render(
-		<div>
-			<Provider store={store}>
+		<Provider store={store}>
+			<div>
 				<Router history={history}>
 					<Route path="/" component={App}>
 						<Route path="dash" component={Dashboard}/>
 						<Route path="new" component={NewAccountPage}/>
 					</Route>
 				</Router>
-			</Provider>
-		
-		{__DEVELOPMENT__ &&
-			<DebugPanel top right bottom>
-				<DevTools store={store} monitor={LogMonitor} visibleOnLoad={false}/>
-			</DebugPanel>
-		}
-		</div>
+
+				{__DEVELOPMENT__ &&
+					<DevTools/>
+				}
+			</div>
+		</Provider>
 		, root);
 }
