@@ -18,6 +18,7 @@ import { Action, addAccount, AccountCollection } from "./actions/index";
 import { appState, AppState } from "./state";
 import { i18nInit } from "./i18n";
 import { fiInit } from "./fi";
+import { updraftInit } from "./updraft";
 
 interface Props {
 	accounts: AccountCollection;
@@ -68,6 +69,7 @@ export function main(root: HTMLElement) {
 
 	store.dispatch(i18nInit());
 	store.dispatch(fiInit());
+	store.dispatch(updraftInit());
 
 	ReactDOM.render(
 		<div>

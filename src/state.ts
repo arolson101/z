@@ -15,6 +15,8 @@ import { Action,
 				 institutionCollectionReducer,
 				 FI,
 				 fiReducer,
+				 UpdraftState,
+				 updraftReducer
 				} from "./actions";
 
 export { i18nFunction, FI };
@@ -26,6 +28,7 @@ export interface AppState {
 	institutions: InstitutionCollection;
 	filist: FI[];
 	form: any;
+	updraft: UpdraftState;
 }
 
 export const appState = combineReducers<AppState, Action>({
@@ -35,4 +38,5 @@ export const appState = combineReducers<AppState, Action>({
   institutions: institutionCollectionReducer,
 	filist: fiReducer,
 	form: reduxForm.reducer,
+	updraft: updraftReducer
 });

@@ -22,6 +22,7 @@
         "./src/actions/index.ts",
         "./src/actions/i18nActions.ts",
         "./src/actions/institutionActions.ts",
+        "./src/actions/updraftActions.ts",
         "./src/components/app.tsx",
         "./src/components/breadcrumbs.tsx",
         "./src/components/component.tsx",
@@ -47,6 +48,7 @@
         "./src/index.ts",
         "./src/fi.ts",
         "./src/i18n.ts",
-        "./src/state.ts"
+        "./src/state.ts",
+        "./src/updraft.ts"
     ]
 }
