@@ -12,6 +12,7 @@ import { connect } from "react-redux";
 import { History } from "react-router";
 import * as reduxForm from "redux-form";
 import access = require("safe-access");
+import hash = require("string-hash");
 
 import { AppState, FI, i18nFunction, UpdraftState } from "../state";
 import {
@@ -27,7 +28,8 @@ import {
 	EnumSelect
  } from "../components";
 import { historyMixin, EnumEx } from "../util";
-import { bindActionCreators, addInstitution, addAccount, updatePath } from "../actions";
+import { bindActionCreators, updatePath } from "../actions";
+import { updraftAdd } from "../updraft";
 import { readAccountProfiles } from "../online";
 
 interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field, ReduxForm.Field, ReduxForm.Field, ReduxForm.Field, ReduxForm.Field> {}
@@ -35,8 +37,7 @@ interface AccountFieldArray extends ReduxForm.FieldArray<AccountField> {}
 
 interface EditAccountProps extends ReduxForm.Props {
 	isNew?: boolean;
-	addAccount?: (table: AccountTable, item: Account) => Promise<any>;
-	addInstitution?: (table: InstitutionTable, item: Institution) => Promise<any>;
+	updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
 	updatePath?: (path: string) => any;
 	change?: (form: string, field: string, value: string) => any;
 	t: i18nFunction;
@@ -149,8 +150,7 @@ function validate(values: any): Object {
 @connect(
 	(state: AppState) => ({filist: state.filist, t: state.t, updraft: state.updraft}),
 	(dispatch: Redux.Dispatch<any>) => bindActionCreators({
-		addAccount,
-		addInstitution,
+		updraftAdd,
 		updatePath,
 		change: reduxForm.change
 	}, dispatch)
@@ -610,14 +610,58 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 		this.props.history.replace("/");
 	}
 	
+	makeInstitution(dbid: number): Institution {
+		const institution: Institution = {
+			dbid
+		};
+		
+		institutionKeys.forEach((key: string) => {
+			const field = this.props.fields[key] as ReduxForm.Field;
+			(institution as any)[key] = field.value || "";
+		});
+		
+		return institution;
+	}
+	
+	makeAccounts(institutionId: number): Account[] {
+		const makeAccount = (fields: AccountField) => {
+			const account: Account = {
+				dbid: hash(institutionId + "" + fields.number.value),
+				institution: institutionId
+			};
+			
+			accountKeys.forEach((key: string) => {
+				const field = fields[key] as ReduxForm.Field;
+				(account as any)[key] = field.value;
+			});
+			
+			return account;
+		}
+		
+		return this.props.fields.accounts.map(makeAccount);
+	}
+	
 	@autobind
 	onSave(e: React.FormEvent) {
-		const { fields, updraft } = this.props;
-		// this.props.addAccount({dbid: this.id, name: "foo " + this.id});
-		this.props.addInstitution(updraft.institutionTable, {
-			dbid: Date.now(),
-			name: fields.name.value as string
-		})
+		const { updraft } = this.props;
+
+		const time = Date.now();
+		const id = Date.now();
+		const institution = this.makeInstitution(id);
+		const accounts = this.makeAccounts(id);
+		
+		const makeChange = (table: Updraft.TableAny) => {
+			return (value: any) => ({
+				table,
+				time,
+				save: value
+			});
+		}
+		
+		this.props.updraftAdd(updraft,
+			makeChange(updraft.institutionTable)(institution),
+			...accounts.map(makeChange(updraft.accountTable))
+		)
 		.then(() => {
 			this.props.history.replace("/dash");
 		});

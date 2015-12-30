@@ -5,19 +5,20 @@ import { combineReducers } from "redux";
 import { routeReducer } from "redux-simple-router";
 import * as reduxForm from "redux-form";
 
-import { Action,
-				 nullAction,
-				 i18nFunction,
-				 i18nReducer,
-				 AccountCollection,
-				 accountCollectionReducer,
-				 InstitutionCollection,
-				 institutionCollectionReducer,
-				 FI,
-				 fiReducer,
-				 UpdraftState,
-				 updraftReducer
-				} from "./actions";
+import {
+	Action,
+	nullAction,
+	i18nFunction,
+	i18nReducer,
+	AccountCollection,
+	accountCollectionReducer,
+	InstitutionCollection,
+	institutionCollectionReducer,
+	FI,
+	fiReducer,
+	UpdraftState,
+	updraftReducer
+} from "./actions";
 
 export {
 	i18nFunction,

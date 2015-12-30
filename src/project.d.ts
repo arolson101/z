@@ -167,3 +167,10 @@ declare module "redux-form" {
   function untouchWithKey(form: string, formKey: string, ...fields: string[]): ReduxForm.Action;
   function destroy(form: string, field: string, value: string): ReduxForm.Action;
 }
+
+
+
+declare module "string-hash" {
+	function hash(input: string): number;
+	export = hash;
+}
