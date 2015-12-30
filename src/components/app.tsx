@@ -6,17 +6,16 @@ import { connect } from "react-redux";
 import { Link } from "react-router";
 import { Component } from "./component";
 import { Breadcrumbs } from "./breadcrumbs";
-import { AppState, i18nFunction } from "../state";
+import { AppState, t } from "../state";
 
 interface Props extends React.Props<any> {
-	t: i18nFunction;
+	i18nLoaded: boolean;
 }
 
-@connect((state: AppState) => ({ t: state.t }))
+@connect((state: AppState) => ({ i18nLoaded: state.i18nLoaded }))
 export class App extends Component<Props> {
 	render() {
-		const { t } = this.props;
-		if (!t) {
+		if (!this.props.i18nLoaded) {
 			return <div>...</div>;
 		}
 

@@ -14,7 +14,7 @@ import * as reduxForm from "redux-form";
 import access = require("safe-access");
 import hash = require("string-hash");
 
-import { AppState, FI, i18nFunction, UpdraftState } from "../state";
+import { AppState, FI, t, UpdraftState } from "../state";
 import {
 	Account, AccountType, _Account, AccountTable, 
 	Institution, InstitutionTable } from "../types";
@@ -40,7 +40,6 @@ interface EditAccountProps extends ReduxForm.Props {
 	updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
 	updatePath?: (path: string) => any;
 	change?: (form: string, field: string, value: string) => any;
-	t: i18nFunction;
 	filist: FI[];
 	updraft: UpdraftState;
 	history: ReactRouter.History;
@@ -116,7 +115,7 @@ function validate(values: any): Object {
 	
 	let checkNonempty = (key: string) => {
 		if (!values[key]) {
-			errors[key] = "accountDialog.validate.nonempty";
+			errors[key] = t("accountDialog.validate.nonempty");
 			return;
 		}
 	};
@@ -124,7 +123,7 @@ function validate(values: any): Object {
 	checkNonempty("name");
 	
 	if (!values.accounts.length) {
-		errors["accounts"] = "accountDialog.validate.noAccounts";
+		errors["accounts"] = t("accountDialog.validate.noAccounts");
 	}
 	
   return errors;
@@ -148,7 +147,7 @@ function validate(values: any): Object {
   validate
 })
 @connect(
-	(state: AppState) => ({filist: state.filist, t: state.t, updraft: state.updraft}),
+	(state: AppState) => ({filist: state.filist, updraft: state.updraft}),
 	(dispatch: Redux.Dispatch<any>) => bindActionCreators({
 		updraftAdd,
 		updatePath,
@@ -166,7 +165,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 	}
 	
 	render() {
-		const { fields, filist, t, handleSubmit } = this.props;
+		const { fields, filist, handleSubmit } = this.props;
 		const canGetAccounts: boolean = (
 			fields.ofx.value as boolean &&
 			fields.username.value as boolean &&
@@ -186,7 +185,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 			let error: string = null;
 			const isEmpty = (field.value === undefined || field.value === "")
 			if (field.error && field.touched && (!supressEmptyError || !isEmpty)) {
-				error = t(field.error);
+				error = field.error;
 			}
 			wrapErrorHelper(props, error);
 			return props;
@@ -520,7 +519,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
   }
 	
 	validateAccountField(value: string, fieldName: string, showEmptyError: boolean): string {
-		const { fields, t } = this.props;
+		const { fields } = this.props;
 		let props: any = {};
 		let error: string = null;
 		if (showEmptyError && !value) {
@@ -533,7 +532,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 
 	@autobind
 	onAddAccount() {
-		const { fields, t, change, touch, untouch } = this.props;
+		const { fields, change, touch, untouch } = this.props;
 		
 		const check = (fieldName: string) => {
 			const field = fields["addAccount_" + fieldName] as ReduxForm.Field;

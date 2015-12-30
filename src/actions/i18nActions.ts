@@ -6,24 +6,20 @@ import * as i18n from "i18next-client";
 
 const I18N_LOADED = "i18n/loaded";
 
-export type i18nFunction = (key: string, options?: any) => string;
+type tFcn = (key: string, values?: Object) => string;
+export const t: tFcn = i18n.t;
 
-interface I18nAction extends Action {
-	t: i18nFunction;
-}
-
-export function i18nLoaded(t: i18nFunction): I18nAction {
+export function i18nLoaded(): Action {
 	return {
-		type: I18N_LOADED,
-		t: t
+		type: I18N_LOADED
 	};
 }
 
-export function i18nReducer(state: i18nFunction, action?: Action): i18nFunction {
-	state = state || null;
+export function i18nReducer(state: boolean, action?: Action): boolean {
+	state = state || false;
 	switch (action.type) {
 		case I18N_LOADED:
-			return (action as I18nAction).t;
+			return true;
 	}
 	
 	return state;

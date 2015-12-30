@@ -5,17 +5,16 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Component } from "../components";
 
-import { AppState, FI, i18nFunction, InstitutionCollection, AccountCollection } from "../state";
+import { AppState, FI, t, InstitutionCollection, AccountCollection } from "../state";
 import { Account, Institution } from "../types";
 
 interface Props {
-	t: i18nFunction,
 	institutions: InstitutionCollection,
 	accounts: AccountCollection
 }
 
 @connect(
-	(state: AppState) => ({institutions: state.institutions, accounts: state.accounts, t: state.t})
+	(state: AppState) => ({institutions: state.institutions, accounts: state.accounts})
 )
 export class Dashboard extends Component<Props> {
 	render() {

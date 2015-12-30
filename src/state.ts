@@ -8,7 +8,6 @@ import * as reduxForm from "redux-form";
 import {
 	Action,
 	nullAction,
-	i18nFunction,
 	i18nReducer,
 	AccountCollection,
 	accountCollectionReducer,
@@ -16,12 +15,13 @@ import {
 	institutionCollectionReducer,
 	FI,
 	fiReducer,
+	t,
 	UpdraftState,
 	updraftReducer
 } from "./actions";
 
 export {
-	i18nFunction,
+	t,
 	FI,
 	AccountCollection,
 	InstitutionCollection,
@@ -29,7 +29,7 @@ export {
 };
 
 export interface AppState {
-	t: i18nFunction;
+	i18nLoaded: boolean;
 	routing: ReactRouter.RouterState;
 	accounts: AccountCollection;
 	institutions: InstitutionCollection;
@@ -39,7 +39,7 @@ export interface AppState {
 }
 
 export const appState = combineReducers<AppState, Action>({
-	t: i18nReducer,
+	i18nLoaded: i18nReducer,
 	routing: routeReducer,
   accounts: accountCollectionReducer,
   institutions: institutionCollectionReducer,

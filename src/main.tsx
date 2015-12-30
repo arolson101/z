@@ -24,7 +24,7 @@ import { fiInit } from "./fi";
 import { updraftInit } from "./updraft";
 
 const DevTools = createDevTools(
-	<DockMonitor toggleVisibilityKey="ctrl-h" changePositionKey="ctrl-q">
+	<DockMonitor toggleVisibilityKey="ctrl-h" changePositionKey="ctrl-q" defaultIsVisible={false}>
 		<LogMonitor theme="tomorrow"/>
 	</DockMonitor>
 );
