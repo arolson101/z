@@ -16,7 +16,7 @@ import DockMonitor from "redux-devtools-dock-monitor";
 
 
 import { App } from "./components/index";
-import { Dashboard, NewAccountPage } from "./pages/index";
+import { AccountsPage, BudgetsPage, NewAccountPage } from "./pages/index";
 import { Action, addAccount, AccountCollection } from "./actions/index";
 import { appState, AppState } from "./state";
 import { i18nInit } from "./i18n";
@@ -65,6 +65,7 @@ function getDebugSessionKey() {
 
 type createStoreFunction<State, Action> = (reducer: Redux.Reducer<State, Action>, initialState?: State) => Redux.Store<State, Action>
 
+
 export function main(root: HTMLElement) {
 	const middleware: any[] = [thunk];
 
@@ -88,13 +89,20 @@ export function main(root: HTMLElement) {
 	store.dispatch(i18nInit());
 	store.dispatch(fiInit());
 	store.dispatch(updraftInit());
+	
+	// if (module.hot) {
+	// 	module.hot.accept("./state", () => {
+	// 		store.replaceReducer(require("./state").appState);
+	// 	});
+	// }
 
 	ReactDOM.render(
 		<Provider store={store}>
 			<div>
 				<Router history={history}>
 					<Route path="/" component={App}>
-						<Route path="dash" component={Dashboard}/>
+						<Route path="accounts" component={AccountsPage}/>
+						<Route path="budgets" component={BudgetsPage}/>
 						<Route path="new" component={NewAccountPage}/>
 					</Route>
 				</Router>

@@ -174,3 +174,25 @@ declare module "string-hash" {
 	function hash(input: string): number;
 	export = hash;
 }
+
+
+interface WebpackHMR {
+	accept(dependencies: string[], callback: (updatedDependencies: any) => void): void;
+	accept(dependency: string, callback: () => void): void;
+	decline(dependencies: string[]): void;
+	decline(dependency: string): void;
+	decline(): void;
+	dispose(callback: (data: Object) => void): void;
+	addDisposeHandler(callback: (data: Object) => void): void;
+	removeDisposeHandler(callback: (data: Object) => void): void;
+}
+
+interface NodeModule {
+	hot?: WebpackHMR;
+}
+
+
+declare module "reselect" {
+	type Selector<State> = (state: State) => any;
+	function createSelector<State, ReturnType>(selectors: Selector<State>[], resultFunc: (...args: any[]) => ReturnType): (state: State) => ReturnType;
+}

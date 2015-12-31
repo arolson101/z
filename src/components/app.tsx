@@ -21,10 +21,12 @@ export class App extends Component<Props> {
 
 		return (
 			<div>
-				<Breadcrumbs items={[{title: "Home"}, {href: "/new", title: "new"}]}/>
-				app
-				<Link to="/dash">dash</Link>
-				<Link to="/new">new</Link>
+				<Breadcrumbs items={[
+					{href: "/", title: "Home"},
+					{href: "/accounts", title: "accounts"},
+					{href: "/new", title: "new"},
+					{href: "/budgets", title: "budgets"}
+				]}/>
 				{this.props.children}
 			</div>
 		);
