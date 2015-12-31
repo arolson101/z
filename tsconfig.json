@@ -11,44 +11,12 @@
     },
     "filesGlob": [
       "./src/**/*.ts",
-      "./test/**/*.ts",
+      "!./test/**/*.ts",
       "!./node_modules/**/*.ts",
       "!./src/**/*.d.ts"
     ],
-    "files": [
-        "./src/actions/accountActions.ts",
-        "./src/actions/action.ts",
-        "./src/actions/fiActions.ts",
-        "./src/actions/index.ts",
-        "./src/actions/i18nActions.ts",
-        "./src/actions/institutionActions.ts",
-        "./src/actions/updraftActions.ts",
-        "./src/components/app.tsx",
-        "./src/components/breadcrumbs.tsx",
-        "./src/components/component.tsx",
-        "./src/components/enumSelect.tsx",
-        "./src/components/fadeTransitionGroup.tsx",
-        "./src/components/imageCheckbox.tsx",
-        "./src/components/index.ts",
-        "./src/components/select2.tsx",
-        "./src/components/xeditable.tsx",
-        "./src/containers/index.ts",
-        "./src/online/index.ts",
-        "./src/online/readAccountProfiles.ts",
-        "./src/pages/dashboard.tsx",
-        "./src/pages/loginPage.tsx",
-        "./src/pages/index.ts",
-        "./src/pages/newAccount.tsx",
-        "./src/types/account.ts",
-        "./src/types/index.ts",
-        "./src/types/institution.ts",
-        "./src/util/enumEx.ts",
-        "./src/util/mixin.ts",
-        "./src/util/updraftCollection.ts",
-        "./src/index.ts",
-        "./src/fi.ts",
-        "./src/i18n.ts",
-        "./src/state.ts",
-        "./src/updraft.ts"
-    ]
+		"exclude": [
+			"node_modules",
+			"test"
+		]
 }

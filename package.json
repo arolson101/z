@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "webpack-dev-server --content-base app/ --inline --hot --history-api-fallback --no-info",
+    "serve": "webpack-dev-server --content-base app/ --inline --history-api-fallback --no-info",
     "chrome": "open -a Google\\ Chrome http://localhost:8765/webpack-dev-server/ --args --disable-web-security"
   },
   "author": "",
@@ -33,13 +33,13 @@
     "react-redux": "^4.0.5",
     "react-router": "^1.0.0-rc3",
     "redux": "^3.0.4",
-		"redux-devtools": "^3.0.1",
+    "redux-devtools": "^3.0.1",
     "redux-devtools-dock-monitor": "^1.0.1",
     "redux-devtools-log-monitor": "^1.0.1",
     "redux-form": "^4.0.5",
     "redux-simple-router": "1.0.2",
     "redux-thunk": "^1.0.2",
-    "reselect": "^2.0.0",
+    "reselect": "^2.0.1",
     "rrule": "^2.1.0",
     "safe-access": "^0.1.0",
     "select2": "^4.0.0",
@@ -49,6 +49,7 @@
     "x-editable": "^1.5.1"
   },
   "devDependencies": {
+    "awesome-typescript-loader": "^0.15.9",
     "blanket": "^1.1.7",
     "chai": "^3.3.0",
     "css-loader": "^0.23.1",
@@ -65,7 +66,6 @@
     "json-loader": "^0.5.3",
     "merge-stream": "^1.0.0",
     "style-loader": "^0.13.0",
-    "ts-loader": "^0.7.2",
     "ts-node": "^0.5.5",
     "typescript": "^1.6.2",
     "typescript-register": "^1.1.0",
