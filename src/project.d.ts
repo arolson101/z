@@ -78,7 +78,7 @@ declare module ReduxForm {
 		validate?: (values: Object, props: Object) => Object;
 	}
 	
-	interface Field {
+	interface Field<type> {
 		active: boolean;
 		checked: boolean;
 		dirty: boolean;
@@ -95,11 +95,11 @@ declare module ReduxForm {
 		pristine: boolean;
 		touched: boolean;
 		valid: boolean;
-		value: boolean | string;
+		value: type;
 		visited: boolean;
 	}
 	
-	type FieldOpt = Field | FieldArray<FieldSet>;
+	type FieldOpt = Field<any> | FieldArray<FieldSet>;
 	
 	interface FieldSet {
 		[fieldName: string]: FieldOpt;
@@ -195,4 +195,13 @@ interface NodeModule {
 declare module "reselect" {
 	type Selector<State> = (state: State) => any;
 	function createSelector<State, ReturnType>(selectors: Selector<State>[], resultFunc: (...args: any[]) => ReturnType): (state: State) => ReturnType;
+}
+
+
+declare module "current-locale" {
+	function currentLocaleFunction(opts: {
+		supportedLocales: string[],
+		fallbackLocale: string
+	}): string;
+	export = currentLocaleFunction;
 }

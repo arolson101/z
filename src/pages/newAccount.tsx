@@ -8,13 +8,12 @@ import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
 import {Alert, Panel, Button, Collapse, Grid, Input, Label, Modal, OverlayTrigger, Row, Col, Table, Tooltip} from "react-bootstrap";
 import * as Icon from "react-fa";
 import * as LaddaButton from "react-ladda";
-import { connect } from "react-redux";
 import { History } from "react-router";
 import * as reduxForm from "redux-form";
 import access = require("safe-access");
 import hash = require("string-hash");
 
-import { AppState, FI, t, UpdraftState } from "../state";
+import { connect, AppState, FI, t, UpdraftState } from "../state";
 import {
 	Account, AccountType, _Account, AccountTable, 
 	Institution, InstitutionTable } from "../types";
@@ -28,42 +27,41 @@ import {
 	EnumSelect
  } from "../components";
 import { historyMixin, EnumEx } from "../util";
-import { bindActionCreators, updatePath } from "../actions";
-import { updraftAdd } from "../updraft";
+import { bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { readAccountProfiles } from "../online";
 
-interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field, ReduxForm.Field, ReduxForm.Field, ReduxForm.Field, ReduxForm.Field> {}
+interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field<number>, ReduxForm.Field<number>, ReduxForm.Field<string>, ReduxForm.Field<AccountType>, ReduxForm.Field<boolean>> {}
 interface AccountFieldArray extends ReduxForm.FieldArray<AccountField> {} 
 
-interface EditAccountProps extends ReduxForm.Props {
+interface Props extends ReduxForm.Props {
 	isNew?: boolean;
 	updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
 	updatePath?: (path: string) => any;
-	change?: (form: string, field: string, value: string) => any;
+	change?: (form: string, field: string, value: any) => any;
 	filist: FI[];
 	updraft: UpdraftState;
 	history: ReactRouter.History;
 	fields: {
-		name: ReduxForm.Field;
-		web: ReduxForm.Field;
-		address: ReduxForm.Field;
-		notes: ReduxForm.Field;
-		institution: ReduxForm.Field;
-		id: ReduxForm.Field;
+		name: ReduxForm.Field<string>;
+		web: ReduxForm.Field<string>;
+		address: ReduxForm.Field<string>;
+		notes: ReduxForm.Field<string>;
+		institution: ReduxForm.Field<string>;
+		id: ReduxForm.Field<string>;
 
-		online: ReduxForm.Field;
+		online: ReduxForm.Field<boolean>;
 
-		fid: ReduxForm.Field;
-		org: ReduxForm.Field;
-		ofx: ReduxForm.Field;
+		fid: ReduxForm.Field<string>;
+		org: ReduxForm.Field<string>;
+		ofx: ReduxForm.Field<string>;
 
-		username: ReduxForm.Field;
-		password: ReduxForm.Field;
+		username: ReduxForm.Field<string>;
+		password: ReduxForm.Field<string>;
 
-		addAccount_visible: ReduxForm.Field;
-		addAccount_type: ReduxForm.Field;
-		addAccount_number: ReduxForm.Field;
-		addAccount_name: ReduxForm.Field;
+		addAccount_visible: ReduxForm.Field<boolean>;
+		addAccount_type: ReduxForm.Field<number>;
+		addAccount_number: ReduxForm.Field<string>;
+		addAccount_name: ReduxForm.Field<string>;
 		
 		accounts: AccountFieldArray;
 		
@@ -154,7 +152,7 @@ function validate(values: any): Object {
 		change: reduxForm.change
 	}, dispatch)
 )
-export class NewAccountPage extends React.Component<EditAccountProps, State> {
+export class NewAccountPage extends React.Component<Props, State> {
 	constructor() {
 		super();
 		this.state = {
@@ -167,9 +165,9 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 	render() {
 		const { fields, filist, handleSubmit } = this.props;
 		const canGetAccounts: boolean = (
-			fields.ofx.value as boolean &&
-			fields.username.value as boolean &&
-			fields.password.value as boolean
+			!!fields.ofx.value &&
+			!!fields.username.value &&
+			!!fields.password.value
 		);
 		
 		const wrapErrorHelper = (props: any, error: string) => {
@@ -180,7 +178,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 			props.hasFeedback = true;
 		};
 		
-		const wrapError = (field: ReduxForm.Field, supressEmptyError?: boolean) => {
+		const wrapError = (field: ReduxForm.Field<string>, supressEmptyError?: boolean) => {
 			let props: any = _.extend({}, field);
 			let error: string = null;
 			const isEmpty = (field.value === undefined || field.value === "")
@@ -191,15 +189,15 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 			return props;
 		};
 		
-		const accountWrapError = (field: ReduxForm.Field) => {
+		const accountWrapError = (field: ReduxForm.Field<string>) => {
 			let props: any = _.extend({}, field);
 			let fieldName = field.name.substring("addAccount_".length); 
-			let error: string = this.validateAccountField(field.value as string, fieldName, this.state.userPressedAddAccount);
+			let error: string = this.validateAccountField(field.value, fieldName, this.state.userPressedAddAccount);
 			wrapErrorHelper(props, error);
 			return props;
 		};
 		
-		const wrapValidator = (field: ReduxForm.Field, fieldName: string) => {
+		const wrapValidator = (field: ReduxForm.Field<any>, fieldName: string) => {
 			let props: any = _.extend({}, field);
 			props.validate = (value: string) => {
 				if (value != field.value) {
@@ -468,11 +466,11 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
     return fi.id + 1 as any;
   }
   
-  fiForOptionValue(value: string | boolean): FI {
+  fiForOptionValue(value: string): FI {
     if (!value) {
       return null;
     }
-    let v: number = parseInt(value as string, 10);
+    let v: number = parseInt(value, 10);
     v--;
     return this.props.filist[v];
   }
@@ -491,7 +489,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
       if (typeof fiProp !== "function") {
         getValue = (fi: FI) => access(fi, fiProp as string); 
       }
-      let field = fields[stateKey] as ReduxForm.Field;
+      let field = fields[stateKey] as ReduxForm.Field<string>;
       if (!field.value || field.value == getValue(oldFi)) {
         let value = getValue(newFi);
         change(FORM_NAME, stateKey, value);
@@ -525,7 +523,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 		if (showEmptyError && !value) {
 			return t("accountDialog.validate.nonempty");
 		}
-		else if (value && _.any(fields.accounts, (account: ReduxForm.FieldSet) => (account[fieldName] as ReduxForm.Field).value == value)) {
+		else if (value && _.any(fields.accounts, (account: ReduxForm.FieldSet) => (account[fieldName] as ReduxForm.Field<string>).value == value)) {
 			return t("accountDialog.validate.unique");
 		}
 	}
@@ -535,8 +533,8 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 		const { fields, change, touch, untouch } = this.props;
 		
 		const check = (fieldName: string) => {
-			const field = fields["addAccount_" + fieldName] as ReduxForm.Field;
-			return this.validateAccountField(field.value as string, fieldName, true);
+			const field = fields["addAccount_" + fieldName] as ReduxForm.Field<string>;
+			return this.validateAccountField(field.value, fieldName, true);
 		};
 		
 		if (check("name") || check("number")) {
@@ -545,16 +543,16 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 		}
 
 		let account: Account = {
-			visible: fields.addAccount_visible.value as boolean,
-			type: fields.addAccount_type.value as any,
-			name: fields.addAccount_name.value as string,
-			number: fields.addAccount_number.value as string,
+			visible: fields.addAccount_visible.value,
+			type: fields.addAccount_type.value,
+			name: fields.addAccount_name.value,
+			number: fields.addAccount_number.value,
 		};
 
 		fields.accounts.addField(account);
 		
-		change(FORM_NAME, "addAccount_visible", true as any);
-		change(FORM_NAME, "addAccount_type", AccountType.CHECKING as any);
+		change(FORM_NAME, "addAccount_visible", true);
+		change(FORM_NAME, "addAccount_type", AccountType.CHECKING);
 		change(FORM_NAME, "addAccount_name", "");
 		change(FORM_NAME, "addAccount_number", "");
 
@@ -575,12 +573,12 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
     });
 
     readAccountProfiles({
-      name: fields.name.value as string,
-      fid: fields.fid.value as string,
-      org: fields.org.value as string,
-      ofx: fields.ofx.value as string,
-      username: fields.username.value as string,
-      password: fields.password.value as string
+      name: fields.name.value,
+      fid: fields.fid.value,
+      org: fields.org.value,
+      ofx: fields.ofx.value,
+      username: fields.username.value,
+      password: fields.password.value
     })
     .then(
 			(accounts: Account[]) => {
@@ -615,8 +613,8 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 		};
 		
 		institutionKeys.forEach((key: string) => {
-			const field = this.props.fields[key] as ReduxForm.Field;
-			(institution as any)[key] = field.value || "";
+			const field = this.props.fields[key] as ReduxForm.Field<string>;
+			(institution as any)[key] = field.value || field.initialValue || "";
 		});
 		
 		return institution;
@@ -630,7 +628,7 @@ export class NewAccountPage extends React.Component<EditAccountProps, State> {
 			};
 			
 			accountKeys.forEach((key: string) => {
-				const field = fields[key] as ReduxForm.Field;
+				const field = fields[key] as ReduxForm.Field<any>;
 				(account as any)[key] = field.value;
 			});
 			

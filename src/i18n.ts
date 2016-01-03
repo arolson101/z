@@ -2,23 +2,46 @@
 "use strict";
 
 import * as i18n from "i18next-client";
+import * as moment from "moment";
+import currentLocaleFunction = require("current-locale");
+import { verify } from "updraft";
 
-import { Thunk, Dispatch, i18nLoaded } from "./actions";
+import { Thunk, Dispatch, setLocale } from "./actions";
 
-require("file?name=/locales/translation.en-US.json!./locales/translation.dev.json");
+require("file?name=/locales/translation.dev.json!./locales/translation.dev.json");
 require("file?name=/locales/translation.en.json!./locales/translation.en.json");
-require("file?name=/locales/translation.dev.json!./locales/translation.en-US.json");
+require("file?name=/locales/translation.en-AU.json!./locales/translation.en-AU.json");
+require("file?name=/locales/translation.en-CA.json!./locales/translation.en-CA.json");
+require("file?name=/locales/translation.en-GB.json!./locales/translation.en-GB.json");
+require("file?name=/locales/translation.en-US.json!./locales/translation.en-US.json");
 
-function init() {
+// TODO: make these separate loads, rather than bundled in via webpack
+//require("moment/locale/en-us"); - implicit default
+require("moment/locale/en-au");
+require("moment/locale/en-ca");
+require("moment/locale/en-gb");
+
+
+export const supportedLocales = [
+	"en-AU",
+	"en-CA",
+	"en-GB",
+	"en-US",
+];
+
+const fallbackLocale = "en-US";
+
+export function loadLocale(locale: string): Promise<string> {
 	return new Promise((resolve, reject) => {
 		i18n.init({
+			lng: locale,
 			resGetPath: 'locales/__ns__.__lng__.json'
 		}, (err: any) => {
 			if (err) {
 				reject(err);
 			}
 			else {
-				resolve();
+				resolve(locale);
 			}
 		})
 	});
@@ -26,9 +49,17 @@ function init() {
 
 
 export function i18nInit(): Thunk {
+	var currentLocale = currentLocaleFunction({
+		supportedLocales,
+		fallbackLocale
+	});
+	
+	let localeUsed = moment.locale(currentLocale);
+	verify(currentLocale.indexOf(localeUsed) != -1, "moment does not support this locale");
+
 	return (dispatch: Dispatch) => {
-		return init().then(
-			() => dispatch(i18nLoaded()),
+		return loadLocale(currentLocale).then(
+			() => dispatch(setLocale(currentLocale)),
 			(err: Error) => console.error(err)
 		);
 	}

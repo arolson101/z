@@ -9,13 +9,13 @@ import { Breadcrumbs } from "./breadcrumbs";
 import { AppState, t } from "../state";
 
 interface Props extends React.Props<any> {
-	i18nLoaded: boolean;
+	locale: string;
 }
 
-@connect((state: AppState) => ({ i18nLoaded: state.i18nLoaded }))
+@connect((state: AppState) => ({ locale: state.locale }))
 export class App extends Component<Props> {
 	render() {
-		if (!this.props.i18nLoaded) {
+		if (!this.props.locale) {
 			return <div>...</div>;
 		}
 
@@ -24,7 +24,7 @@ export class App extends Component<Props> {
 				<Breadcrumbs items={[
 					{href: "/", title: "Home"},
 					{href: "/accounts", title: "accounts"},
-					{href: "/new", title: "new"},
+					{href: "/newAccount", title: "new account"},
 					{href: "/budgets", title: "budgets"}
 				]}/>
 				{this.props.children}

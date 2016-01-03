@@ -46,7 +46,7 @@ export class XSelect extends Component<XSelectProps> {
 }
 
 
-interface XSelectFormProps extends ReduxForm.Field, React.Props<any> {
+interface XSelectFormProps extends ReduxForm.Field<number>, React.Props<any> {
 	source: { 
 		value: number;
 		text: string;
@@ -68,7 +68,7 @@ export class XText extends Component<XTextProps> {
 	}
 }
 
-export class XTextForm extends Component<ReduxForm.Field> {
+export class XTextForm extends Component<ReduxForm.Field<string>> {
 	render() {
 		return <XText mode="inline" onChange={this.props.onChange} {...this.props as any}>{this.props.value}</XText>;
 	}

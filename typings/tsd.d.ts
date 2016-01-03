@@ -28,3 +28,4 @@
 /// <reference path="react-router/history.d.ts" />
 /// <reference path="../node_modules/ofx4js/lib/ofx4js.d.ts" />
 /// <reference path="../node_modules/filist/filist.d.ts" />
+/// <reference path="moment/moment-node.d.ts" />

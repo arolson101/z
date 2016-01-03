@@ -7,36 +7,14 @@ import { Row, Grid, Panel } from "react-bootstrap";
 import * as Icon from "react-fa";
 import { createSelector } from "reselect";
 
-import { Component } from "../components";
+import { AccountGroup, accountGroups, Component } from "../components";
 
 import { AppState, FI, t, InstitutionCollection, AccountCollection } from "../state";
 import { Account, Institution } from "../types";
 
-interface AccountGroup {
-	institution: Institution;
-	accounts: Account[];
-}
-
 interface Props {
 	accountGroups: AccountGroup[];
 }
-
-const accountGroups = createSelector<AppState, AccountGroup[]>(
-	[
-		(state: AppState) => state.institutions,
-		(state: AppState) => state.accounts
-	],
-	(institutions: InstitutionCollection, accounts: AccountCollection) =>
-		_.map(_.sortBy(institutions, "name"), 
-			(institution: Institution) => ({
-				institution,
-				accounts: _.sortBy(
-					_.filter(accounts, (account: Account) => account.institution === institution.dbid),
-					"name"
-				)
-			} as AccountGroup)
-		)
-);
 
 @connect(
 	(state: AppState) => ({accountGroups: accountGroups(state)})

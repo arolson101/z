@@ -16,7 +16,7 @@ import DockMonitor from "redux-devtools-dock-monitor";
 
 
 import { App } from "./components/index";
-import { AccountsPage, BudgetsPage, NewAccountPage } from "./pages/index";
+import { AccountsPage, BudgetPage, NewAccountPage } from "./pages/index";
 import { Action, addAccount, AccountCollection } from "./actions/index";
 import { appState, AppState } from "./state";
 import { i18nInit } from "./i18n";
@@ -102,8 +102,8 @@ export function main(root: HTMLElement) {
 				<Router history={history}>
 					<Route path="/" component={App}>
 						<Route path="accounts" component={AccountsPage}/>
-						<Route path="budgets" component={BudgetsPage}/>
-						<Route path="new" component={NewAccountPage}/>
+						<Route path="newAccount" component={NewAccountPage}/>
+						<Route path="budgets" component={BudgetPage}/>
 					</Route>
 				</Router>
 

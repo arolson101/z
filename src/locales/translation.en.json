@@ -93,6 +93,17 @@
     "save": "Save",
     "close": "Cancel"
   },
+	
+	"accountSelect": {
+		"none": "None"
+	},
+	
+	"BudgetPage": {
+		"nameHeader": "Name",
+		"namePlaceholder": "Name",
+		"nextOccurrenceHeader": "Next Occurrence",
+		"accountHeader": "Account"
+	},
 
   "easyList": {
     "valueExists": "Must be unique",

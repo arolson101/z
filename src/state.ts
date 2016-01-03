@@ -1,16 +1,19 @@
 ///<reference path="./project.d.ts"/>
 "use strict";
 
+import { connect } from "react-redux";
 import { combineReducers } from "redux";
-import { routeReducer } from "redux-simple-router";
 import * as reduxForm from "redux-form";
+import { routeReducer } from "redux-simple-router";
 
 import {
 	Action,
 	nullAction,
-	i18nReducer,
+	localeReducer,
 	AccountCollection,
 	accountCollectionReducer,
+	BudgetCollection,
+	budgetCollectionReducer,
 	InstitutionCollection,
 	institutionCollectionReducer,
 	FI,
@@ -24,14 +27,17 @@ export {
 	t,
 	FI,
 	AccountCollection,
+	BudgetCollection,
 	InstitutionCollection,
-	UpdraftState
+	UpdraftState,
+	connect
 };
 
 export interface AppState {
-	i18nLoaded: boolean;
+	locale: string;
 	routing: ReactRouter.RouterState;
 	accounts: AccountCollection;
+	budgets: BudgetCollection;
 	institutions: InstitutionCollection;
 	filist: FI[];
 	form: any;
@@ -39,9 +45,10 @@ export interface AppState {
 }
 
 export const appState = combineReducers<AppState, Action>({
-	i18nLoaded: i18nReducer,
+	locale: localeReducer,
 	routing: routeReducer,
   accounts: accountCollectionReducer,
+	budgets: budgetCollectionReducer,
   institutions: institutionCollectionReducer,
 	filist: fiReducer,
 	form: reduxForm.reducer,

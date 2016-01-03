@@ -4,22 +4,27 @@
 import { Action } from "./action";
 import * as i18n from "i18next-client";
 
-const I18N_LOADED = "i18n/loaded";
+const SET_LOCALE = "i18n/setLocale";
 
 type tFcn = (key: string, values?: Object) => string;
 export const t: tFcn = i18n.t;
 
-export function i18nLoaded(): Action {
+interface SetLocaleAction extends Action {
+	locale: string;
+}
+
+export function setLocale(locale: string): SetLocaleAction {
 	return {
-		type: I18N_LOADED
+		type: SET_LOCALE,
+		locale
 	};
 }
 
-export function i18nReducer(state: boolean, action?: Action): boolean {
-	state = state || false;
+export function localeReducer(state: string, action?: Action): string {
+	state = state || null;
 	switch (action.type) {
-		case I18N_LOADED:
-			return true;
+		case SET_LOCALE:
+			return (action as SetLocaleAction).locale;
 	}
 	
 	return state;

@@ -70,6 +70,9 @@
     },
     "react/react-addons-css-transition-group.d.ts": {
       "commit": "4c41545030eba44b27ce7209112dbf862f6b1d78"
+    },
+    "moment/moment-node.d.ts": {
+      "commit": "fe563dff3428bac1260d1794e2c2ecf8f097535a"
     }
   }
 }
