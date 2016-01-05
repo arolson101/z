@@ -1,6 +1,7 @@
 ///<reference path="../project.d.ts"/>
 "use strict";
 
+import { autobind } from "core-decorators";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Button, Row, Grid, Input, Panel, Table } from "react-bootstrap";
@@ -8,20 +9,23 @@ import * as Icon from "react-fa";
 import * as reduxForm from "redux-form";
 import { createSelector } from "reselect";
 
-import { Budget, t } from "../actions";
-import { Component, AccountSelect, DatePicker } from "../components";
-import { AppState, BudgetCollection } from "../state";
+import { Budget, t, bindActionCreators, updraftAdd, updatePath } from "../actions";
+import { Component, AccountSelect, DatePicker, XText } from "../components";
+import { AppState, UpdraftState, BudgetCollection } from "../state";
 
 
 interface Props extends ReduxForm.Props {
 	budgets: BudgetCollection;
+	updraft: UpdraftState;
+	updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
+	change?: (form: string, field: string, value: any) => any;
 	fields: {
 		account: ReduxForm.Field<string>;
 		name: ReduxForm.Field<string>;
 		nextOccurrence: ReduxForm.Field<Date>;
 		rrule: ReduxForm.Field<string>;
 		amount: ReduxForm.Field<string>;
-		
+
 		// index signature to make typescript happy
 		[field: string]: ReduxForm.FieldOpt;
 	}
@@ -38,8 +42,18 @@ const budgetKeys = [
 ];
 
 function validate(values: any): Object {
-  const errors: any = { accounts: [] as any[] };
-  return errors;
+	const errors: any = { accounts: [] as any[] };
+
+	let checkNonempty = (key: string) => {
+		if (!values[key]) {
+			errors[key] = t("accountDialog.validate.nonempty");
+			return;
+		}
+	};
+
+	checkNonempty("name");
+
+	return errors;
 }
 
 
@@ -49,15 +63,39 @@ function validate(values: any): Object {
 		...budgetKeys
 	],
 	initialValues: {
+		nextOccurrence: new Date()
 	},
-  validate
+	validate
 })
 @connect(
-	(state: AppState) => ({budgets: state.budgets})
+	(state: AppState) => ({budgets: state.budgets, updraft: state.updraft}),
+	(dispatch: Redux.Dispatch<any>) => bindActionCreators({
+		updraftAdd,
+		change: reduxForm.change
+	}, dispatch)
 )
 export class BudgetPage extends Component<Props> {
 	render() {
-		const { budgets, fields } = this.props;
+		const { budgets, fields, handleSubmit } = this.props;
+
+		const wrapErrorHelper = (props: any, error: string) => {
+			if (error) {
+				props.bsStyle = "error";
+				props.help = error;
+			}
+			props.hasFeedback = true;
+		};
+
+		const wrapError = (field: ReduxForm.Field<string>, supressEmptyError?: boolean) => {
+			let props: any = _.extend({}, field);
+			let error: string = null;
+			const isEmpty = (field.value === undefined || field.value === "")
+			if (field.error && field.touched && (!supressEmptyError || !isEmpty)) {
+				error = field.error;
+			}
+			wrapErrorHelper(props, error);
+			return props;
+		};
 
 		return <Grid>
 			<Row>budgets</Row>
@@ -73,8 +111,9 @@ export class BudgetPage extends Component<Props> {
 				<tbody>
 					{_.map(budgets, (budget: Budget) =>
 						<tr key={budget.dbid}>
-							<td>{budget.name}</td>
-							<td>{budget.nextOccurrence}</td>
+							<td><XText onChange={() => {}} value={budget.name}/></td>
+							<td>{budget.nextOccurrence.toString()}</td>
+							<td>{budget.account}</td>
 							<td>
 								<Button type="button" bsStyle="danger" onClick={() => console.log("todo")}><Icon name="trash-o"/></Button>
 							</td>
@@ -87,7 +126,7 @@ export class BudgetPage extends Component<Props> {
 							<Input
 								type="text"
 								placeholder={t("BudgetPage.namePlaceholder")}
-								{...fields.name}
+								{...wrapError(fields.name)}
 							/>
 						</td>
 						<td>
@@ -99,10 +138,7 @@ export class BudgetPage extends Component<Props> {
 							<AccountSelect {...fields.account}/>
 						</td>
 						<td>
-							<Button
-								type="button"
-								onClick={this.onAddBudget}
-							>
+							<Button type="button" bsStyle="success" onClick={handleSubmit(this.onAddBudget)}>
 								<Icon name="plus"/>
 							</Button>
 						</td>
@@ -111,8 +147,36 @@ export class BudgetPage extends Component<Props> {
 			</Table>
 		</Grid>;
 	}
-	
+
+	makeBudget(dbid: number): Budget {
+		const budget: Budget = {
+			dbid
+		};
+
+		budgetKeys.forEach((key: string) => {
+			const field = this.props.fields[key] as ReduxForm.Field<string>;
+			(budget as any)[key] = field.value || field.initialValue || "";
+		});
+
+		return budget;
+	}
+
+	@autobind
 	onAddBudget() {
-		console.log("todo: add budget");
+		const { updraft } = this.props;
+
+		const time = Date.now();
+		const dbid = Date.now();
+		const budget = this.makeBudget(dbid);
+
+		const makeChange = (table: Updraft.TableAny) => {
+			return (value: any) => ({
+				table,
+				time,
+				save: value
+			});
+		}
+
+		this.props.updraftAdd(updraft, makeChange(updraft.budgetTable)(budget));
 	}
 }

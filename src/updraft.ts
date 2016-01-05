@@ -4,7 +4,7 @@
 import * as Updraft from "updraft";
 
 import { Thunk, ThunkPromise, Dispatch, UpdraftState, updraftOpened, updraftLoadData } from "./actions";
-import { accountSpec, institutionSpec } from "./types";
+import { accountSpec, institutionSpec, budgetSpec } from "./types";
 
 function init(): Promise<UpdraftState> {
 	let db = Updraft.createWebsqlWrapper("z");
@@ -15,6 +15,7 @@ function init(): Promise<UpdraftState> {
 	
 	state.accountTable = store.createTable(accountSpec);
 	state.institutionTable = store.createTable(institutionSpec);
+	state.budgetTable = store.createTable(budgetSpec);
 	
 	return store.open()
 	.then(() => {

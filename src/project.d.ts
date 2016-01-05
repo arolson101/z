@@ -58,7 +58,7 @@ declare module ReduxForm {
     TOUCH: string;
     UNTOUCH: string;
   }
-  
+
 	interface Info {
 		form: string; // unique name for this form
 		fields: string[]; // all the fields in your form
@@ -77,39 +77,40 @@ declare module ReduxForm {
 		touchOnChange?: boolean;
 		validate?: (values: Object, props: Object) => Object;
 	}
-	
+
 	interface Field<type> {
 		active: boolean;
 		checked: boolean;
+		defaultValue: type;
 		dirty: boolean;
 		error: string;
-		initialValue: any;
+		initialValue: type;
 		invalid: boolean;
 		name: string;
-		onBlur(e: Event | string | number): any;
-		onChange(e: Event | string | number): any;
+		onBlur(e: Event): any;
+		onChange(e: Event | type): any;
 		onDragStart(): any;
 		onDrop(): any;
 		onFocus(): any;
-		onUpdate(e: Event | string | number): any;
+		onUpdate(e: Event | type): any;
 		pristine: boolean;
 		touched: boolean;
 		valid: boolean;
 		value: type;
 		visited: boolean;
 	}
-	
+
 	type FieldOpt = Field<any> | FieldArray<FieldSet>;
-	
+
 	interface FieldSet {
 		[fieldName: string]: FieldOpt;
 	}
-	
+
 	interface FieldArray<T> extends Array<T> {
 		addField(value?: any, index?: number): any;
 		removeField(index?: number): any;
 	}
-	
+
 	interface Props {
 		active: string;
 		asyncValidate: Function;
@@ -135,7 +136,7 @@ declare module ReduxForm {
 			[fieldName: string]: string;
 		}
 	}
-  
+
   interface ReducerPluginSet {
     [formName: string]: Redux.Reducer<any, any>;
   }
@@ -149,7 +150,7 @@ declare module "redux-form" {
 	function reducer(state: any, action: any): any;
 	function reduxForm(info: ReduxForm.Info, mapStateToProps?: Function, mapDispatchToProps?: Object): ClassDecorator;
   var actionTypes: ReduxForm.ActionTypes;
-	
+
   function blur(form: string, field: string, value: string): ReduxForm.Action;
   function change(form: string, field: string, value: string): ReduxForm.Action;
   function changeWithKey(form: string, formKey: string, field: string, value: string): ReduxForm.Action;

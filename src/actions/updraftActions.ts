@@ -62,7 +62,8 @@ const UPDRAFT_OPENED = "updraft/opened";
 type loadAction = (table: Updraft.TableAny) => ThunkPromise; 
 const tableLoadActionMap = new Map<Updraft.TableSpecAny, loadAction>([
 	[accountSpec, loadAccounts],
-	[institutionSpec, loadInstitutions]
+	[institutionSpec, loadInstitutions],
+	[budgetSpec, loadBudgets]
 ]);
 
 export function updraftOpened(state: UpdraftState): UpdraftOpenAction {
