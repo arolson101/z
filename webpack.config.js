@@ -2,13 +2,13 @@
 
 var webpack = require("webpack");
 var fs = require("fs");
-//var path = require("path");
+var path = require("path");
 var ForkCheckerPlugin = require('awesome-typescript-loader').ForkCheckerPlugin;
 
 var production = 0;
 
 module.exports = {
-	context: __dirname + "/src",
+  context: path.join(__dirname, 'src'),
 
 	entry: {
 		vendor:
