@@ -22,9 +22,9 @@ interface _Institution<id, str, bool> {
 
 export interface Institution extends _Institution<number, string, boolean> {}
 export interface InstitutionQuery extends _Institution<Q.num, Q.str, Q.bool> {}
-export interface InstitutionChange extends _Institution<M.num, M.str, M.bool> {}
-export type InstitutionTable = Updraft.Table<Institution, InstitutionQuery, InstitutionChange>;
-export type InstitutionTableSpec = Updraft.TableSpec<Institution, InstitutionQuery, InstitutionChange>;
+export interface InstitutionChange extends _Institution<number, M.str, M.bool> {}
+export type InstitutionTable = Updraft.Table<Institution, InstitutionChange, InstitutionQuery>;
+export type InstitutionTableSpec = Updraft.TableSpec<Institution, InstitutionChange, InstitutionQuery>;
 
 export const institutionSpec: InstitutionTableSpec = {
 	name: "institutions",

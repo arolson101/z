@@ -27,9 +27,9 @@ export interface _Account<key, id, str, tAccountType, bool> {
 
 export interface Account extends _Account<number, number, string, AccountType, boolean> {}
 export interface AccountQuery extends _Account<Q.num, Q.num, Q.str, Q.enm<AccountType>, Q.bool> {}
-export interface AccountChange extends _Account<void, M.num, M.str, M.enm<AccountType>, M.bool> {}
-export type AccountTable = Updraft.Table<Account, AccountQuery, AccountChange>;
-export type AccountTableSpec = Updraft.TableSpec<Account, AccountQuery, AccountChange>;
+export interface AccountChange extends _Account<number, M.num, M.str, M.enm<AccountType>, M.bool> {}
+export type AccountTable = Updraft.Table<Account, AccountChange, AccountQuery>;
+export type AccountTableSpec = Updraft.TableSpec<Account, AccountChange, AccountQuery>;
 
 export const accountSpec: AccountTableSpec = {
 	name: "accounts",

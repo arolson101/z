@@ -14,9 +14,9 @@ export interface _Budget<key, id, str, date, num> {
 
 export interface Budget extends _Budget<number, number, string, Date, number> {}
 export interface BudgetQuery extends _Budget<Q.num, Q.num, Q.str, Q.date, Q.num> {}
-export interface BudgetChange extends _Budget<void, M.num, M.str, M.date, M.num> {}
-export type BudgetTable = Updraft.Table<Budget, BudgetQuery, BudgetChange>;
-export type BudgetTableSpec = Updraft.TableSpec<Budget, BudgetQuery, BudgetChange>;
+export interface BudgetChange extends _Budget<number, M.num, M.str, M.date, M.num> {}
+export type BudgetTable = Updraft.Table<Budget, BudgetChange, BudgetQuery>;
+export type BudgetTableSpec = Updraft.TableSpec<Budget, BudgetChange, BudgetQuery>;
 
 export const budgetSpec: BudgetTableSpec = {
 	name: "budgets",

@@ -9,7 +9,8 @@ import * as Icon from "react-fa";
 import * as reduxForm from "redux-form";
 import { createSelector } from "reselect";
 
-import { Budget, t, bindActionCreators, updraftAdd, updatePath } from "../actions";
+import { Budget, BudgetChange } from "../types";
+import { t, bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { Component, AccountSelect, DatePicker, XText } from "../components";
 import { AppState, UpdraftState, BudgetCollection } from "../state";
 
@@ -57,13 +58,43 @@ function validate(values: any): Object {
 }
 
 
+function makeSave<Element>(table: Updraft.Table<Element, any, any>, time: number) {
+	return (save: Element) => ({
+		table,
+		time,
+		save
+	} as Updraft.TableChange<Element, any>);
+}
+
+function makeChange<Mutator>(table: Updraft.Table<any, Mutator, any>, time: number) {
+	return (change: Mutator) => ({
+		table,
+		time,
+		change
+	} as Updraft.TableChange<any, Mutator>);
+}
+
+function makeDelete(table: Updraft.TableAny, time: number) {
+	return (id: number) => ({
+		table,
+		time,
+		delete: id
+	} as Updraft.TableChange<any, any>);
+}
+
+function currentDate(): Date {
+	let date = new Date();
+	date.setHours(0, 0, 0, 0);
+	return date;
+}
+
 @reduxForm.reduxForm({
 	form: FORM_NAME,
 	fields: [
 		...budgetKeys
 	],
 	initialValues: {
-		nextOccurrence: new Date()
+		nextOccurrence: currentDate()
 	},
 	validate
 })
@@ -111,11 +142,11 @@ export class BudgetPage extends Component<Props> {
 				<tbody>
 					{_.map(budgets, (budget: Budget) =>
 						<tr key={budget.dbid}>
-							<td><XText onChange={() => {}} value={budget.name}/></td>
+							<td><XText onChange={(value: any) => this.editBudget(budget, "name", value)} value={budget.name}/></td>
 							<td>{budget.nextOccurrence.toString()}</td>
 							<td>{budget.account}</td>
 							<td>
-								<Button type="button" bsStyle="danger" onClick={() => console.log("todo")}><Icon name="trash-o"/></Button>
+								<Button type="button" bsStyle="danger" onClick={() => this.deleteBudget(budget)}><Icon name="trash-o"/></Button>
 							</td>
 						</tr>
 					)}
@@ -169,14 +200,22 @@ export class BudgetPage extends Component<Props> {
 		const dbid = Date.now();
 		const budget = this.makeBudget(dbid);
 
-		const makeChange = (table: Updraft.TableAny) => {
-			return (value: any) => ({
-				table,
-				time,
-				save: value
-			});
-		}
+		this.props.updraftAdd(updraft, makeSave(updraft.budgetTable, time)(budget));
+	}
 
-		this.props.updraftAdd(updraft, makeChange(updraft.budgetTable)(budget));
+	@autobind
+	editBudget(budget: Budget, key: string, value: any) {
+		const { updraft } = this.props;
+
+		let change: BudgetChange = { dbid: budget.dbid };
+		(change as any)[key] = { $set: value } as Updraft.Mutate.setter<any>;
+
+		this.props.updraftAdd(updraft, makeChange(updraft.budgetTable, Date.now())(change));
+	}
+	
+	@autobind
+	deleteBudget(budget: Budget) {
+		const { updraft } = this.props;
+		this.props.updraftAdd(updraft, makeDelete(updraft.budgetTable, Date.now())(budget.dbid));
 	}
 }
