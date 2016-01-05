@@ -106,7 +106,7 @@ const accountKeys = [
 
 const addAccountKeys = accountKeys.map(x => "addAccount_" + x);
 
-function validate(values: any): Object {
+function validate(values: any, props: Props): Object {
   const errors: any = { accounts: [] as any[] };
   const accountNames: any = {};
   const accountNumbers: any = {};
@@ -129,22 +129,22 @@ function validate(values: any): Object {
 
 
 @historyMixin
-@reduxForm.reduxForm({
-	form: FORM_NAME,
-	fields: [
-		...institutionKeys,
-		...addAccountKeys,
-		...accountKeys.map(x => "accounts[]." + x)
-	],
-	initialValues: {
-		online: true,
-		addAccount_visible: true,
-		addAccount_type: AccountType.CHECKING,
-		accounts: []
+@reduxForm.reduxForm(
+	{
+		form: FORM_NAME,
+		fields: [
+			...institutionKeys,
+			...addAccountKeys,
+			...accountKeys.map(x => "accounts[]." + x)
+		],
+		initialValues: {
+			online: true,
+			addAccount_visible: true,
+			addAccount_type: AccountType.CHECKING,
+			accounts: []
+		},
+		validate
 	},
-  validate
-})
-@connect(
 	(state: AppState) => ({filist: state.filist, updraft: state.updraft}),
 	(dispatch: Redux.Dispatch<any>) => bindActionCreators({
 		updraftAdd,
@@ -644,17 +644,9 @@ export class NewAccountPage extends React.Component<Props, State> {
 		const institution = this.makeInstitution(id);
 		const accounts = this.makeAccounts(id);
 
-		const makeChange = (table: Updraft.TableAny) => {
-			return (value: any) => ({
-				table,
-				time,
-				save: value
-			});
-		}
-
 		this.props.updraftAdd(updraft,
-			makeChange(updraft.institutionTable)(institution),
-			...accounts.map(makeChange(updraft.accountTable))
+			Updraft.makeSave(updraft.institutionTable, time)(institution),
+			...accounts.map(Updraft.makeSave(updraft.accountTable, time))
 		)
 		.then(() => {
 			this.props.history.replace("/dash");

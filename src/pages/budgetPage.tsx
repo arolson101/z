@@ -42,7 +42,7 @@ const budgetKeys = [
 	"amount"
 ];
 
-function validate(values: any): Object {
+function validate(values: any, props: Props): Object {
 	const errors: any = { accounts: [] as any[] };
 
 	let checkNonempty = (key: string) => {
@@ -51,36 +51,20 @@ function validate(values: any): Object {
 			return;
 		}
 	};
+	
+	let checkUnique = (key: string) => {
+		const value = values[key];
+		if (_.any(props.budgets, (budget: Budget) => (budget as any)[key] === value)) {
+			errors[key] = t("accountDialog.validate.unique");
+		}
+	}
 
 	checkNonempty("name");
+	checkUnique("name");
 
 	return errors;
 }
 
-
-function makeSave<Element>(table: Updraft.Table<Element, any, any>, time: number) {
-	return (save: Element) => ({
-		table,
-		time,
-		save
-	} as Updraft.TableChange<Element, any>);
-}
-
-function makeChange<Mutator>(table: Updraft.Table<any, Mutator, any>, time: number) {
-	return (change: Mutator) => ({
-		table,
-		time,
-		change
-	} as Updraft.TableChange<any, Mutator>);
-}
-
-function makeDelete(table: Updraft.TableAny, time: number) {
-	return (id: number) => ({
-		table,
-		time,
-		delete: id
-	} as Updraft.TableChange<any, any>);
-}
 
 function currentDate(): Date {
 	let date = new Date();
@@ -88,17 +72,17 @@ function currentDate(): Date {
 	return date;
 }
 
-@reduxForm.reduxForm({
-	form: FORM_NAME,
-	fields: [
-		...budgetKeys
-	],
-	initialValues: {
-		nextOccurrence: currentDate()
+@reduxForm.reduxForm(
+	{
+		form: FORM_NAME,
+		fields: [
+			...budgetKeys
+		],
+		initialValues: {
+			nextOccurrence: currentDate()
+		},
+		validate
 	},
-	validate
-})
-@connect(
 	(state: AppState) => ({budgets: state.budgets, updraft: state.updraft}),
 	(dispatch: Redux.Dispatch<any>) => bindActionCreators({
 		updraftAdd,
@@ -196,11 +180,10 @@ export class BudgetPage extends Component<Props> {
 	onAddBudget() {
 		const { updraft } = this.props;
 
-		const time = Date.now();
 		const dbid = Date.now();
 		const budget = this.makeBudget(dbid);
 
-		this.props.updraftAdd(updraft, makeSave(updraft.budgetTable, time)(budget));
+		this.props.updraftAdd(updraft, Updraft.makeSave(updraft.budgetTable, Date.now())(budget));
 	}
 
 	@autobind
@@ -210,12 +193,12 @@ export class BudgetPage extends Component<Props> {
 		let change: BudgetChange = { dbid: budget.dbid };
 		(change as any)[key] = { $set: value } as Updraft.Mutate.setter<any>;
 
-		this.props.updraftAdd(updraft, makeChange(updraft.budgetTable, Date.now())(change));
+		this.props.updraftAdd(updraft, Updraft.makeChange(updraft.budgetTable, Date.now())(change));
 	}
 	
 	@autobind
 	deleteBudget(budget: Budget) {
 		const { updraft } = this.props;
-		this.props.updraftAdd(updraft, makeDelete(updraft.budgetTable, Date.now())(budget.dbid));
+		this.props.updraftAdd(updraft, Updraft.makeDelete(updraft.budgetTable, Date.now())(budget.dbid));
 	}
 }

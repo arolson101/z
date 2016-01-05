@@ -47,7 +47,7 @@
     "select2": "^4.0.1",
     "sortablejs": "^1.4.2",
     "string-hash": "^1.1.0",
-    "updraft": "^0.7.5",
+    "updraft": "^0.7.6",
     "x-editable": "^1.5.1"
   },
   "devDependencies": {
