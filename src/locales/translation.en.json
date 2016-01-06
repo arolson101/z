@@ -11,6 +11,13 @@
     "CREDITLINE": "Credit Line",
     "CREDITCARD": "Credit Card"
   },
+	
+	"RecurrencePeriod": {
+		"YEAR": "Year(s)",
+		"MONTH": "Month(s)",
+		"WEEK": "Week(s)",
+		"DAY": "Day(s)"
+	},
 
   "sbAdmin2": {
     "toggleNav": "Toggle navigation",

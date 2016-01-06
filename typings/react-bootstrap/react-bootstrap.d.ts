@@ -838,6 +838,7 @@ declare module "react-bootstrap" {
         id?: string | number;
         label?: any; // TODO: Add more specific type 
         labelClassName?: string;
+        min?: number;
         multiple?: boolean;
         placeholder?: string;
         readOnly?: boolean;

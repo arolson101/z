@@ -4,12 +4,11 @@
 import { Column, Mutate as M, Query as Q } from "updraft";
 
 export interface _Budget<key, id, str, date, num> {
-  dbid?: key;
-  account?: id;
-  name?: str;
-  nextOccurrence?: date;
+	dbid?: key;
+	account?: id;
+	name?: str;
 	rrule?: str;
-  amount?: num;
+	amount?: num;
 }
 
 export interface Budget extends _Budget<number, number, string, Date, number> {}
@@ -20,12 +19,11 @@ export type BudgetTableSpec = Updraft.TableSpec<Budget, BudgetChange, BudgetQuer
 
 export const budgetSpec: BudgetTableSpec = {
 	name: "budgets",
-  columns: {
-    dbid: Column.Int().Key(),
-    account: Column.Int(),
-    name: Column.Text(),
-    nextOccurrence: Column.Date(),
-    rrule: Column.Text(),
-    amount: Column.Real(),
-  }
+	columns: {
+		dbid: Column.Int().Key(),
+		account: Column.Int(),
+		name: Column.Text(),
+		rrule: Column.Text(),
+		amount: Column.Real(),
+	}
 };

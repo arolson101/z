@@ -1,6 +1,15 @@
 ///<reference path="../project.d.ts"/>
 "use strict";
 
+import { TypeScriptEnum } from "updraft";
+
+
+export interface EnumType extends TypeScriptEnum {
+	parse<E>(idx: string): E;
+	tr(name: string): string;
+}
+
+
 export class EnumEx {
     static getNames(e: any): Array<string> {
         var a: Array<string> = [];

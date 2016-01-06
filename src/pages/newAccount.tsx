@@ -207,8 +207,6 @@ export class NewAccountPage extends React.Component<Props, State> {
 			return props;
 		};
 
-		const AccountTypes_t = (name: string) => t("AccountTypes." + name);
-
 		return (
 			<Grid>
 
@@ -360,7 +358,7 @@ export class NewAccountPage extends React.Component<Props, State> {
                     <ImageCheckbox on="eye" off="eye-slash" {...account.visible}/>
                   </td>
                   <td {...tdStyle}>
-                    <XSelectForm {...account.type} source={EnumEx.map(AccountType, (name: string, value: number) => ({value: value, text: AccountTypes_t(name)}))}/>
+                    <XSelectForm {...account.type} source={EnumEx.map(AccountType, (name: string, value: number) => ({value: value, text: AccountType.tr(name)}))}/>
                   </td>
                   <td {...tdStyle}>
                     <XTextForm {...wrapValidator(account.name, "name")}/>
@@ -380,7 +378,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 									<ImageCheckbox on="eye" off="eye-slash" {...fields.addAccount_visible}/>
 								</td>
 								<td>
-									<EnumSelect {...fields.addAccount_type} enum={AccountType} tfcn={AccountTypes_t}/>
+									<EnumSelect {...fields.addAccount_type} enum={AccountType}/>
 								</td>
 								<td>
 									<Input
