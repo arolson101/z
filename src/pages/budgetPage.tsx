@@ -8,12 +8,21 @@ import { Button, Row, Grid, Input, Panel, Table } from "react-bootstrap";
 import * as Icon from "react-fa";
 import * as reduxForm from "redux-form";
 import { createSelector } from "reselect";
-//import { RRule } from "rrule";
+import * as later from "later";
 
 import { Budget, BudgetChange } from "../types";
 import { t, bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { Component, AccountSelect, DatePicker, EnumSelect, XText } from "../components";
 import { AppState, UpdraftState, BudgetCollection } from "../state";
+
+function test() {
+  let sched = later.parse.text('every 5 minutes'),
+      occurrences = later.schedule(sched).next(10);
+
+      occurrences.forEach((x, i) => console.log(x));
+}
+
+test();
 
 enum RecurrencePeriod {
 	YEAR,
