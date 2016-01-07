@@ -37,7 +37,7 @@ interface Props extends ReduxForm.Props {
 	isNew?: boolean;
 	updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
 	updatePath?: (path: string) => any;
-	change?: (form: string, field: string, value: any) => any;
+	change2?: (form: string, field: string, value: any) => any;
 	filist: FI[];
 	updraft: UpdraftState;
 	history: ReactRouter.History;
@@ -149,7 +149,7 @@ function validate(values: any, props: Props): Object {
 	(dispatch: Redux.Dispatch<any>) => bindActionCreators({
 		updraftAdd,
 		updatePath,
-		change: reduxForm.change
+		change2: reduxForm.change
 	}, dispatch)
 )
 export class NewAccountPage extends React.Component<Props, State> {
@@ -472,7 +472,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 
   @autobind
   onInstitutionChange(e: Event) {
-    const { fields, change } = this.props;
+    const { fields, change2 } = this.props;
     fields.institution.onChange(e);
 
     type FiFunction = (fi: FI) => string;
@@ -487,7 +487,7 @@ export class NewAccountPage extends React.Component<Props, State> {
       let field = fields[stateKey] as ReduxForm.Field<string>;
       if (!field.value || field.value == getValue(oldFi)) {
         let value = getValue(newFi);
-        change(FORM_NAME, stateKey, value);
+        change2(FORM_NAME, stateKey, value);
       }
     }
 
@@ -525,7 +525,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 
 	@autobind
 	onAddAccount() {
-		const { fields, change, touch, untouch } = this.props;
+		const { fields, change2, touch, untouch } = this.props;
 
 		const check = (fieldName: string) => {
 			const field = fields["addAccount_" + fieldName] as ReduxForm.Field<string>;
@@ -546,10 +546,10 @@ export class NewAccountPage extends React.Component<Props, State> {
 
 		fields.accounts.addField(account);
 
-		change(FORM_NAME, "addAccount_visible", true);
-		change(FORM_NAME, "addAccount_type", AccountType.CHECKING);
-		change(FORM_NAME, "addAccount_name", "");
-		change(FORM_NAME, "addAccount_number", "");
+		change2(FORM_NAME, "addAccount_visible", true);
+		change2(FORM_NAME, "addAccount_type", AccountType.CHECKING);
+		change2(FORM_NAME, "addAccount_name", "");
+		change2(FORM_NAME, "addAccount_number", "");
 
 		accountKeys.forEach((key: string) => {
 			untouch(FORM_NAME, "addAccount_" + key, "");
@@ -647,7 +647,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 			...accounts.map(Updraft.makeSave(updraft.accountTable, time))
 		)
 		.then(() => {
-			this.props.history.replace("/dash");
+			this.props.history.replace("/accounts");
 		});
 	}
 }
