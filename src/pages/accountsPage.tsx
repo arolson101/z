@@ -5,7 +5,6 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Row, Grid, Panel } from "react-bootstrap";
 import * as Icon from "react-fa";
-import { createSelector } from "reselect";
 
 import { AccountGroup, accountGroups, Component } from "../components";
 

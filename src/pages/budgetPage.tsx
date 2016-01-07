@@ -69,10 +69,8 @@ function calculateNextOccurrence(budget: Budget): Date {
 	return new Date();
 }
 
-export const calculateBudgets = createSelector<AppState, Budget2[]>(
-	[
-		(state: AppState) => state.budgets
-	],
+export const calculateBudgets = createSelector(
+  (state: AppState) => state.budgets,
 	(budgets: BudgetCollection) => {
 		let budgets2 = _.map(budgets, (budget) => ({budget, nextOccurrence: calculateNextOccurrence(budget)} as Budget2));
 		return budgets2;

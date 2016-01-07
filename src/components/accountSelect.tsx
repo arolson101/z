@@ -8,7 +8,7 @@ import * as Icon from "react-fa";
 import { createSelector } from "reselect";
 
 import { Component } from "./component";
-import { AppState, FI, t, InstitutionCollection, AccountCollection } from "../state";
+import { AppState, FI, t } from "../state";
 import { Account, Institution } from "../types";
 
 export interface AccountGroup {
@@ -16,12 +16,10 @@ export interface AccountGroup {
 	accounts: Account[];
 }
 
-export const accountGroups = createSelector<AppState, AccountGroup[]>(
-	[
-		(state: AppState) => state.institutions,
-		(state: AppState) => state.accounts
-	],
-	(institutions: InstitutionCollection, accounts: AccountCollection) =>
+export const accountGroups = createSelector(
+  (state: AppState) => state.institutions,
+  (state: AppState) => state.accounts,
+	(institutions, accounts) =>
 		_.map(_.sortBy(institutions, "name"), 
 			(institution: Institution) => ({
 				institution,

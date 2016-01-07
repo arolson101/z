@@ -194,8 +194,26 @@ interface NodeModule {
 
 
 declare module "reselect" {
-	type Selector<State> = (state: State) => any;
-	function createSelector<State, ReturnType>(selectors: Selector<State>[], resultFunc: (...args: any[]) => ReturnType): (state: State) => ReturnType;
+	type Selector<State, Return> = (state: State) => Return;
+	function createSelector<State, ReturnType, Result1>(
+    selector1: Selector<State, Result1>,
+    resultFunc: (result1: Result1) => ReturnType
+  ): (state: State) => ReturnType;
+	function createSelector<State, ReturnType, Result1, Result2>(
+    selector1: Selector<State, Result1>, 
+    selector2: Selector<State, Result2>, 
+    resultFunc: (result1: Result1, result2: Result2) => ReturnType
+  ): (state: State) => ReturnType;
+	function createSelector<State, ReturnType, Result1, Result2, Result3>(
+    selector1: Selector<State, Result1>, 
+    selector2: Selector<State, Result2>, 
+    selector3: Selector<State, Result3>, 
+    resultFunc: (result1: Result1, result2: Result2, result3: Result3) => ReturnType
+  ): (state: State) => ReturnType;
+	function createSelector<State, ReturnType>(
+    selectors: Selector<State, any>[],
+    resultFunc: (...args: any[]) => ReturnType
+  ): (state: State) => ReturnType;
 }
 
 
