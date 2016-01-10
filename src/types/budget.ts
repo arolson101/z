@@ -3,17 +3,19 @@
 
 import { Column, Mutate as M, Query as Q } from "updraft";
 
-export interface _Budget<key, id, str, date, num> {
+import RRuleOptions = __RRule.Options;
+
+export interface _Budget<key, id, str, date, num, rruleOpts> {
 	dbid?: key;
 	account?: id;
 	name?: str;
-	rrule?: str;
+	rruleOpts?: rruleOpts;
 	amount?: num;
 }
 
-export interface Budget extends _Budget<number, number, string, Date, number> {}
-export interface BudgetQuery extends _Budget<Q.num, Q.num, Q.str, Q.date, Q.num> {}
-export interface BudgetChange extends _Budget<number, M.num, M.str, M.date, M.num> {}
+export interface Budget extends _Budget<number, number, string, Date, number, RRuleOptions> {}
+export interface BudgetQuery extends _Budget<Q.num, Q.num, Q.str, Q.date, Q.num, Q.none> {}
+export interface BudgetChange extends _Budget<number, M.num, M.str, M.date, M.num, M.primitive<RRuleOptions>> {}
 export type BudgetTable = Updraft.Table<Budget, BudgetChange, BudgetQuery>;
 export type BudgetTableSpec = Updraft.TableSpec<Budget, BudgetChange, BudgetQuery>;
 
@@ -23,7 +25,7 @@ export const budgetSpec: BudgetTableSpec = {
 		dbid: Column.Int().Key(),
 		account: Column.Int(),
 		name: Column.Text(),
-		rrule: Column.Text(),
+		rruleOpts: Column.JSON(),
 		amount: Column.Real(),
 	}
 };

@@ -12,7 +12,7 @@
     "CREDITCARD": "Credit Card"
   },
 	
-	"RecurrencePeriod": {
+	"Frequency": {
 		"YEAR": "Year(s)",
 		"MONTH": "Month(s)",
 		"WEEK": "Week(s)",
@@ -109,7 +109,9 @@
 		"nameHeader": "Name",
 		"namePlaceholder": "Name",
 		"nextOccurrenceHeader": "Next Occurrence",
-		"accountHeader": "Account"
+		"accountHeader": "Account",
+		"once": "once",
+		"repeatEvery": "repeat every"
 	},
 
   "easyList": {

@@ -8,37 +8,40 @@ import { Button, Row, Grid, Input, Panel, Table } from "react-bootstrap";
 import * as Icon from "react-fa";
 import * as reduxForm from "redux-form";
 import { createSelector } from "reselect";
-import * as later from "later";
+import RRule = require("rrule");
 
 import { Budget, BudgetChange } from "../types";
 import { t, bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { Component, AccountSelect, DatePicker, EnumSelect, XText } from "../components";
 import { AppState, UpdraftState, BudgetCollection } from "../state";
 
-function test() {
-  let sched = later.parse.text('every 5 minutes'),
-      occurrences = later.schedule(sched).next(10);
 
-      occurrences.forEach((x, i) => console.log(x));
-}
-
-test();
-
-enum RecurrencePeriod {
+enum Frequency {
 	YEAR,
 	MONTH,
 	WEEK,
 	DAY,
 }
 
-module RecurrencePeriod {
-	export function parse(idx: string): RecurrencePeriod { return (RecurrencePeriod as any)[idx]; }
-	export function tr(name: string): string { return t("RecurrencePeriod." + name); }
+module Frequency {
+	export function parse(idx: string): Frequency { return (Frequency as any)[idx]; }
+	export function tr(name: string): string { return t("Frequency." + name); }
+	export function toRRuleFreq(value: Frequency): __RRule.Frequency {
+		switch (value) {
+			case Frequency.YEAR: return RRule.YEARLY;
+			case Frequency.MONTH: return RRule.MONTHLY;
+			case Frequency.WEEK: return RRule.WEEKLY;
+			case Frequency.DAY: return RRule.DAILY;
+			default:
+				throw new Error("invalid Frequency value");
+		}
+	}
 }
 
 interface Budget2 {
 	budget: Budget;
-	nextOccurrence: Date;
+	rrule: __RRule.RRule;
+	next: Date;
 }
 
 interface Props extends ReduxForm.Props {
@@ -51,7 +54,7 @@ interface Props extends ReduxForm.Props {
 		name: ReduxForm.Field<string>;
 		recurring: ReduxForm.Field<boolean>;
 		startingOn: ReduxForm.Field<Date>;
-		recurrencePeriod: ReduxForm.Field<RecurrencePeriod>;
+		frequency: ReduxForm.Field<Frequency>;
 		recurrenceMultiple: ReduxForm.Field<number>;
 		rrule: ReduxForm.Field<string>;
 		amount: ReduxForm.Field<string>;
@@ -69,11 +72,21 @@ function calculateNextOccurrence(budget: Budget): Date {
 	return new Date();
 }
 
-export const calculateBudgets = createSelector(
+export const calculateBudget2s = createSelector(
   (state: AppState) => state.budgets,
 	(budgets: BudgetCollection) => {
-		let budgets2 = _.map(budgets, (budget) => ({budget, nextOccurrence: calculateNextOccurrence(budget)} as Budget2));
-		return budgets2;
+		let now = currentDate();
+		return _.chain(budgets)
+		.map((budget: Budget) => {
+			let rrule = new RRule(budget.rruleOpts);
+			return {
+				budget,
+				rrule,
+				next: rrule.after(now, true)
+			} as Budget2;
+		})
+		.sortBy((budget: Budget2) => budget.next)
+		.value();
 	}
 );
 
@@ -114,7 +127,7 @@ function currentDate(): Date {
 		fields: [
 			"name",
 			"recurring",
-			"recurrencePeriod",
+			"frequency",
 			"recurrenceMultiple",
 			"startingOn",
 			"account",
@@ -123,12 +136,12 @@ function currentDate(): Date {
 		initialValues: {
 			startingOn: currentDate(),
 			recurring: 1,
-			recurrencePeriod: RecurrencePeriod.MONTH,
+			frequency: Frequency.MONTH,
 			recurrenceMultiple: 1
 		},
 		validate
 	},
-	(state: AppState) => ({budgets2: calculateBudgets(state), updraft: state.updraft}),
+	(state: AppState) => ({budgets2: calculateBudget2s(state), updraft: state.updraft}),
 	(dispatch: Redux.Dispatch<any>) => bindActionCreators({
 		updraftAdd,
 		change: reduxForm.change
@@ -174,7 +187,7 @@ export class BudgetPage extends Component<Props> {
 					{_.map(budgets2, (budget: Budget2) =>
 						<tr key={budget.budget.dbid}>
 							<td><XText onChange={(value: any) => this.editBudget(budget, "name", value)} value={budget.budget.name}/></td>
-							<td>{budget.budget.account}</td>
+							<td>{budget.next.toString()}</td>
 							<td>
 								<Button type="button" bsStyle="danger" onClick={() => this.deleteBudget(budget)}><Icon name="trash-o"/></Button>
 							</td>
@@ -197,8 +210,8 @@ export class BudgetPage extends Component<Props> {
 								/>
 								{" "}
 								<Input type="select" {...fields.recurring}>
-									<option value="0">---once</option>
-									<option value="1">---repeat every</option>
+									<option value="0">{t("BudgetPage.once")}</option>
+									<option value="1">{t("BudgetPage.repeatEvery")}</option>
 								</Input>
 								{" "}
 								{recurring &&
@@ -211,7 +224,7 @@ export class BudgetPage extends Component<Props> {
 								}
 								{" "}
 								{recurring &&
-									<EnumSelect {...fields.recurrencePeriod} enum={RecurrencePeriod}/>
+									<EnumSelect {...fields.frequency} enum={Frequency}/>
 								}
 							</div>
 						</td>
@@ -235,14 +248,20 @@ export class BudgetPage extends Component<Props> {
 			dbid,
 			name: valueOf(fields.name),
 			account: 0, //TODO: fields.account.value,
-			//amount: 
 		};
 		
 		if (valueOf(fields.recurring) != "0") {
-			// let rule = new RRule({
-			// 	freq: RRule.WEEKLY,
-			// })
-			// budget.rrule = fields.
+			budget.rruleOpts = {
+				freq: Frequency.toRRuleFreq(valueOf(fields.frequency)),
+				dtstart: valueOf(fields.startingOn),
+			};
+		}
+		else {
+			budget.rruleOpts = {
+				freq: RRule.MONTHLY,
+				dtstart: valueOf(fields.startingOn),
+				count: 1
+			};
 		}
 		
 		return budget;
