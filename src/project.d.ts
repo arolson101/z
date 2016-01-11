@@ -112,27 +112,27 @@ declare module ReduxForm {
 	}
 
 	interface Props {
-		active: string;
-		asyncValidate: Function;
-		asyncValidating: boolean;
-		destroyForm: Function;
+		active?: string;
+		asyncValidate?: Function;
+		asyncValidating?: boolean;
+		destroyForm?: Function;
 		dirty?: boolean;
 		error?: string;
 		fields?: FieldSet;
 		handleSubmit?(e: any): any;
 		initializeForm?(data: Object): any;
-		invalid: boolean;
-		pristine: boolean;
-		resetForm(): any;
-		formKey: string;
-		submitting: boolean;
-		submitFailed: boolean;
-		touch(...field: string[]): any;
-		touchAll(): any;
-		untouch(...field: string[]): any;
-		untouchAll(): any;
-		valid: boolean;
-		values: {
+		invalid?: boolean;
+		pristine?: boolean;
+		resetForm?(): any;
+		formKey?: string;
+		submitting?: boolean;
+		submitFailed?: boolean;
+		touch?(...field: string[]): any;
+		touchAll?(): any;
+		untouch?(...field: string[]): any;
+		untouchAll?(): any;
+		valid?: boolean;
+		values?: {
 			[fieldName: string]: string;
 		}
 	}

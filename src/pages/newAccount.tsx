@@ -24,14 +24,14 @@ import {
 	ImageCheckbox,
 	XTextForm,
 	XSelectForm,
-	EnumSelect
+	EnumSelect,
+	AccountField,
+	AccountFieldArray,
+	AddAccountForm
  } from "../components";
-import { historyMixin, EnumEx } from "../util";
+import { historyMixin, EnumEx, ValidateHelper } from "../util";
 import { bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { readAccountProfiles } from "../online";
-
-interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field<number>, ReduxForm.Field<number>, ReduxForm.Field<string>, ReduxForm.Field<AccountType>, ReduxForm.Field<boolean>> {}
-interface AccountFieldArray extends ReduxForm.FieldArray<AccountField> {}
 
 interface Props extends ReduxForm.Props {
 	isNew?: boolean;
@@ -58,11 +58,6 @@ interface Props extends ReduxForm.Props {
 		username: ReduxForm.Field<string>;
 		password: ReduxForm.Field<string>;
 
-		addAccount_visible: ReduxForm.Field<boolean>;
-		addAccount_type: ReduxForm.Field<number>;
-		addAccount_number: ReduxForm.Field<string>;
-		addAccount_name: ReduxForm.Field<string>;
-
 		accounts: AccountFieldArray;
 
 		// index signature to make typescript happy
@@ -71,7 +66,6 @@ interface Props extends ReduxForm.Props {
 }
 
 interface State {
-	userPressedAddAccount?: boolean;
 	gettingAccounts?: boolean;
 	gettingAccountsSuccess?: number;
 	gettingAccountsError?: string;
@@ -104,21 +98,11 @@ const accountKeys = [
 	"visible"
 ];
 
-const addAccountKeys = accountKeys.map(x => "addAccount_" + x);
-
 function validate(values: any, props: Props): Object {
   const errors: any = { accounts: [] as any[] };
-  const accountNames: any = {};
-  const accountNumbers: any = {};
+	let v = new ValidateHelper(values, props, errors);
 
-	let checkNonempty = (key: string) => {
-		if (!values[key]) {
-			errors[key] = t("accountDialog.validate.nonempty");
-			return;
-		}
-	};
-
-	checkNonempty("name");
+	v.checkNonempty("name");
 
 	if (!values.accounts.length) {
 		errors["accounts"] = t("accountDialog.validate.noAccounts");
@@ -134,13 +118,10 @@ function validate(values: any, props: Props): Object {
 		form: FORM_NAME,
 		fields: [
 			...institutionKeys,
-			...addAccountKeys,
 			...accountKeys.map(x => "accounts[]." + x)
 		],
 		initialValues: {
 			online: true,
-			addAccount_visible: true,
-			addAccount_type: AccountType.CHECKING,
 			accounts: []
 		},
 		validate
@@ -185,14 +166,6 @@ export class NewAccountPage extends React.Component<Props, State> {
 			if (field.error && field.touched && (!supressEmptyError || !isEmpty)) {
 				error = field.error;
 			}
-			wrapErrorHelper(props, error);
-			return props;
-		};
-
-		const accountWrapError = (field: ReduxForm.Field<string>) => {
-			let props: any = _.extend({}, field);
-			let fieldName = field.name.substring("addAccount_".length);
-			let error: string = this.validateAccountField(field.value, fieldName, this.state.userPressedAddAccount);
 			wrapErrorHelper(props, error);
 			return props;
 		};
@@ -372,35 +345,7 @@ export class NewAccountPage extends React.Component<Props, State> {
                 </tr>
 							})}
 						</FadeTransitionGroup>
-						<tfoot>
-							<tr>
-								<td>
-									<ImageCheckbox on="eye" off="eye-slash" {...fields.addAccount_visible}/>
-								</td>
-								<td>
-									<EnumSelect {...fields.addAccount_type} enum={AccountType}/>
-								</td>
-								<td>
-									<Input
-										type="text"
-										placeholder={t("accountDialog.accountNamePlaceholder")}
-										{...accountWrapError(fields.addAccount_name)}
-									/>
-								</td>
-								<td>
-									<Input
-										type="text"
-										placeholder={t("accountDialog.accountNumberPlaceholder")}
-										{...accountWrapError(fields.addAccount_number)}
-									/>
-								</td>
-								<td>
-									<Button type="button" bsStyle="success" onClick={this.onAddAccount}>
-										<Icon name="plus"/>
-									</Button>
-								</td>
-							</tr>
-						</tfoot>
+						<AddAccountForm accounts={fields.accounts} onAddAccount={this.onAddAccount}/>
 					</Table>
 
 					{this.state.gettingAccountsSuccess &&
@@ -524,37 +469,9 @@ export class NewAccountPage extends React.Component<Props, State> {
 	}
 
 	@autobind
-	onAddAccount() {
-		const { fields, change2, touch, untouch } = this.props;
-
-		const check = (fieldName: string) => {
-			const field = fields["addAccount_" + fieldName] as ReduxForm.Field<string>;
-			return this.validateAccountField(field.value, fieldName, true);
-		};
-
-		if (check("name") || check("number")) {
-			this.setState({userPressedAddAccount: true});
-			return;
-		}
-
-		let account: Account = {
-			visible: fields.addAccount_visible.value,
-			type: fields.addAccount_type.value,
-			name: fields.addAccount_name.value,
-			number: fields.addAccount_number.value,
-		};
-
+	onAddAccount(account: Account) {
+		const { fields } = this.props;
 		fields.accounts.addField(account);
-
-		change2(FORM_NAME, "addAccount_visible", true);
-		change2(FORM_NAME, "addAccount_type", AccountType.CHECKING);
-		change2(FORM_NAME, "addAccount_name", "");
-		change2(FORM_NAME, "addAccount_number", "");
-
-		accountKeys.forEach((key: string) => {
-			untouch(FORM_NAME, "addAccount_" + key, "");
-		});
-		this.setState({userPressedAddAccount: false});
 	}
 
 	@autobind

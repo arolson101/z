@@ -14,6 +14,7 @@ import { Budget, BudgetChange } from "../types";
 import { t, bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { Component, AccountSelect, DatePicker, EnumSelect, XText } from "../components";
 import { AppState, UpdraftState, BudgetCollection } from "../state";
+import { valueOf, ValidateHelper } from "../util";
 
 
 enum Frequency {
@@ -66,12 +67,6 @@ interface Props extends ReduxForm.Props {
 
 const FORM_NAME = "budget";
 
-function valueOf<T>(x: ReduxForm.Field<any>) { return x.value || x.defaultValue; } 
-
-function calculateNextOccurrence(budget: Budget): Date {
-	return new Date();
-}
-
 export const calculateBudget2s = createSelector(
   (state: AppState) => state.budgets,
 	(budgets: BudgetCollection) => {
@@ -92,24 +87,20 @@ export const calculateBudget2s = createSelector(
 
 function validate(values: any, props: Props): Object {
 	const errors: any = { accounts: [] as any[] };
+	let v = new ValidateHelper(values, props, errors);
 
-	let checkNonempty = (key: string) => {
-		if (!values[key]) {
-			errors[key] = t("accountDialog.validate.nonempty");
-			return;
-		}
-	};
-	
-	let checkUnique = (key: string) => {
-		const value = values[key];
-		if (_.any(props.budgets2, (budget: Budget2) => (budget.budget as any)[key] === value)) {
-			errors[key] = t("accountDialog.validate.unique");
-		}
-	}
+	const names = _.reduce(
+		props.budgets2, 
+		(set: any, budget: Budget2) => {
+			set[budget.budget.name] = true;
+			return set;
+		},
+		{}
+	);
 
-	checkNonempty("name");
-	checkNonempty("recurrenceMultiple");
-	checkUnique("name");
+	v.checkNonempty("name");
+	v.checkNonempty("recurrenceMultiple");
+	v.checkUnique("name", names);
 
 	return errors;
 }
