@@ -16,6 +16,7 @@ import { Component, AccountSelect, DatePicker, EnumSelect, XText } from "../comp
 import { AppState, UpdraftState, BudgetCollection } from "../state";
 import { valueOf, ValidateHelper } from "../util";
 
+// TODO: refresh on day change
 
 enum Frequency {
 	YEAR,
@@ -87,7 +88,7 @@ export const calculateBudget2s = createSelector(
 
 function validate(values: any, props: Props): Object {
 	const errors: any = { accounts: [] as any[] };
-	let v = new ValidateHelper(values, props, errors);
+	let v = new ValidateHelper(values, errors);
 
 	const names = _.reduce(
 		props.budgets2, 
@@ -161,6 +162,18 @@ export class BudgetPage extends Component<Props> {
 			return props;
 		};
 		
+		const wrapValidator = (budget: Budget2, fieldName: string) => {
+			return {
+				validate: (newValue: string): string => {
+					let currentValue = (budget.budget as any)[fieldName];
+					if (newValue != currentValue) {
+						let res = validate({ [fieldName]: newValue }, this.props) as any;
+						return res[fieldName];
+					}
+				}
+			}
+		};
+		
 		const recurring = valueOf(fields.recurring) != "0";
 
 		return <Grid>
@@ -177,7 +190,13 @@ export class BudgetPage extends Component<Props> {
 				<tbody>
 					{_.map(budgets2, (budget: Budget2) =>
 						<tr key={budget.budget.dbid}>
-							<td><XText onChange={(value: any) => this.editBudget(budget, "name", value)} value={budget.budget.name}/></td>
+							<td>
+								<XText
+									{...wrapValidator(budget, "name")}
+									onChange={(value: any) => this.editBudget(budget, "name", value)}
+									value={budget.budget.name}
+								/>
+							</td>
 							<td>{budget.next.toString()}</td>
 							<td>
 								<Button type="button" bsStyle="danger" onClick={() => this.deleteBudget(budget)}><Icon name="trash-o"/></Button>

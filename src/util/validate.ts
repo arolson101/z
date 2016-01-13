@@ -13,12 +13,10 @@ export interface ValidateErrorSet {
 
 export class ValidateHelper<Props> {
 	values: any;
-	props: Props;
 	errors: ValidateErrorSet;
 
-	constructor(values: any, props: Props, errors: ValidateErrorSet) {
+	constructor(values: any, errors: ValidateErrorSet) {
 		this.values = values;
-		this.props = props;
 		this.errors = errors;
 	}
 	

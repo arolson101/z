@@ -36,17 +36,10 @@ interface Props extends ReduxForm.Props {
 const FORM_NAME = "addAccount";
 
 
-const accountKeys = [
-	"name",
-	"type",
-	"number",
-	"visible"
-];
 
-
-function validate(values: any, props: Props): Object {
+export function addAccountValidate(values: any, props: Props): Object {
   const errors: any = { accounts: [] as any[] };
-	let v = new ValidateHelper(values, props, errors);
+	let v = new ValidateHelper(values, errors);
 
 	v.checkNonempty("name");
 	v.checkNonempty("number");
@@ -77,12 +70,17 @@ function validate(values: any, props: Props): Object {
 @reduxForm.reduxForm(
 	{
 		form: FORM_NAME,
-		fields: accountKeys,
+		fields: [
+			"name",
+			"type",
+			"number",
+			"visible"
+		],
 		initialValues: {
 			visbile: true,
 			type: AccountType.CHECKING
 		},
-		validate
+		validate: addAccountValidate
 	}
 )
 export class AddAccountForm extends Component<Props> {

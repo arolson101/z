@@ -3,6 +3,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { autobind } from "core-decorators";
 import { Component } from "./component";
 
 
@@ -14,26 +15,40 @@ interface Props extends React.Props<any>, ChangeProps {}
 interface XEditableProps extends Props, XEditable.Options {}
 
 export class XEditable extends Component<XEditableProps> {
-    render() {
-        return <a href="#" ref="a">
-            {this.props.children}
-        </a>;
-    }
+	render() {
+		return <a href="#" ref="a">
+			{this.props.children}
+		</a>;
+	}
+	
+	get $a() {
+		return $(ReactDOM.findDOMNode(this.refs["a"]));
+	}
+	
+	componentDidMount() {
+		let { $a } = this;
+		$a.editable(this.props);
+		$a.on("save", this.onSave);
+	}
+	
+	componentWillReceiveProps(nextProps: Props) {
+		let { $a } = this;
+		$a.editable(this.props);
+	}
+		
+	componentWillUnmount() {
+		let { $a } = this;
+		$a.editable("destroy");
+	}
 
-    componentDidMount() {
-        let $a = $(ReactDOM.findDOMNode(this.refs["a"]));
-				let cfg = $.extend({}, this.props, {unsavedClass: null});
-        $a.editable(cfg);
-        $a.on('save', (e, params) => this.onSave(e, params));
-    }
-
-    onSave(e: Event, params: XEditable.SaveParams) {
-        let $a = $(ReactDOM.findDOMNode(this.refs["a"]));
-        $a.removeClass('editable-unsaved');
-        if(this.props.onChange) {
-            this.props.onChange(params.newValue);
-        }
-    }
+	@autobind
+	onSave(e: Event, params: XEditable.SaveParams) {
+		let { $a } = this;
+		$a.removeClass("editable-unsaved");
+		if (this.props.onChange) {
+			this.props.onChange(params.newValue);
+		}
+	}
 }
 
 

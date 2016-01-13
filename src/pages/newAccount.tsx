@@ -27,7 +27,8 @@ import {
 	EnumSelect,
 	AccountField,
 	AccountFieldArray,
-	AddAccountForm
+	AddAccountForm,
+	addAccountValidate
  } from "../components";
 import { historyMixin, EnumEx, ValidateHelper } from "../util";
 import { bindActionCreators, updraftAdd, updatePath } from "../actions";
@@ -100,7 +101,7 @@ const accountKeys = [
 
 function validate(values: any, props: Props): Object {
   const errors: any = { accounts: [] as any[] };
-	let v = new ValidateHelper(values, props, errors);
+	let v = new ValidateHelper(values, errors);
 
 	v.checkNonempty("name");
 
@@ -170,11 +171,13 @@ export class NewAccountPage extends React.Component<Props, State> {
 			return props;
 		};
 
-		const wrapValidator = (field: ReduxForm.Field<any>, fieldName: string) => {
-			let props: any = _.extend({}, field);
-			props.validate = (value: string) => {
-				if (value != field.value) {
-					return this.validateAccountField(value, fieldName, true);
+		const wrapValidator = (field: AccountField, fieldName: string) => {
+			let props: any = _.extend({}, field[fieldName]);
+			props.validate = (newValue: string) => {
+				let oldValue = (field[fieldName] as ReduxForm.Field<string>).value;
+				if (newValue != oldValue) {
+					let res = addAccountValidate({[fieldName]: newValue}, {accounts: this.props.fields.accounts} as any) as any;
+					return res[fieldName];
 				}
 			};
 			return props;
@@ -334,10 +337,10 @@ export class NewAccountPage extends React.Component<Props, State> {
                     <XSelectForm {...account.type} source={EnumEx.map(AccountType, (name: string, value: number) => ({value: value, text: AccountType.tr(name)}))}/>
                   </td>
                   <td {...tdStyle}>
-                    <XTextForm {...wrapValidator(account.name, "name")}/>
+                    <XTextForm {...wrapValidator(account, "name")}/>
                   </td>
                   <td {...tdStyle}>
-                    <XTextForm {...wrapValidator(account.number, "number")}/>
+                    <XTextForm {...wrapValidator(account, "number")}/>
                   </td>
                   <td {...tdStyle}>
                     <Button type="button" bsStyle="danger" onClick={() => fields.accounts.removeField(index)}><Icon name="trash-o"/></Button>
@@ -455,18 +458,6 @@ export class NewAccountPage extends React.Component<Props, State> {
     initField("org");
     initField("ofx");
   }
-
-	validateAccountField(value: string, fieldName: string, showEmptyError: boolean): string {
-		const { fields } = this.props;
-		let props: any = {};
-		let error: string = null;
-		if (showEmptyError && !value) {
-			return t("accountDialog.validate.nonempty");
-		}
-		else if (value && _.any(fields.accounts, (account: ReduxForm.FieldSet) => (account[fieldName] as ReduxForm.Field<string>).value == value)) {
-			return t("accountDialog.validate.unique");
-		}
-	}
 
 	@autobind
 	onAddAccount(account: Account) {
