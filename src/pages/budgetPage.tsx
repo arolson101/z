@@ -12,9 +12,10 @@ import RRule = require("rrule");
 
 import { Budget, BudgetChange } from "../types";
 import { t, bindActionCreators, updraftAdd, updatePath } from "../actions";
-import { Component, AccountSelect, DatePicker, EnumSelect, XText } from "../components";
+import { Component, AccountSelect, DatePicker, CurrencyInput, EnumSelect, XText } from "../components";
 import { AppState, UpdraftState, BudgetCollection } from "../state";
 import { valueOf, ValidateHelper } from "../util";
+import { formatCurrency } from "../i18n";
 
 // TODO: refresh on day change
 
@@ -91,7 +92,7 @@ function validate(values: any, props: Props): Object {
 	let v = new ValidateHelper(values, errors);
 
 	const names = _.reduce(
-		props.budgets2, 
+		props.budgets2,
 		(set: any, budget: Budget2) => {
 			set[budget.budget.name] = true;
 			return set;
@@ -102,6 +103,7 @@ function validate(values: any, props: Props): Object {
 	v.checkNonempty("name");
 	v.checkNonempty("recurrenceMultiple");
 	v.checkUnique("name", names);
+	v.checkNumber("amount");
 
 	return errors;
 }
@@ -161,7 +163,7 @@ export class BudgetPage extends Component<Props> {
 			wrapErrorHelper(props, error);
 			return props;
 		};
-		
+
 		const wrapValidator = (budget: Budget2, fieldName: string) => {
 			return {
 				validate: (newValue: string): string => {
@@ -173,7 +175,7 @@ export class BudgetPage extends Component<Props> {
 				}
 			}
 		};
-		
+
 		const recurring = valueOf(fields.recurring) != "0";
 
 		return <Grid>
@@ -182,6 +184,7 @@ export class BudgetPage extends Component<Props> {
 				<thead>
 					<tr>
 						<th>{t("BudgetPage.nameHeader")}</th>
+						<th>{t("BudgetPage.amountHeader")}</th>
 						<th>{t("BudgetPage.nextOccurrenceHeader")}</th>
 						<th>{t("BudgetPage.accountHeader")}</th>
 						<th></th>
@@ -195,6 +198,13 @@ export class BudgetPage extends Component<Props> {
 									{...wrapValidator(budget, "name")}
 									onChange={(value: any) => this.editBudget(budget, "name", value)}
 									value={budget.budget.name}
+								/>
+							</td>
+							<td>
+								<XText
+									{...wrapValidator(budget, "amount") }
+									onChange={(value: any) => this.editBudget(budget, "amount", value) }
+									value={formatCurrency(budget.budget.amount)}
 								/>
 							</td>
 							<td>{budget.next.toString()}</td>
@@ -212,6 +222,11 @@ export class BudgetPage extends Component<Props> {
 								placeholder={t("BudgetPage.namePlaceholder")}
 								{...wrapError(fields.name)}
 							/>
+						</td>
+						<td>
+							<CurrencyInput
+								placeholder={t("BudgetPage.amountPlaceholder") }
+								{...wrapError(fields.amount) } />
 						</td>
 						<td>
 							<div className="form-inline">
@@ -258,8 +273,9 @@ export class BudgetPage extends Component<Props> {
 			dbid,
 			name: valueOf(fields.name),
 			account: 0, //TODO: fields.account.value,
+			amount: valueOf(fields.amount)
 		};
-		
+
 		if (valueOf(fields.recurring) != "0") {
 			budget.rruleOpts = {
 				freq: Frequency.toRRuleFreq(valueOf(fields.frequency)),
@@ -273,7 +289,7 @@ export class BudgetPage extends Component<Props> {
 				count: 1
 			};
 		}
-		
+
 		return budget;
 	}
 
@@ -283,7 +299,7 @@ export class BudgetPage extends Component<Props> {
 
 		const dbid = Date.now();
 		const budget = this.makeBudget(dbid);
-		
+
 		updraftAdd(updraft, Updraft.makeSave(updraft.budgetTable, Date.now())(budget));
 		resetForm();
 	}
@@ -297,7 +313,7 @@ export class BudgetPage extends Component<Props> {
 
 		updraftAdd(updraft, Updraft.makeChange(updraft.budgetTable, Date.now())(change));
 	}
-	
+
 	@autobind
 	deleteBudget(budget: Budget2) {
 		const { updraft, updraftAdd } = this.props;

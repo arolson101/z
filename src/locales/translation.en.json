@@ -11,7 +11,7 @@
     "CREDITLINE": "Credit Line",
     "CREDITCARD": "Credit Card"
   },
-	
+
 	"Frequency": {
 		"YEAR": "Year(s)",
 		"MONTH": "Month(s)",
@@ -84,7 +84,8 @@
 		"validate": {
 			"nonempty": "Required",
 			"unique": "Already used",
-			"noAccounts": "You must add at least one account"
+			"noAccounts": "You must add at least one account",
+			"numeric": "Invalid number"
 		},
     "add": {
       "typePlaceholder": "Type",
@@ -100,16 +101,18 @@
     "save": "Save",
     "close": "Cancel"
   },
-	
+
 	"accountSelect": {
 		"none": "None"
 	},
-	
+
 	"BudgetPage": {
 		"nameHeader": "Name",
 		"namePlaceholder": "Name",
+		"amountPlaceholder": "Amount",
 		"nextOccurrenceHeader": "Next Occurrence",
 		"accountHeader": "Account",
+		"amountHeader": "Amount",
 		"once": "once",
 		"repeatEvery": "repeat every"
 	},

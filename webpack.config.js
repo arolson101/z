@@ -29,6 +29,7 @@ module.exports = {
 			"lodash",
 			//"metisMenu",
 			"moment",
+			"numeral",
 			"ofx4js",
 			"radium",
 			"react",

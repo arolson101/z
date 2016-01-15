@@ -26,6 +26,6 @@ export const budgetSpec: BudgetTableSpec = {
 		account: Column.Int(),
 		name: Column.Text(),
 		rruleOpts: Column.JSON(),
-		amount: Column.Real(),
+		amount: Column.Real().Default(0),
 	}
 };

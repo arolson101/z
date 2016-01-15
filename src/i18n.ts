@@ -5,6 +5,7 @@ import * as i18n from "i18next-client";
 import * as moment from "moment";
 import currentLocaleFunction = require("current-locale");
 import { verify } from "updraft";
+import * as numeral from "numeral";
 
 import { Thunk, Dispatch, setLocale } from "./actions";
 
@@ -53,7 +54,7 @@ export function i18nInit(): Thunk {
 		supportedLocales,
 		fallbackLocale
 	});
-	
+
 	let localeUsed = moment.locale(currentLocale);
 	verify(currentLocale.indexOf(localeUsed) != -1, "moment does not support this locale");
 
@@ -63,4 +64,10 @@ export function i18nInit(): Thunk {
 			(err: Error) => console.error(err)
 		);
 	}
+}
+
+
+export function formatCurrency(amount: number): string {
+	let n = numeral(amount);
+	return n.format("($0,0.00)");
 }
