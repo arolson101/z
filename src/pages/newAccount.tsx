@@ -38,7 +38,6 @@ interface Props extends ReduxForm.Props {
 	isNew?: boolean;
 	updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
 	updatePath?: (path: string) => any;
-	change2?: (form: string, field: string, value: any) => any;
 	filist: FI[];
 	updraft: UpdraftState;
 	history: ReactRouter.History;
@@ -71,8 +70,6 @@ interface State {
 	gettingAccountsSuccess?: number;
 	gettingAccountsError?: string;
 }
-
-const FORM_NAME = "newAccount";
 
 const institutionKeys = [
   "name",
@@ -116,7 +113,7 @@ function validate(values: any, props: Props): Object {
 @historyMixin
 @reduxForm.reduxForm(
 	{
-		form: FORM_NAME,
+		form: "newAccount",
 		fields: [
 			...institutionKeys,
 			...accountKeys.map(x => "accounts[]." + x)
@@ -131,7 +128,6 @@ function validate(values: any, props: Props): Object {
 	(dispatch: Redux.Dispatch<any>) => bindActionCreators({
 		updraftAdd,
 		updatePath,
-		change2: reduxForm.change
 	}, dispatch)
 )
 export class NewAccountPage extends React.Component<Props, State> {
@@ -420,7 +416,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 
   @autobind
   onInstitutionChange(e: Event) {
-    const { fields, change2 } = this.props;
+    const { fields } = this.props;
     fields.institution.onChange(e);
 
     type FiFunction = (fi: FI) => string;
@@ -435,7 +431,7 @@ export class NewAccountPage extends React.Component<Props, State> {
       let field = fields[stateKey] as ReduxForm.Field<string>;
       if (!field.value || field.value == getValue(oldFi)) {
         let value = getValue(newFi);
-        change2(FORM_NAME, stateKey, value);
+        field.onChange(value);
       }
     }
 
