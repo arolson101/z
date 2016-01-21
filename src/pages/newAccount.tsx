@@ -27,8 +27,7 @@ import {
 	EnumSelect,
 	AccountField,
 	AccountFieldArray,
-	AddAccountForm,
-	addAccountValidate
+	AddAccountDialog
  } from "../components";
 import { historyMixin, EnumEx, ValidateHelper, valueOf } from "../util";
 import { bindActionCreators, updraftAdd, updatePath } from "../actions";
@@ -58,11 +57,6 @@ interface Props extends ReduxForm.Props {
 		username: ReduxForm.Field<string>;
 		password: ReduxForm.Field<string>;
     
-    account_name: ReduxForm.Field<string>;
-    account_type: ReduxForm.Field<string>;
-    account_number: ReduxForm.Field<string>;
-    account_visible: ReduxForm.Field<boolean>;
-
 		accounts: AccountFieldArray;
 
 		// index signature to make typescript happy
@@ -123,14 +117,11 @@ function validate(values: any, props: Props): Object {
 		form: "newAccount",
 		fields: [
 			...institutionKeys,
-      ...accountKeys.map(x => "account_" + x),
 			...accountKeys.map(x => "accounts[]." + x)
 		],
 		initialValues: {
 			online: true,
 			accounts: [],
-      account_visible: true,
-      account_type: AccountType.CHECKING
 		},
 		validate
 	},
@@ -176,18 +167,6 @@ export class NewAccountPage extends React.Component<Props, State> {
 				error = field.error;
 			}
 			wrapErrorHelper(props, error);
-			return props;
-		};
-
-		const wrapValidator = (field: AccountField, fieldName: string) => {
-			let props: any = _.extend({}, field[fieldName]);
-			props.validate = (newValue: string) => {
-				let oldValue = (field[fieldName] as ReduxForm.Field<string>).value;
-				if (newValue != oldValue) {
-					let res = addAccountValidate({[fieldName]: newValue}, {accounts: this.props.fields.accounts} as any) as any;
-					return res[fieldName];
-				}
-			};
 			return props;
 		};
 
@@ -358,28 +337,13 @@ export class NewAccountPage extends React.Component<Props, State> {
 						</FadeTransitionGroup>
 					</Table>
 
-          <Modal show={this.state.adding || this.state.editing != -1} onHide={this.onModalHide}>
-            <Modal.Header closeButton>
-              <Modal.Title>{this.state.adding ? t("accountDialog.modal.addTitle") : t("accountDialog.modal.editTitle")}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <EnumSelect {...fields.account_type} enum={AccountType}/>
-              <Input
-                type="text"
-                placeholder={t("accountDialog.accountNamePlaceholder")}
-                {...wrapError(fields.account_name)}
-              />
-              <Input
-                type="text"
-                placeholder={t("accountDialog.accountNumberPlaceholder")}
-                {...wrapError(fields.account_number)}
-              />
-            </Modal.Body>
-            <Modal.Footer>
-              <Button onClick={this.onModalHide}>{t("accountDialog.modal.cancel")}</Button>
-              <Button bsStyle="primary" onClick={this.onModalSave}>{this.state.adding ? t("accountDialog.modal.add") : t("accountDialog.modal.save")}</Button>
-            </Modal.Footer>
-          </Modal>
+          <AddAccountDialog
+            show={this.state.adding || this.state.editing != -1}
+            accounts={fields.accounts}
+            editing={this.state.editing}
+            onCancel={this.onModalHide}
+            onSave={this.onAccountSave}
+          />
 
 					{this.state.gettingAccountsSuccess &&
 						<Alert
@@ -495,49 +459,33 @@ export class NewAccountPage extends React.Component<Props, State> {
     initField("ofx");
   }
   
-  @autobind
-  onEditAccount(index: number) {
-		const { fields } = this.props;
-    const account = fields.accounts[index];
-    accountKeys.forEach(name => {
-      const field = (fields["account_" + name] as ReduxForm.Field<string>);
-      field.onChange(valueOf(account[name] as ReduxForm.Field<string>));
-    });
-    this.setState({editing: index});
-  }
-
 	@autobind
 	onAddAccount() {
 		const { fields } = this.props;
-    accountKeys.forEach(name => {
-      const field = (fields["account_" + name] as ReduxForm.Field<string>);
-      field.onChange(field.initialValue);
-    });
     this.setState({adding: true});
 	}
   
+  @autobind
+  onEditAccount(editing: number) {
+		const { fields } = this.props;
+    this.setState({editing});
+  }
+
   @autobind
   onModalHide() {
     this.setState({adding: false, editing: -1});
   }
   
   @autobind
-  onModalSave() {
+  onAccountSave(account: Account) {
     const { fields } = this.props;
     if (this.state.adding) {
-      let account: Account = {};
-      accountKeys.forEach(name => {
-        const field = (fields["account_" + name] as ReduxForm.Field<string>);
-        (account as any)[name] = valueOf(field);
-      });
-      
       fields.accounts.addField(account);
     }
     else {
       const dest = fields.accounts[this.state.editing];
       accountKeys.forEach(name => {
-        const field = (fields["account_" + name] as ReduxForm.Field<string>);
-        (dest[name] as ReduxForm.Field<string>).onChange(valueOf(field));
+        (dest[name] as ReduxForm.Field<string>).onChange((account as any)[name]);
       });
     }
     

@@ -28,13 +28,22 @@ interface Props extends ReduxForm.Props {
 		// index signature to make typescript happy
 		[field: string]: ReduxForm.FieldOpt;
 	}
+  
+  editing?: number;
 	
-	onAddAccount: (account: Account) => any;
+  show: boolean;
+  onCancel: Function;
+	onSave: (account: Account) => any;
 	accounts: AccountFieldArray;
 }
 
-const FORM_NAME = "addAccount";
 
+const accountKeys = [
+  "name",
+  "type",
+  "number",
+  "visible"
+];
 
 
 export function addAccountValidate(values: any, props: Props): Object {
@@ -69,13 +78,8 @@ export function addAccountValidate(values: any, props: Props): Object {
 
 @reduxForm.reduxForm(
 	{
-		form: FORM_NAME,
-		fields: [
-			"name",
-			"type",
-			"number",
-			"visible"
-		],
+		form: "addAccount",
+		fields: accountKeys,
 		initialValues: {
 			visbile: true,
 			type: AccountType.CHECKING
@@ -83,9 +87,25 @@ export function addAccountValidate(values: any, props: Props): Object {
 		validate: addAccountValidate
 	}
 )
-export class AddAccountForm extends Component<Props> {
+export class AddAccountDialog extends Component<Props> {
+  constructor(props?: Props) {
+    super(props);
+    if (props) {
+      //this.componentWillReceiveProps(props);
+    }
+  }
+  
+  componentWillReceiveProps(nextProps: Props) {
+    const adding = nextProps.editing == -1;
+    accountKeys.forEach(key => {
+      const field = nextProps.fields[key] as ReduxForm.Field<string>;
+      const value = adding ? field.initialValue : valueOf(nextProps.accounts[nextProps.editing][name] as ReduxForm.Field<string>);
+      field.onChange(value);
+    });
+  }
+  
 	render() {
-		const { fields, handleSubmit } = this.props;
+		const { fields, handleSubmit, onCancel } = this.props;
 
 		const wrapErrorHelper = (props: any, error: string) => {
 			if (error) {
@@ -105,43 +125,45 @@ export class AddAccountForm extends Component<Props> {
 			wrapErrorHelper(props, error);
 			return props;
 		};
+    
+    const adding = this.props.editing == -1;
 
-		return <tfoot>
-			<tr>
-				<td>
-					<ImageCheckbox on="eye" off="eye-slash" {...fields.visible}/>
-				</td>
-				<td>
-					<EnumSelect {...fields.type} enum={AccountType}/>
-				</td>
-				<td>
-					<Input
-						type="text"
-						placeholder={t("accountDialog.accountNamePlaceholder")}
-						{...wrapError(fields.name)}
-					/>
-				</td>
-				<td>
-					<Input
-						type="text"
-						placeholder={t("accountDialog.accountNumberPlaceholder")}
-						{...wrapError(fields.number)}
-					/>
-				</td>
-				<td>
-					<Button type="button" bsStyle="success" onClick={handleSubmit(this.onSave)}>
-						<Icon name="plus"/>
-					</Button>
-				</td>
-			</tr>
-		</tfoot>;
+		return (
+      <Modal show={this.props.show} onHide={onCancel}>
+        <Modal.Header closeButton>
+          <Modal.Title>{adding ? t("accountDialog.modal.addTitle") : t("accountDialog.modal.editTitle")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <EnumSelect {...fields.type} enum={AccountType}/>
+          <Input
+            type="text"
+            placeholder={t("accountDialog.accountNamePlaceholder")}
+            {...wrapError(fields.name)}
+          />
+          <Input
+            type="text"
+            placeholder={t("accountDialog.accountNumberPlaceholder")}
+            {...wrapError(fields.number)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={onCancel}>{t("accountDialog.modal.cancel")}</Button>
+          <Button
+            bsStyle="primary"
+            onClick={this.onSave}
+          >
+            {adding ? t("accountDialog.modal.save") : t("accountDialog.modal.add")}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
 	}
 	
 	@autobind
 	onSave(e: React.FormEvent) {
 		const { fields, resetForm } = this.props;
-		if (this.props.onAddAccount) {
-			this.props.onAddAccount({
+		if (this.props.onSave) {
+			this.props.onSave({
 				name: valueOf(fields.name),
 				number: valueOf(fields.number),
 				type: valueOf(fields.type),
