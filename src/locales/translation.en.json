@@ -98,6 +98,13 @@
 			"noName": "'Name' cannot be blank",
 			"noAccounts": "You must add at least one account"
 		},
+    "modal": {
+      "addTitle": "Add Account",
+      "editTitle": "Edit Account",
+      "cancel": "Cancel",
+      "save": "Save",
+      "add": "Add"
+    },
     "save": "Save",
     "close": "Cancel"
   },

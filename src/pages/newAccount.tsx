@@ -5,7 +5,7 @@ import { autobind } from "core-decorators";
 import * as ofx4js from "ofx4js";
 import * as React from "react";
 import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
-import {Alert, Panel, Button, Collapse, Grid, Input, Label, Modal, OverlayTrigger, Row, Col, Table, Tooltip} from "react-bootstrap";
+import {Alert, Panel, Button, ButtonInput, Collapse, Grid, Input, Label, Modal, OverlayTrigger, Row, Col, Table, Tooltip} from "react-bootstrap";
 import * as Icon from "react-fa";
 import * as LaddaButton from "react-ladda";
 import { History } from "react-router";
@@ -30,7 +30,7 @@ import {
 	AddAccountForm,
 	addAccountValidate
  } from "../components";
-import { historyMixin, EnumEx, ValidateHelper } from "../util";
+import { historyMixin, EnumEx, ValidateHelper, valueOf } from "../util";
 import { bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { readAccountProfiles } from "../online";
 
@@ -57,6 +57,11 @@ interface Props extends ReduxForm.Props {
 
 		username: ReduxForm.Field<string>;
 		password: ReduxForm.Field<string>;
+    
+    account_name: ReduxForm.Field<string>;
+    account_type: ReduxForm.Field<string>;
+    account_number: ReduxForm.Field<string>;
+    account_visible: ReduxForm.Field<boolean>;
 
 		accounts: AccountFieldArray;
 
@@ -66,6 +71,8 @@ interface Props extends ReduxForm.Props {
 }
 
 interface State {
+  adding?: boolean;
+  editing?: number;
 	gettingAccounts?: boolean;
 	gettingAccountsSuccess?: number;
 	gettingAccountsError?: string;
@@ -116,11 +123,14 @@ function validate(values: any, props: Props): Object {
 		form: "newAccount",
 		fields: [
 			...institutionKeys,
+      ...accountKeys.map(x => "account_" + x),
 			...accountKeys.map(x => "accounts[]." + x)
 		],
 		initialValues: {
 			online: true,
-			accounts: []
+			accounts: [],
+      account_visible: true,
+      account_type: AccountType.CHECKING
 		},
 		validate
 	},
@@ -134,6 +144,8 @@ export class NewAccountPage extends React.Component<Props, State> {
 	constructor() {
 		super();
 		this.state = {
+      adding: false,
+      editing: -1,
 			gettingAccounts: false,
       gettingAccountsSuccess: null,
       gettingAccountsError: null
@@ -330,22 +342,44 @@ export class NewAccountPage extends React.Component<Props, State> {
                     <ImageCheckbox on="eye" off="eye-slash" {...account.visible}/>
                   </td>
                   <td {...tdStyle}>
-                    <XSelectForm {...account.type} source={EnumEx.map(AccountType, (name: string, value: number) => ({value: value, text: AccountType.tr(name)}))}/>
+                    {AccountType.tr(AccountType[account.type.value])}
                   </td>
                   <td {...tdStyle}>
-                    <XTextForm {...wrapValidator(account, "name")}/>
+                    {account.name.value}
                   </td>
                   <td {...tdStyle}>
-                    <XTextForm {...wrapValidator(account, "number")}/>
+                    {account.number.value}
                   </td>
                   <td {...tdStyle}>
-                    <Button type="button" bsStyle="danger" onClick={() => fields.accounts.removeField(index)}><Icon name="trash-o"/></Button>
+                    <Button type="button" bsStyle="warning" onClick={() => this.onEditAccount(index)}><Icon name="edit"/></Button>
                   </td>
                 </tr>
 							})}
 						</FadeTransitionGroup>
-						<AddAccountForm accounts={fields.accounts} onAddAccount={this.onAddAccount}/>
 					</Table>
+
+          <Modal show={this.state.adding || this.state.editing != -1} onHide={this.onModalHide}>
+            <Modal.Header closeButton>
+              <Modal.Title>{this.state.adding ? t("accountDialog.modal.addTitle") : t("accountDialog.modal.editTitle")}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <EnumSelect {...fields.account_type} enum={AccountType}/>
+              <Input
+                type="text"
+                placeholder={t("accountDialog.accountNamePlaceholder")}
+                {...wrapError(fields.account_name)}
+              />
+              <Input
+                type="text"
+                placeholder={t("accountDialog.accountNumberPlaceholder")}
+                {...wrapError(fields.account_number)}
+              />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={this.onModalHide}>{t("accountDialog.modal.cancel")}</Button>
+              <Button bsStyle="primary" onClick={this.onModalSave}>{this.state.adding ? t("accountDialog.modal.add") : t("accountDialog.modal.save")}</Button>
+            </Modal.Footer>
+          </Modal>
 
 					{this.state.gettingAccountsSuccess &&
 						<Alert
@@ -370,21 +404,27 @@ export class NewAccountPage extends React.Component<Props, State> {
 						<Alert bsStyle="danger">{t("accountDialog.validate.noAccounts")}</Alert>
 					}
 
-					<Collapse in={fields.online.checked}>
-						<Row>
-							<Col xs={12}>
-								<Button
-									type="button"
-									active={this.state.gettingAccounts}
-									disabled={!canGetAccounts}
-									onClick={this.onGetAccountList}
-									>
-										<Icon name={this.state.gettingAccounts ? "fa-spinner fa-pulse" : "download"}/>
-										{" " + t("accountDialog.getAccountList")}
-								</Button>
-							</Col>
-						</Row>
-					</Collapse>
+          <Row>
+            <Col xs={12}>
+              <Button
+                type="button"
+                bsStyle="success"
+                onClick={this.onAddAccount}>{t("accountDialog.addAccount")}
+              </Button>
+              {" "}
+              {fields.online.checked &&
+                <Button
+                  type="button"
+                  active={this.state.gettingAccounts}
+                  disabled={!canGetAccounts}
+                  onClick={this.onGetAccountList}
+                  >
+                    <Icon name={this.state.gettingAccounts ? "fa-spinner fa-pulse" : "download"}/>
+                    {" " + t("accountDialog.getAccountList")}
+                </Button>
+              }
+            </Col>
+          </Row>
 				</Panel>
 
 				<div className="modal-footer">
@@ -454,12 +494,55 @@ export class NewAccountPage extends React.Component<Props, State> {
     initField("org");
     initField("ofx");
   }
+  
+  @autobind
+  onEditAccount(index: number) {
+		const { fields } = this.props;
+    const account = fields.accounts[index];
+    accountKeys.forEach(name => {
+      const field = (fields["account_" + name] as ReduxForm.Field<string>);
+      field.onChange(valueOf(account[name] as ReduxForm.Field<string>));
+    });
+    this.setState({editing: index});
+  }
 
 	@autobind
-	onAddAccount(account: Account) {
+	onAddAccount() {
 		const { fields } = this.props;
-		fields.accounts.addField(account);
+    accountKeys.forEach(name => {
+      const field = (fields["account_" + name] as ReduxForm.Field<string>);
+      field.onChange(field.initialValue);
+    });
+    this.setState({adding: true});
 	}
+  
+  @autobind
+  onModalHide() {
+    this.setState({adding: false, editing: -1});
+  }
+  
+  @autobind
+  onModalSave() {
+    const { fields } = this.props;
+    if (this.state.adding) {
+      let account: Account = {};
+      accountKeys.forEach(name => {
+        const field = (fields["account_" + name] as ReduxForm.Field<string>);
+        (account as any)[name] = valueOf(field);
+      });
+      
+      fields.accounts.addField(account);
+    }
+    else {
+      const dest = fields.accounts[this.state.editing];
+      accountKeys.forEach(name => {
+        const field = (fields["account_" + name] as ReduxForm.Field<string>);
+        (dest[name] as ReduxForm.Field<string>).onChange(valueOf(field));
+      });
+    }
+    
+    this.onModalHide();
+  }
 
 	@autobind
   onGetAccountList() {
