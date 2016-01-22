@@ -1,4 +1,4 @@
 export * from "./accountsPage";
 export * from "./budgetPage";
 export * from "./loginPage";
-export * from "./newAccount";
+export * from "./newAccountPage";

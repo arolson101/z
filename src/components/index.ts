@@ -1,4 +1,4 @@
-export * from "./addAccount";
+export * from "./addAccountDialog";
 export * from "./accountSelect";
 export * from "./app";
 export * from "./breadcrumbs";
