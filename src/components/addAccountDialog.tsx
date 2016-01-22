@@ -3,7 +3,7 @@
 
 import { autobind } from "core-decorators";
 import * as React from "react";
-import {Alert, Panel, Button, Collapse, Grid, Input, Label, Modal, OverlayTrigger, Row, Col, Table, Tooltip} from "react-bootstrap";
+import {Alert, Panel, Button, Grid, Input, Label, Modal, OverlayTrigger, Row, Col, Table, Tooltip} from "react-bootstrap";
 import * as Icon from "react-fa";
 import { t } from "i18next-client";
 
@@ -56,8 +56,10 @@ export function validate(values: any, props: Props): Object {
 
 	const names = _.reduce(
 		props.accounts,
-		(set: any, account: AccountField) => {
-			set[valueOf(account.name)] = true;
+		(set: any, account: AccountField, i: number) => {
+      if (i != props.editing) {
+			 set[valueOf(account.name)] = true;
+      }
 			return set;
 		},
 		{}
@@ -66,9 +68,11 @@ export function validate(values: any, props: Props): Object {
 
 	const numbers = _.reduce(
 		props.accounts,
-		(set: any, account: AccountField) => {
-			set[valueOf(account.number)] = true;
-			return set;
+		(set: any, account: AccountField, i: number) => {
+      if (i != props.editing) {
+        set[valueOf(account.number)] = true;
+      }
+      return set;
 		},
 		{}
 	);
@@ -90,28 +94,8 @@ export function validate(values: any, props: Props): Object {
 	}
 )
 export class AddAccountDialog extends Component<Props> {
-  constructor(props?: Props) {
-    super(props);
-    if (props) {
-      //this.componentWillReceiveProps(props);
-    }
-  }
-
-  // componentWillReceiveProps(nextProps: Props) {
-  //   const adding = nextProps.editing == -1;
-  //   const accountValues = {} as any;
-  //   accountKeys.forEach(key => {
-  //     const field = nextProps.fields[key] as ReduxForm.Field<string>;
-  //     const value = adding ? field.initialValue : valueOf(nextProps.accounts[nextProps.editing][name] as ReduxForm.Field<string>);
-  //     //field.onChange(value);
-  //     accountValues[key] = value;
-  //   });
-
-  //   //nextProps.initializeForm(accountValues);
-  // }
-
 	render() {
-		const { fields, handleSubmit, onCancel } = this.props;
+		const { fields, handleSubmit } = this.props;
 
 		const wrapErrorHelper = (props: any, error: string) => {
 			if (error) {
@@ -135,48 +119,55 @@ export class AddAccountDialog extends Component<Props> {
     const adding = this.props.editing == -1;
 
 		return (
-      <Modal show={this.props.show} onHide={onCancel}>
-        <Modal.Header closeButton>
-          <Modal.Title>{adding ? t("accountDialog.modal.addTitle") : t("accountDialog.modal.editTitle")}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <EnumSelect {...fields.type} enum={AccountType}/>
-          <Input
-            type="text"
-            placeholder={t("accountDialog.accountNamePlaceholder")}
-            {...wrapError(fields.name)}
-          />
-          <Input
-            type="text"
-            placeholder={t("accountDialog.accountNumberPlaceholder")}
-            {...wrapError(fields.number)}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={onCancel}>{t("accountDialog.modal.cancel")}</Button>
-          <Button
-            bsStyle="primary"
-            onClick={this.onSave}
-          >
-            {adding ? t("accountDialog.modal.save") : t("accountDialog.modal.add")}
-          </Button>
-        </Modal.Footer>
+      <Modal show={this.props.show} onHide={this.onCancel}>
+        <form onSubmit={handleSubmit(this.onSave)}>
+          <Modal.Header closeButton>
+            <Modal.Title>{adding ? t("AddAccountDialog.addTitle") : t("AddAccountDialog.editTitle")}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <EnumSelect {...fields.type} enum={AccountType}/>
+            <Input
+              type="text"
+              placeholder={t("AddAccountDialog.accountNamePlaceholder")}
+              {...wrapError(fields.name)}
+            />
+            <Input
+              type="text"
+              placeholder={t("AddAccountDialog.accountNumberPlaceholder")}
+              {...wrapError(fields.number)}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={this.onCancel}>{t("AddAccountDialog.cancel")}</Button>
+            <Button
+              bsStyle="primary"
+              type="submit"
+            >
+              {adding ? t("AddAccountDialog.add") : t("AddAccountDialog.save")}
+            </Button>
+          </Modal.Footer>
+        </form>
       </Modal>
     );
 	}
 
 	@autobind
 	onSave(e: React.FormEvent) {
-		const { fields, resetForm } = this.props;
-		if (this.props.onSave) {
-			this.props.onSave({
-				name: valueOf(fields.name),
-				number: valueOf(fields.number),
-				type: valueOf(fields.type),
-				visible: valueOf(fields.visible)
-			});
-
-			resetForm();
-		}
+		const { fields, resetForm, onSave } = this.props;
+    const account: Account = {
+      name: valueOf(fields.name),
+      number: valueOf(fields.number),
+      type: valueOf(fields.type),
+      visible: valueOf(fields.visible)
+    };
+    resetForm();
+    onSave(account);
 	}
+  
+  @autobind
+  onCancel() {
+    const { resetForm, onCancel } = this.props;
+    resetForm();
+    onCancel();
+  }
 }

@@ -27,21 +27,21 @@ export class ValidateHelper<Props> {
 
 	checkNonempty(key: string) {
 		if (!this.values[key] && !this.errors[key]) {
-			this.errors[key] = t("accountDialog.validate.nonempty");
+			this.errors[key] = t("validate.nonempty");
 		}
 	}
 
 	checkUnique(key: string, otherValues: { [key: string]: any }) {
 		const value = this.values[key];
 		if ((value in otherValues) && !this.errors[key]) {
-			this.errors[key] = t("accountDialog.validate.unique");
+			this.errors[key] = t("validate.unique");
 		}
 	}
 
 	checkNumber(key: string) {
 		const value = this.values[key];
 		if (!isNumeric(value) && !this.errors[key]) {
-			this.errors[key] = t("accountDialog.validate.numeric");
+			this.errors[key] = t("validate.numeric");
 		}
 	}
 }

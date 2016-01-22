@@ -15,7 +15,7 @@ import hash = require("string-hash");
 
 import { connect, AppState, FI, t, UpdraftState } from "../state";
 import {
-	Account, AccountType, _Account, AccountTable,
+	Account, AccountType, _Account, AccountTable, defaultAccount,
 	Institution, InstitutionTable } from "../types";
 import {
 	Component,
@@ -65,30 +65,30 @@ interface Props extends ReduxForm.Props {
 }
 
 interface State {
-  adding?: boolean;
-  editing?: number;
-  accountValues?: Account;
+	adding?: boolean;
+	editing?: number;
+	accountValues?: Account;
 	gettingAccounts?: boolean;
 	gettingAccountsSuccess?: number;
 	gettingAccountsError?: string;
 }
 
 const institutionKeys = [
-  "name",
-  "web",
-  "address",
-  "notes",
-  "institution",
-  "id",
+	"name",
+	"web",
+	"address",
+	"notes",
+	"institution",
+	"id",
 
-  "online",
+	"online",
 
-  "fid",
-  "org",
-  "ofx",
+	"fid",
+	"org",
+	"ofx",
 
-  "username",
-  "password",
+	"username",
+	"password",
 ];
 
 const accountKeys = [
@@ -99,16 +99,16 @@ const accountKeys = [
 ];
 
 function validate(values: any, props: Props): Object {
-  const errors: any = { accounts: [] as any[] };
+	const errors: any = { accounts: [] as any[] };
 	let v = new ValidateHelper(values, errors);
 
 	v.checkNonempty("name");
 
 	if (!values.accounts.length) {
-		errors["accounts"] = t("accountDialog.validate.noAccounts");
+		errors["accounts"] = t("NewAccountPage.validate.noAccounts");
 	}
 
-  return errors;
+	return errors;
 }
 
 
@@ -136,12 +136,12 @@ export class NewAccountPage extends React.Component<Props, State> {
 	constructor() {
 		super();
 		this.state = {
-      adding: false,
-      editing: -1,
-      accountValues: {},
+			adding: false,
+			editing: -1,
+			accountValues: {},
 			gettingAccounts: false,
-      gettingAccountsSuccess: null,
-      gettingAccountsError: null
+			gettingAccountsSuccess: null,
+			gettingAccountsError: null
 		};
 	}
 
@@ -175,178 +175,179 @@ export class NewAccountPage extends React.Component<Props, State> {
 		return (
 			<Grid>
 
-        <Row>
-          <Col xs={12}>
-            <Select2
-              label={t("accountDialog.institutionLabel")}
-              help={t("accountDialog.institutionHelp")}
-              placeholder={t("accountDialog.institutionPlaceholder")}
-              opts={{allowClear:true}}
-              {...fields.institution}
-              onChange={this.onInstitutionChange}
-            >
-              <option value="0"/>
-              {_.map(filist, fi =>
+				<Row>
+					<Col xs={12}>
+						<Select2
+							label={t("NewAccountPage.institutionLabel")}
+							help={t("NewAccountPage.institutionHelp")}
+							placeholder={t("NewAccountPage.institutionPlaceholder")}
+							opts={{allowClear:true}}
+							{...fields.institution}
+							onChange={this.onInstitutionChange}
+						>
+							<option value="0"/>
+							{_.map(filist, fi =>
 								<option value={this.optionValueForFi(fi)} key={fi.id}>{fi.name}</option>
 							)}
-            </Select2>
-          </Col>
-        </Row>
+						</Select2>
+					</Col>
+				</Row>
 
-        <Row>
-          <Col xs={12} md={6}>
-            <Input
-              type="text"
-              label={t("accountDialog.nameLabel")}
-              help={t("accountDialog.nameHelp")}
-              placeholder={t("accountDialog.namePlaceholder")}
-              {...wrapError(fields.name)}
-            />
-          </Col>
+				<Row>
+					<Col xs={12} md={6}>
+						<Input
+							type="text"
+							label={t("NewAccountPage.nameLabel")}
+							help={t("NewAccountPage.nameHelp")}
+							placeholder={t("NewAccountPage.namePlaceholder")}
+							{...wrapError(fields.name)}
+						/>
+					</Col>
 
-          <Col xs={12} md={6}>
-            <Input
-              type="text"
-              label={t("accountDialog.webLabel")}
-              placeholder={t("accountDialog.webPlaceholder")}
-              {...fields.web}
-            />
-          </Col>
-        </Row>
+					<Col xs={12} md={6}>
+						<Input
+							type="text"
+							label={t("NewAccountPage.webLabel")}
+							placeholder={t("NewAccountPage.webPlaceholder")}
+							{...fields.web}
+						/>
+					</Col>
+				</Row>
 
-        <Row>
-          <Col xs={12} md={6}>
-            <Input
-              type="textarea"
-              rows={4}
-              label={t("accountDialog.addressLabel")}
-              placeholder={t("accountDialog.addressPlaceholder")}
-              {...fields.address}
-            />
-          </Col>
+				<Row>
+					<Col xs={12} md={6}>
+						<Input
+							type="textarea"
+							rows={4}
+							label={t("NewAccountPage.addressLabel")}
+							placeholder={t("NewAccountPage.addressPlaceholder")}
+							{...fields.address}
+						/>
+					</Col>
 
-          <Col xs={12} md={6}>
-            <Input
-              type="textarea"
-              rows={4}
-              label={t("accountDialog.notesLabel")}
-              placeholder={t("accountDialog.notesPlaceholder")}
-              {...fields.notes}
-            />
-          </Col>
-        </Row>
+					<Col xs={12} md={6}>
+						<Input
+							type="textarea"
+							rows={4}
+							label={t("NewAccountPage.notesLabel")}
+							placeholder={t("NewAccountPage.notesPlaceholder")}
+							{...fields.notes}
+						/>
+					</Col>
+				</Row>
 
 				<Input
 					type="checkbox"
-					label={t("accountDialog.enableOnline")}
+					label={t("NewAccountPage.enableOnline")}
 					{...fields.online}
 				/>
 
 				<Collapse in={fields.online.checked}>
 					<div>
-						<Panel header={t("accountDialog.ofxInfo")}>
-              <Row>
-                <Col xs={6} md={3}>
-                  <Input
-                    type="text"
-                    label={t("accountDialog.fidLabel")}
-                    help={t("accountDialog.fidHelp")}
-                    placeholder={t("accountDialog.fidPlaceholder")}
-                    {...fields.fid}
-                  />
-                </Col>
+						<Panel header={t("NewAccountPage.ofxInfo")}>
+							<Row>
+								<Col xs={6} md={3}>
+									<Input
+										type="text"
+										label={t("NewAccountPage.fidLabel")}
+										help={t("NewAccountPage.fidHelp")}
+										placeholder={t("NewAccountPage.fidPlaceholder")}
+										{...fields.fid}
+									/>
+								</Col>
 
-                <Col xs={6} md={3}>
-                  <Input
-                    type="text"
-                    label={t("accountDialog.orgLabel")}
-                    help={t("accountDialog.orgHelp")}
-                    placeholder={t("accountDialog.orgPlaceholder")}
-                    {...fields.org}
-                  />
-                </Col>
+								<Col xs={6} md={3}>
+									<Input
+										type="text"
+										label={t("NewAccountPage.orgLabel")}
+										help={t("NewAccountPage.orgHelp")}
+										placeholder={t("NewAccountPage.orgPlaceholder")}
+										{...fields.org}
+									/>
+								</Col>
 
-                <Col xs={6} md={6}>
-                  <Input
-                    type="text"
-                    label={t("accountDialog.ofxLabel")}
-                    help={t("accountDialog.ofxHelp")}
-                    placeholder={t("accountDialog.ofxPlaceholder")}
-                    {...fields.ofx}
-                  />
-                </Col>
-              </Row>
+								<Col xs={6} md={6}>
+									<Input
+										type="text"
+										label={t("NewAccountPage.ofxLabel")}
+										help={t("NewAccountPage.ofxHelp")}
+										placeholder={t("NewAccountPage.ofxPlaceholder")}
+										{...fields.ofx}
+									/>
+								</Col>
+							</Row>
 						</Panel>
 
-						<Panel header={t("accountDialog.userpassInfo")}>
-              <Row>
-                <Col xs={6}>
-                  <Input
-                    type="text"
-                    label={t("accountDialog.usernameLabel")}
-                    help={t("accountDialog.usernameHelp")}
-                    placeholder={t("accountDialog.usernamePlaceholder")}
-                    {...fields.username}
-                  />
-                </Col>
+						<Panel header={t("NewAccountPage.userpassInfo")}>
+							<Row>
+								<Col xs={6}>
+									<Input
+										type="text"
+										label={t("NewAccountPage.usernameLabel")}
+										help={t("NewAccountPage.usernameHelp")}
+										placeholder={t("NewAccountPage.usernamePlaceholder")}
+										{...fields.username}
+									/>
+								</Col>
 
-                <Col xs={6}>
-                  <Input
-                    type="text"
-                    label={t("accountDialog.passwordLabel")}
-                    help={t("accountDialog.passwordHelp")}
-                    placeholder={t("accountDialog.passwordPlaceholder")}
-                    {...fields.password}
-                  />
-                </Col>
-              </Row>
+								<Col xs={6}>
+									<Input
+										type="text"
+										label={t("NewAccountPage.passwordLabel")}
+										help={t("NewAccountPage.passwordHelp")}
+										placeholder={t("NewAccountPage.passwordPlaceholder")}
+										{...fields.password}
+									/>
+								</Col>
+							</Row>
 						</Panel>
 					</div>
 				</Collapse>
 
-				<Panel header={t("accountDialog.accounts")}>
+				<Panel header={t("NewAccountPage.accounts")}>
 					<Table>
-            <thead>
-              <tr>
-                <th>{t("accountDialog.accountVisible")}</th>
-                <th>{t("accountDialog.accountType")}</th>
-                <th>{t("accountDialog.accountName")}</th>
-                <th>{t("accountDialog.accountNumber")}</th>
-                <th></th>
-              </tr>
-            </thead>
+						<thead>
+							<tr>
+								<th>{t("NewAccountPage.accountVisible")}</th>
+								<th>{t("NewAccountPage.accountType")}</th>
+								<th>{t("NewAccountPage.accountName")}</th>
+								<th>{t("NewAccountPage.accountNumber")}</th>
+								<th></th>
+							</tr>
+						</thead>
 						<FadeTransitionGroup component="tbody">
 							{fields.accounts.map((account: AccountField, index: number) => {
 								const tdStyle = {style: {verticalAlign: "middle"}};
 								return <tr key={index}>
-                  <td {...tdStyle}>
-                    <ImageCheckbox on="eye" off="eye-slash" {...account.visible}/>
-                  </td>
-                  <td {...tdStyle}>
-                    {AccountType.tr(AccountType[account.type.value])}
-                  </td>
-                  <td {...tdStyle}>
-                    {account.name.value}
-                  </td>
-                  <td {...tdStyle}>
-                    {account.number.value}
-                  </td>
-                  <td {...tdStyle}>
-                    <Button type="button" bsStyle="warning" onClick={() => this.onEditAccount(index)}><Icon name="edit"/></Button>
-                  </td>
-                </tr>
+									<td {...tdStyle}>
+										<ImageCheckbox on="eye" off="eye-slash" {...account.visible}/>
+									</td>
+									<td {...tdStyle}>
+										{AccountType.tr(AccountType[account.type.value])}
+									</td>
+									<td {...tdStyle}>
+										{account.name.value}
+									</td>
+									<td {...tdStyle}>
+										{account.number.value}
+									</td>
+									<td {...tdStyle}>
+										<Button type="button" bsStyle="warning" onClick={() => this.onEditAccount(index)}><Icon name="edit"/></Button>
+									</td>
+								</tr>
 							})}
 						</FadeTransitionGroup>
 					</Table>
 
-          <AddAccountDialog
-            show={this.state.adding || this.state.editing != -1}
-            editing={this.state.editing}
-            accounts={fields.accounts}
-            initialValues={this.state.accountValues}
-            onCancel={this.onModalHide}
-            onSave={this.onAccountSave}
-          />
+					<AddAccountDialog
+						show={this.state.adding || this.state.editing != -1}
+						editing={this.state.editing}
+						accounts={fields.accounts}
+						//initialValues={this.state.accountValues}
+						onCancel={this.onModalHide}
+						onSave={this.onAccountSave}
+						ref="addAccountDialog"
+					/>
 
 					{this.state.gettingAccountsSuccess &&
 						<Alert
@@ -354,8 +355,8 @@ export class NewAccountPage extends React.Component<Props, State> {
 							onDismiss={() => this.setState({gettingAccountsSuccess: null})}
 							dismissAfter={2000}
 							>
-							<h4>{t("accountDialog.successGettingAccounts")}</h4>
-							<p>{t("accountDialog.successGettingAccountsMessage", {numAccounts: this.state.gettingAccountsSuccess})}</p>
+							<h4>{t("NewAccountPage.successGettingAccounts")}</h4>
+							<p>{t("NewAccountPage.successGettingAccountsMessage", {numAccounts: this.state.gettingAccountsSuccess})}</p>
 						</Alert>
 					}
 					{this.state.gettingAccountsError &&
@@ -363,44 +364,44 @@ export class NewAccountPage extends React.Component<Props, State> {
 							bsStyle="danger"
 							onDismiss={() => this.setState({gettingAccountsError: null})}
 							>
-							<h4>{t("accountDialog.errorGettingAccounts")}</h4>
+							<h4>{t("NewAccountPage.errorGettingAccounts")}</h4>
 							<p>{this.state.gettingAccountsError}</p>
 						</Alert>
 					}
 					{this.props.submitFailed && fields.accounts.length == 0 &&
-						<Alert bsStyle="danger">{t("accountDialog.validate.noAccounts")}</Alert>
+						<Alert bsStyle="danger">{t("NewAccountPage.validate.noAccounts")}</Alert>
 					}
 
-          <Row>
-            <Col xs={12}>
-              <Button
-                type="button"
-                bsStyle="success"
-                onClick={this.onAddAccount}>{t("accountDialog.addAccount")}
-              </Button>
-              {" "}
-              {fields.online.checked &&
-                <Button
-                  type="button"
-                  active={this.state.gettingAccounts}
-                  disabled={!canGetAccounts}
-                  onClick={this.onGetAccountList}
-                  >
-                    <Icon name={this.state.gettingAccounts ? "fa-spinner fa-pulse" : "download"}/>
-                    {" " + t("accountDialog.getAccountList")}
-                </Button>
-              }
-            </Col>
-          </Row>
+					<Row>
+						<Col xs={12}>
+							<Button
+								type="button"
+								bsStyle="success"
+								onClick={this.onAddAccount}>{t("NewAccountPage.addAccount")}
+							</Button>
+							{" "}
+							{fields.online.checked &&
+								<Button
+									type="button"
+									active={this.state.gettingAccounts}
+									disabled={!canGetAccounts}
+									onClick={this.onGetAccountList}
+									>
+										<Icon name={this.state.gettingAccounts ? "fa-spinner fa-pulse" : "download"}/>
+										{" " + t("NewAccountPage.getAccountList")}
+								</Button>
+							}
+						</Col>
+					</Row>
 				</Panel>
 
 				<div className="modal-footer">
-					<Button onClick={this.onClose}>{t("accountDialog.close")}</Button>
+					<Button onClick={this.onClose}>{t("NewAccountPage.close")}</Button>
 					<Button
 						bsStyle="primary"
 						onClick={handleSubmit(this.onSave)}
 					>
-						{t("accountDialog.save")}
+						{t("NewAccountPage.save")}
 					</Button>
 				</div>
 
@@ -408,118 +409,119 @@ export class NewAccountPage extends React.Component<Props, State> {
 		);
 	}
 
-  optionValueForFi(fi: FI): string {
-    return fi.id + 1 as any;
-  }
+	optionValueForFi(fi: FI): string {
+		return fi.id + 1 as any;
+	}
 
-  fiForOptionValue(value: string): FI {
-    if (!value) {
-      return null;
-    }
-    let v: number = parseInt(value, 10);
-    v--;
-    return this.props.filist[v];
-  }
+	fiForOptionValue(value: string): FI {
+		if (!value) {
+			return null;
+		}
+		let v: number = parseInt(value, 10);
+		v--;
+		return this.props.filist[v];
+	}
 
-  @autobind
-  onInstitutionChange(e: Event) {
-    const { fields } = this.props;
-    fields.institution.onChange(e);
+	@autobind
+	onInstitutionChange(e: Event) {
+		const { fields } = this.props;
+		fields.institution.onChange(e);
 
-    type FiFunction = (fi: FI) => string;
-    const oldFi = this.fiForOptionValue(fields.institution.value);
-    const newFi = this.fiForOptionValue((e.target as any).value);
-    const initField = (stateKey: string, fiProp?: string | FiFunction) => {
-      fiProp = fiProp || stateKey;
-      let getValue: FiFunction = fiProp as FiFunction;
-      if (typeof fiProp !== "function") {
-        getValue = (fi: FI) => access(fi, fiProp as string);
-      }
-      let field = fields[stateKey] as ReduxForm.Field<string>;
-      if (!field.value || field.value == getValue(oldFi)) {
-        let value = getValue(newFi);
-        field.onChange(value);
-      }
-    }
+		type FiFunction = (fi: FI) => string;
+		const oldFi = this.fiForOptionValue(fields.institution.value);
+		const newFi = this.fiForOptionValue((e.target as any).value);
+		const initField = (stateKey: string, fiProp?: string | FiFunction) => {
+			fiProp = fiProp || stateKey;
+			let getValue: FiFunction = fiProp as FiFunction;
+			if (typeof fiProp !== "function") {
+				getValue = (fi: FI) => access(fi, fiProp as string);
+			}
+			let field = fields[stateKey] as ReduxForm.Field<string>;
+			if (!field.value || field.value == getValue(oldFi)) {
+				let value = getValue(newFi);
+				field.onChange(value);
+			}
+		}
 
-    initField("name");
-    initField("web", "profile.siteURL");
-    initField("address", function(fi: FI): string {
-      let address = "";
-      if(fi && fi.profile) {
-        if(fi.profile.address1) { address += fi.profile.address1 + "\n"; }
-        if(fi.profile.address2) { address += fi.profile.address2 + "\n"; }
-        if(fi.profile.address3) { address += fi.profile.address3 + "\n"; }
-        if(fi.profile.city)     { address += fi.profile.city + ", "; }
-        if(fi.profile.state)    { address += fi.profile.state + " "; }
-        if(fi.profile.zip)      { address += fi.profile.zip + "\n"; }
-        if(fi.profile.country)  { address += fi.profile.country; }
-      }
-      return address;
-    });
-    initField("fid");
-    initField("org");
-    initField("ofx");
-  }
+		initField("name");
+		initField("web", "profile.siteURL");
+		initField("address", function(fi: FI): string {
+			let address = "";
+			if(fi && fi.profile) {
+				if(fi.profile.address1) { address += fi.profile.address1 + "\n"; }
+				if(fi.profile.address2) { address += fi.profile.address2 + "\n"; }
+				if(fi.profile.address3) { address += fi.profile.address3 + "\n"; }
+				if(fi.profile.city)     { address += fi.profile.city + ", "; }
+				if(fi.profile.state)    { address += fi.profile.state + " "; }
+				if(fi.profile.zip)      { address += fi.profile.zip + "\n"; }
+				if(fi.profile.country)  { address += fi.profile.country; }
+			}
+			return address;
+		});
+		initField("fid");
+		initField("org");
+		initField("ofx");
+	}
 
 	@autobind
 	onAddAccount() {
 		const { fields } = this.props;
-		const accountValues = {};
-    this.setState({ adding: true, accountValues });
+		// const addAccountDialog = this.refs["addAccountDialog"] as AddAccountDialog;
+		// addAccountDialog.props.initializeForm(defaultAccount);
+		this.setState({ adding: true, accountValues: defaultAccount });
 	}
 
-  @autobind
-  onEditAccount(editing: number) {
+	@autobind
+	onEditAccount(editing: number) {
 		const { fields } = this.props;
 		const accountValues = {} as any;
 		accountKeys.forEach(key => {
 			const field = fields[key] as ReduxForm.Field<string>;
 			accountValues[key] = valueOf(fields.accounts[editing][key] as any);
 		});
-    this.setState({ editing, accountValues });
-  }
-
-  @autobind
-  onModalHide() {
-    this.setState({ adding: false, editing: -1, accountValues: {} });
-  }
-
-  @autobind
-  onAccountSave(account: Account) {
-    const { fields } = this.props;
-    if (this.state.adding) {
-      fields.accounts.addField(account);
-    }
-    else {
-      const dest = fields.accounts[this.state.editing];
-      accountKeys.forEach(name => {
-        (dest[name] as ReduxForm.Field<string>).onChange((account as any)[name]);
-      });
-    }
-
-    this.onModalHide();
-  }
+		this.setState({ editing, accountValues });
+	}
 
 	@autobind
-  onGetAccountList() {
+	onModalHide() {
+		this.setState({ adding: false, editing: -1, accountValues: defaultAccount });
+	}
+
+	@autobind
+	onAccountSave(account: Account) {
+		const { fields } = this.props;
+		if (this.state.adding) {
+			fields.accounts.addField(account);
+		}
+		else {
+			const dest = fields.accounts[this.state.editing];
+			accountKeys.forEach(name => {
+				(dest[name] as ReduxForm.Field<string>).onChange((account as any)[name]);
+			});
+		}
+
+		this.onModalHide();
+	}
+
+	@autobind
+	onGetAccountList() {
 		const { fields } = this.props;
 
-    this.setState({
-      gettingAccounts: true,
-      gettingAccountsSuccess: null,
-      gettingAccountsError: null
-    });
+		this.setState({
+			gettingAccounts: true,
+			gettingAccountsSuccess: null,
+			gettingAccountsError: null
+		});
 
-    readAccountProfiles({
-      name: fields.name.value,
-      fid: fields.fid.value,
-      org: fields.org.value,
-      ofx: fields.ofx.value,
-      username: fields.username.value,
-      password: fields.password.value
-    })
-    .then(
+		readAccountProfiles({
+			name: fields.name.value,
+			fid: fields.fid.value,
+			org: fields.org.value,
+			ofx: fields.ofx.value,
+			username: fields.username.value,
+			password: fields.password.value
+		})
+		.then(
 			(accounts: Account[]) => {
 				accounts.forEach((account: Account) => {
 					if (!_.any(fields.accounts, (a) => a.number.value == account.number)) {
@@ -539,7 +541,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 				});
 			}
 		);
-  }
+	}
 
 	@autobind
 	onClose() {

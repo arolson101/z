@@ -44,3 +44,9 @@ export const accountSpec: AccountTableSpec = {
     visible: Column.Bool(),
   }
 };
+
+
+export const defaultAccount: Account = {
+  type: AccountType.CHECKING,
+  visible: true
+};

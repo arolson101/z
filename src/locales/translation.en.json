@@ -32,7 +32,7 @@
     "addAccountTooltip": "Add account"
   },
 
-  "accountDialog": {
+  "NewAccountPage": {
     "addTitle": "Add Accounts",
     "editTitle": "Edit Accounts",
     "institutionLabel": "Institution",
@@ -77,36 +77,30 @@
 		"accountVisible": "Visible",
 		"accountType": "Type",
 		"accountName": "Name",
-		"accountNamePlaceholder": "Value Checking",
 		"accountNumber": "Number",
-		"accountNumberPlaceholder": "123456",
     "addAccount": "Add",
-		"validate": {
-			"nonempty": "Required",
-			"unique": "Already used",
-			"noAccounts": "You must add at least one account",
-			"numeric": "Invalid number"
-		},
     "add": {
       "typePlaceholder": "Type",
       "idPlaceholder": "Number",
       "namePlaceholder": "Name"
     },
-    "validateNotEmpty": "Cannot be empty",
 		"errorTitle": "Error",
 		"canSaveReason": {
 			"noName": "'Name' cannot be blank",
 			"noAccounts": "You must add at least one account"
 		},
-    "modal": {
-      "addTitle": "Add Account",
-      "editTitle": "Edit Account",
-      "cancel": "Cancel",
-      "save": "Save",
-      "add": "Add"
-    },
     "save": "Save",
     "close": "Cancel"
+  },
+  
+  "AddAccountDialog": {
+    "addTitle": "Add Account",
+    "editTitle": "Edit Account",
+		"accountNamePlaceholder": "Value Checking",
+		"accountNumberPlaceholder": "123456",
+    "cancel": "Cancel",
+    "save": "Save",
+    "add": "Add"
   },
 
 	"accountSelect": {
@@ -124,9 +118,10 @@
 		"repeatEvery": "repeat every"
 	},
 
-  "easyList": {
-    "valueExists": "Must be unique",
-    "emptyValue": "Must be set",
-    "invalidValueTitle": "Error"
+  "validate": {
+    "nonempty": "Required",
+    "unique": "Already used",
+    "noAccounts": "You must add at least one account",
+    "numeric": "Invalid number"
   }
 }
