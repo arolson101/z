@@ -24,13 +24,14 @@ interface Props extends ReduxForm.Props {
 		type: ReduxForm.Field<number>;
 		number: ReduxForm.Field<string>;
 		name: ReduxForm.Field<string>;
-		
+
 		// index signature to make typescript happy
 		[field: string]: ReduxForm.FieldOpt;
 	}
-  
+
   editing?: number;
-	
+  initialValues?: any;
+
   show: boolean;
   onCancel: Function;
 	onSave: (account: Account) => any;
@@ -46,15 +47,15 @@ const accountKeys = [
 ];
 
 
-export function addAccountValidate(values: any, props: Props): Object {
+export function validate(values: any, props: Props): Object {
   const errors: any = { accounts: [] as any[] };
 	let v = new ValidateHelper(values, errors);
 
 	v.checkNonempty("name");
 	v.checkNonempty("number");
-	
+
 	const names = _.reduce(
-		props.accounts, 
+		props.accounts,
 		(set: any, account: AccountField) => {
 			set[valueOf(account.name)] = true;
 			return set;
@@ -64,7 +65,7 @@ export function addAccountValidate(values: any, props: Props): Object {
 	v.checkUnique("name", names);
 
 	const numbers = _.reduce(
-		props.accounts, 
+		props.accounts,
 		(set: any, account: AccountField) => {
 			set[valueOf(account.number)] = true;
 			return set;
@@ -76,6 +77,7 @@ export function addAccountValidate(values: any, props: Props): Object {
   return errors;
 }
 
+
 @reduxForm.reduxForm(
 	{
 		form: "addAccount",
@@ -84,7 +86,7 @@ export function addAccountValidate(values: any, props: Props): Object {
 			visbile: true,
 			type: AccountType.CHECKING
 		},
-		validate: addAccountValidate
+		validate
 	}
 )
 export class AddAccountDialog extends Component<Props> {
@@ -94,16 +96,20 @@ export class AddAccountDialog extends Component<Props> {
       //this.componentWillReceiveProps(props);
     }
   }
-  
-  componentWillReceiveProps(nextProps: Props) {
-    const adding = nextProps.editing == -1;
-    accountKeys.forEach(key => {
-      const field = nextProps.fields[key] as ReduxForm.Field<string>;
-      const value = adding ? field.initialValue : valueOf(nextProps.accounts[nextProps.editing][name] as ReduxForm.Field<string>);
-      field.onChange(value);
-    });
-  }
-  
+
+  // componentWillReceiveProps(nextProps: Props) {
+  //   const adding = nextProps.editing == -1;
+  //   const accountValues = {} as any;
+  //   accountKeys.forEach(key => {
+  //     const field = nextProps.fields[key] as ReduxForm.Field<string>;
+  //     const value = adding ? field.initialValue : valueOf(nextProps.accounts[nextProps.editing][name] as ReduxForm.Field<string>);
+  //     //field.onChange(value);
+  //     accountValues[key] = value;
+  //   });
+
+  //   //nextProps.initializeForm(accountValues);
+  // }
+
 	render() {
 		const { fields, handleSubmit, onCancel } = this.props;
 
@@ -125,7 +131,7 @@ export class AddAccountDialog extends Component<Props> {
 			wrapErrorHelper(props, error);
 			return props;
 		};
-    
+
     const adding = this.props.editing == -1;
 
 		return (
@@ -158,7 +164,7 @@ export class AddAccountDialog extends Component<Props> {
       </Modal>
     );
 	}
-	
+
 	@autobind
 	onSave(e: React.FormEvent) {
 		const { fields, resetForm } = this.props;
@@ -169,7 +175,7 @@ export class AddAccountDialog extends Component<Props> {
 				type: valueOf(fields.type),
 				visible: valueOf(fields.visible)
 			});
-			
+
 			resetForm();
 		}
 	}

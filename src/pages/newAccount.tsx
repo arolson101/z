@@ -56,7 +56,7 @@ interface Props extends ReduxForm.Props {
 
 		username: ReduxForm.Field<string>;
 		password: ReduxForm.Field<string>;
-    
+
 		accounts: AccountFieldArray;
 
 		// index signature to make typescript happy
@@ -67,6 +67,7 @@ interface Props extends ReduxForm.Props {
 interface State {
   adding?: boolean;
   editing?: number;
+  accountValues?: Account;
 	gettingAccounts?: boolean;
 	gettingAccountsSuccess?: number;
 	gettingAccountsError?: string;
@@ -137,6 +138,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 		this.state = {
       adding: false,
       editing: -1,
+      accountValues: {},
 			gettingAccounts: false,
       gettingAccountsSuccess: null,
       gettingAccountsError: null
@@ -339,8 +341,9 @@ export class NewAccountPage extends React.Component<Props, State> {
 
           <AddAccountDialog
             show={this.state.adding || this.state.editing != -1}
-            accounts={fields.accounts}
             editing={this.state.editing}
+            accounts={fields.accounts}
+            initialValues={this.state.accountValues}
             onCancel={this.onModalHide}
             onSave={this.onAccountSave}
           />
@@ -458,24 +461,30 @@ export class NewAccountPage extends React.Component<Props, State> {
     initField("org");
     initField("ofx");
   }
-  
+
 	@autobind
 	onAddAccount() {
 		const { fields } = this.props;
-    this.setState({adding: true});
+		const accountValues = {};
+    this.setState({ adding: true, accountValues });
 	}
-  
+
   @autobind
   onEditAccount(editing: number) {
 		const { fields } = this.props;
-    this.setState({editing});
+		const accountValues = {} as any;
+		accountKeys.forEach(key => {
+			const field = fields[key] as ReduxForm.Field<string>;
+			accountValues[key] = valueOf(fields.accounts[editing][key] as any);
+		});
+    this.setState({ editing, accountValues });
   }
 
   @autobind
   onModalHide() {
-    this.setState({adding: false, editing: -1});
+    this.setState({ adding: false, editing: -1, accountValues: {} });
   }
-  
+
   @autobind
   onAccountSave(account: Account) {
     const { fields } = this.props;
@@ -488,7 +497,7 @@ export class NewAccountPage extends React.Component<Props, State> {
         (dest[name] as ReduxForm.Field<string>).onChange((account as any)[name]);
       });
     }
-    
+
     this.onModalHide();
   }
 
