@@ -343,6 +343,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 						accounts={fields.accounts}
 						onCancel={this.onModalHide}
 						onSave={this.onAccountSave}
+						onDelete={this.onDeleteAccount}
 						ref="addAccountDialog"
 					/>
 
@@ -469,7 +470,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 	onEditAccount(editing: number) {
 		this.setState({ editing });
 	}
-
+	
 	@autobind
 	onModalHide() {
 		this.setState({ adding: false, editing: -1 });
@@ -488,6 +489,12 @@ export class NewAccountPage extends React.Component<Props, State> {
 			});
 		}
 
+		this.onModalHide();
+	}
+
+	@autobind
+	onDeleteAccount(index: number) {
+		this.props.fields.accounts.removeField(index);
 		this.onModalHide();
 	}
 

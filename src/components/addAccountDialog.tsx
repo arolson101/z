@@ -33,6 +33,7 @@ interface Props extends ReduxForm.Props, React.Props<any> {
 	show: boolean;
 	onCancel: Function;
 	onSave: (account: Account) => any;
+	onDelete: Function;
 	accounts: AccountFieldArray;
 }
 
@@ -151,6 +152,9 @@ export class AddAccountDialog extends Component<Props> {
 					</Modal.Body>
 					<Modal.Footer>
 						<Button onClick={this.onCancel}>{t("AddAccountDialog.cancel")}</Button>
+						{this.props.editing != -1 &&
+							<Button onClick={this.onDelete} bsStyle="danger">{t("AddAccountDialog.delete")}</Button>
+						}
 						<Button
 							bsStyle="primary"
 							type="submit"
@@ -164,7 +168,7 @@ export class AddAccountDialog extends Component<Props> {
 	}
 
 	@autobind
-	onSave(e: React.FormEvent) {
+	onSave() {
 		const { fields, resetForm, onSave } = this.props;
 		const account: Account = {
 			name: valueOf(fields.name),
@@ -174,6 +178,13 @@ export class AddAccountDialog extends Component<Props> {
 		};
 		onSave(account);
 		resetForm();
+	}
+	
+	@autobind
+	onDelete() {
+		const { onDelete, resetForm } = this.props;
+		resetForm();
+		onDelete(this.props.editing);
 	}
 
 	@autobind
