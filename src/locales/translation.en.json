@@ -96,8 +96,11 @@
   "AddAccountDialog": {
     "addTitle": "Add Account",
     "editTitle": "Edit Account",
-		"accountNamePlaceholder": "Value Checking",
-		"accountNumberPlaceholder": "123456",
+		"typeLabel": "Type",
+		"nameLabel": "Name",
+		"namePlaceholder": "Value Checking",
+		"numberLabel": "Number",
+		"numberPlaceholder": "123456",
     "cancel": "Cancel",
     "save": "Save",
     "add": "Add"

@@ -27,7 +27,9 @@ export interface _Account<key, id, str, tAccountType, bool> {
   visible?: bool;
 }
 
-export interface Account extends _Account<number, number, string, AccountType, boolean> {}
+export interface Account extends _Account<number, number, string, AccountType, boolean> {
+	[key: string]: any;
+}
 export interface AccountQuery extends _Account<Q.num, Q.num, Q.str, Q.enm<AccountType>, Q.bool> {}
 export interface AccountChange extends _Account<number, M.num, M.str, M.enm<AccountType>, M.bool> {}
 export type AccountTable = Updraft.Table<Account, AccountChange, AccountQuery>;
@@ -44,7 +46,6 @@ export const accountSpec: AccountTableSpec = {
     visible: Column.Bool(),
   }
 };
-
 
 export const defaultAccount: Account = {
   type: AccountType.CHECKING,

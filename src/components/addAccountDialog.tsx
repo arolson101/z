@@ -9,7 +9,7 @@ import { t } from "i18next-client";
 
 import { Component } from "./component";
 import { ValidateHelper, valueOf } from "../util";
-import { Account, AccountType, _Account, AccountTable } from "../types";
+import { Account, AccountType, _Account, AccountTable, defaultAccount } from "../types";
 import * as reduxForm from "redux-form";
 import { ImageCheckbox } from "./imageCheckbox";
 import { EnumSelect } from "./enumSelect";
@@ -18,7 +18,7 @@ import { EnumSelect } from "./enumSelect";
 export interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field<number>, ReduxForm.Field<number>, ReduxForm.Field<string>, ReduxForm.Field<AccountType>, ReduxForm.Field<boolean>> {}
 export interface AccountFieldArray extends ReduxForm.FieldArray<AccountField> {}
 
-interface Props extends ReduxForm.Props {
+interface Props extends ReduxForm.Props, React.Props<any> {
 	fields?: {
 		visible: ReduxForm.Field<boolean>;
 		type: ReduxForm.Field<number>;
@@ -29,26 +29,25 @@ interface Props extends ReduxForm.Props {
 		[field: string]: ReduxForm.FieldOpt;
 	}
 
-  editing?: number;
-  initialValues?: any;
-
-  show: boolean;
-  onCancel: Function;
+	editing: number;
+	show: boolean;
+	onCancel: Function;
 	onSave: (account: Account) => any;
 	accounts: AccountFieldArray;
 }
 
+type AnyField = ReduxForm.Field<any>;
 
 const accountKeys = [
-  "name",
-  "type",
-  "number",
-  "visible"
+	"name",
+	"type",
+	"number",
+	"visible"
 ];
 
 
 export function validate(values: any, props: Props): Object {
-  const errors: any = { accounts: [] as any[] };
+	const errors: any = { accounts: [] as any[] };
 	let v = new ValidateHelper(values, errors);
 
 	v.checkNonempty("name");
@@ -57,9 +56,9 @@ export function validate(values: any, props: Props): Object {
 	const names = _.reduce(
 		props.accounts,
 		(set: any, account: AccountField, i: number) => {
-      if (i != props.editing) {
+			if (i != props.editing) {
 			 set[valueOf(account.name)] = true;
-      }
+			}
 			return set;
 		},
 		{}
@@ -69,31 +68,42 @@ export function validate(values: any, props: Props): Object {
 	const numbers = _.reduce(
 		props.accounts,
 		(set: any, account: AccountField, i: number) => {
-      if (i != props.editing) {
-        set[valueOf(account.number)] = true;
-      }
-      return set;
+			if (i != props.editing) {
+				set[valueOf(account.number)] = true;
+			}
+			return set;
 		},
 		{}
 	);
 	v.checkUnique("number", numbers);
 
-  return errors;
+	return errors;
 }
-
 
 @reduxForm.reduxForm(
 	{
 		form: "addAccount",
 		fields: accountKeys,
-		initialValues: {
-			visbile: true,
-			type: AccountType.CHECKING
-		},
+		initialValues: defaultAccount,
 		validate
 	}
 )
 export class AddAccountDialog extends Component<Props> {
+	componentWillReceiveProps(nextProps: Props) {
+		if (this.props.editing != nextProps.editing) {
+			if (nextProps.editing != -1) {
+				const src = nextProps.accounts[nextProps.editing];
+				accountKeys.forEach(key => {
+					const nextField = nextProps.fields[key] as AnyField;
+					const srcValue = (src[key] as AnyField).value;
+					if (nextField.value != srcValue) {
+						nextField.onChange(srcValue);
+					}
+				});
+			}
+		}
+	}
+
 	render() {
 		const { fields, handleSubmit } = this.props;
 
@@ -116,58 +126,60 @@ export class AddAccountDialog extends Component<Props> {
 			return props;
 		};
 
-    const adding = this.props.editing == -1;
+		const adding = this.props.editing == -1;
 
 		return (
-      <Modal show={this.props.show} onHide={this.onCancel}>
-        <form onSubmit={handleSubmit(this.onSave)}>
-          <Modal.Header closeButton>
-            <Modal.Title>{adding ? t("AddAccountDialog.addTitle") : t("AddAccountDialog.editTitle")}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <EnumSelect {...fields.type} enum={AccountType}/>
-            <Input
-              type="text"
-              placeholder={t("AddAccountDialog.accountNamePlaceholder")}
-              {...wrapError(fields.name)}
-            />
-            <Input
-              type="text"
-              placeholder={t("AddAccountDialog.accountNumberPlaceholder")}
-              {...wrapError(fields.number)}
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={this.onCancel}>{t("AddAccountDialog.cancel")}</Button>
-            <Button
-              bsStyle="primary"
-              type="submit"
-            >
-              {adding ? t("AddAccountDialog.add") : t("AddAccountDialog.save")}
-            </Button>
-          </Modal.Footer>
-        </form>
-      </Modal>
-    );
+			<Modal show={this.props.show} onHide={this.onCancel}>
+				<form onSubmit={handleSubmit(this.onSave)}>
+					<Modal.Header closeButton>
+						<Modal.Title>{adding ? t("AddAccountDialog.addTitle") : t("AddAccountDialog.editTitle")}</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>
+						<EnumSelect label={t("AddAccountDialog.typeLabel")} {...fields.type} enum={AccountType}/>
+						<Input
+							type="text"
+							label={t("AddAccountDialog.nameLabel")}
+							placeholder={t("AddAccountDialog.namePlaceholder")}
+							{...wrapError(fields.name)}
+						/>
+						<Input
+							type="text"
+							label={t("AddAccountDialog.numberLabel")}
+							placeholder={t("AddAccountDialog.numberPlaceholder")}
+							{...wrapError(fields.number)}
+						/>
+					</Modal.Body>
+					<Modal.Footer>
+						<Button onClick={this.onCancel}>{t("AddAccountDialog.cancel")}</Button>
+						<Button
+							bsStyle="primary"
+							type="submit"
+						>
+							{adding ? t("AddAccountDialog.add") : t("AddAccountDialog.save")}
+						</Button>
+					</Modal.Footer>
+				</form>
+			</Modal>
+		);
 	}
 
 	@autobind
 	onSave(e: React.FormEvent) {
 		const { fields, resetForm, onSave } = this.props;
-    const account: Account = {
-      name: valueOf(fields.name),
-      number: valueOf(fields.number),
-      type: valueOf(fields.type),
-      visible: valueOf(fields.visible)
-    };
-    resetForm();
-    onSave(account);
+		const account: Account = {
+			name: valueOf(fields.name),
+			number: valueOf(fields.number),
+			type: valueOf(fields.type),
+			visible: valueOf(fields.visible)
+		};
+		onSave(account);
+		resetForm();
 	}
-  
-  @autobind
-  onCancel() {
-    const { resetForm, onCancel } = this.props;
-    resetForm();
-    onCancel();
-  }
+
+	@autobind
+	onCancel() {
+		const { resetForm, onCancel } = this.props;
+		resetForm();
+		onCancel();
+	}
 }

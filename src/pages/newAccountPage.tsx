@@ -15,7 +15,7 @@ import hash = require("string-hash");
 
 import { connect, AppState, FI, t, UpdraftState } from "../state";
 import {
-	Account, AccountType, _Account, AccountTable, defaultAccount,
+	Account, AccountType, _Account, AccountTable,
 	Institution, InstitutionTable } from "../types";
 import {
 	Component,
@@ -67,7 +67,6 @@ interface Props extends ReduxForm.Props {
 interface State {
 	adding?: boolean;
 	editing?: number;
-	accountValues?: Account;
 	gettingAccounts?: boolean;
 	gettingAccountsSuccess?: number;
 	gettingAccountsError?: string;
@@ -105,7 +104,7 @@ function validate(values: any, props: Props): Object {
 	v.checkNonempty("name");
 
 	if (!values.accounts.length) {
-		errors["accounts"] = t("NewAccountPage.validate.noAccounts");
+		errors["accounts"] = t("validate.noAccounts");
 	}
 
 	return errors;
@@ -138,7 +137,6 @@ export class NewAccountPage extends React.Component<Props, State> {
 		this.state = {
 			adding: false,
 			editing: -1,
-			accountValues: {},
 			gettingAccounts: false,
 			gettingAccountsSuccess: null,
 			gettingAccountsError: null
@@ -266,7 +264,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 									/>
 								</Col>
 
-								<Col xs={6} md={6}>
+								<Col xs={12} md={6}>
 									<Input
 										type="text"
 										label={t("NewAccountPage.ofxLabel")}
@@ -332,7 +330,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 										{account.number.value}
 									</td>
 									<td {...tdStyle}>
-										<Button type="button" bsStyle="warning" onClick={() => this.onEditAccount(index)}><Icon name="edit"/></Button>
+										<Button type="button" bsStyle="link" onClick={() => this.onEditAccount(index)}><Icon name="edit"/></Button>
 									</td>
 								</tr>
 							})}
@@ -343,7 +341,6 @@ export class NewAccountPage extends React.Component<Props, State> {
 						show={this.state.adding || this.state.editing != -1}
 						editing={this.state.editing}
 						accounts={fields.accounts}
-						//initialValues={this.state.accountValues}
 						onCancel={this.onModalHide}
 						onSave={this.onAccountSave}
 						ref="addAccountDialog"
@@ -369,7 +366,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 						</Alert>
 					}
 					{this.props.submitFailed && fields.accounts.length == 0 &&
-						<Alert bsStyle="danger">{t("NewAccountPage.validate.noAccounts")}</Alert>
+						<Alert bsStyle="danger">{t("validate.noAccounts")}</Alert>
 					}
 
 					<Row>
@@ -465,26 +462,17 @@ export class NewAccountPage extends React.Component<Props, State> {
 
 	@autobind
 	onAddAccount() {
-		const { fields } = this.props;
-		// const addAccountDialog = this.refs["addAccountDialog"] as AddAccountDialog;
-		// addAccountDialog.props.initializeForm(defaultAccount);
-		this.setState({ adding: true, accountValues: defaultAccount });
+		this.setState({ adding: true });
 	}
 
 	@autobind
 	onEditAccount(editing: number) {
-		const { fields } = this.props;
-		const accountValues = {} as any;
-		accountKeys.forEach(key => {
-			const field = fields[key] as ReduxForm.Field<string>;
-			accountValues[key] = valueOf(fields.accounts[editing][key] as any);
-		});
-		this.setState({ editing, accountValues });
+		this.setState({ editing });
 	}
 
 	@autobind
 	onModalHide() {
-		this.setState({ adding: false, editing: -1, accountValues: defaultAccount });
+		this.setState({ adding: false, editing: -1 });
 	}
 
 	@autobind
@@ -496,7 +484,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 		else {
 			const dest = fields.accounts[this.state.editing];
 			accountKeys.forEach(name => {
-				(dest[name] as ReduxForm.Field<string>).onChange((account as any)[name]);
+				(dest[name] as ReduxForm.Field<string>).onChange(account[name]);
 			});
 		}
 
@@ -570,7 +558,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 
 			accountKeys.forEach((key: string) => {
 				const field = fields[key] as ReduxForm.Field<any>;
-				(account as any)[key] = field.value;
+				account[key] = field.value;
 			});
 
 			return account;
