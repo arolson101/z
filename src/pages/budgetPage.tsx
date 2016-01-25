@@ -10,36 +10,14 @@ import * as reduxForm from "redux-form";
 import { createSelector } from "reselect";
 import RRule = require("rrule");
 
-import { Budget, BudgetChange } from "../types";
+import { Budget, BudgetChange, Frequency } from "../types";
 import { t, bindActionCreators, updraftAdd, updatePath } from "../actions";
-import { Component, AccountSelect, DatePicker, CurrencyInput, EnumSelect, XText } from "../components";
+import { Component, AddBudgetDialog } from "../components";
 import { AppState, UpdraftState, BudgetCollection } from "../state";
 import { valueOf, ValidateHelper } from "../util";
 import { formatCurrency } from "../i18n";
 
 // TODO: refresh on day change
-
-enum Frequency {
-	YEAR,
-	MONTH,
-	WEEK,
-	DAY,
-}
-
-module Frequency {
-	export function parse(idx: string): Frequency { return (Frequency as any)[idx]; }
-	export function tr(name: string): string { return t("Frequency." + name); }
-	export function toRRuleFreq(value: Frequency): __RRule.Frequency {
-		switch (value) {
-			case Frequency.YEAR: return RRule.YEARLY;
-			case Frequency.MONTH: return RRule.MONTHLY;
-			case Frequency.WEEK: return RRule.WEEKLY;
-			case Frequency.DAY: return RRule.DAILY;
-			default:
-				throw new Error("invalid Frequency value");
-		}
-	}
-}
 
 interface Budget2 {
 	budget: Budget;
@@ -52,22 +30,12 @@ interface Props extends ReduxForm.Props {
 	updraft: UpdraftState;
 	updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
 	change?: (form: string, field: string, value: any) => any;
-	fields: {
-		account: ReduxForm.Field<string>;
-		name: ReduxForm.Field<string>;
-		recurring: ReduxForm.Field<boolean>;
-		startingOn: ReduxForm.Field<Date>;
-		frequency: ReduxForm.Field<Frequency>;
-		recurrenceMultiple: ReduxForm.Field<number>;
-		rrule: ReduxForm.Field<string>;
-		amount: ReduxForm.Field<string>;
-
-		// index signature to make typescript happy
-		[field: string]: ReduxForm.FieldOpt;
-	}
 }
 
-const FORM_NAME = "budget";
+interface State {
+	add?: boolean;
+	editing?: number;
+}
 
 export const calculateBudget2s = createSelector(
   (state: AppState) => state.budgets,
@@ -75,7 +43,7 @@ export const calculateBudget2s = createSelector(
 		let now = currentDate();
 		return _.chain(budgets)
 		.map((budget: Budget) => {
-			let rrule = new RRule(budget.rruleOpts);
+			let rrule = RRule.fromString(budget.rruleString);
 			return {
 				budget,
 				rrule,
@@ -87,27 +55,6 @@ export const calculateBudget2s = createSelector(
 	}
 );
 
-function validate(values: any, props: Props): Object {
-	const errors: any = { accounts: [] as any[] };
-	let v = new ValidateHelper(values, errors);
-
-	const names = _.reduce(
-		props.budgets2,
-		(set: any, budget: Budget2) => {
-			set[budget.budget.name] = true;
-			return set;
-		},
-		{}
-	);
-
-	v.checkNonempty("name");
-	v.checkNonempty("recurrenceMultiple");
-	v.checkUnique("name", names);
-	v.checkNumber("amount");
-
-	return errors;
-}
-
 
 function currentDate(): Date {
 	let date = new Date();
@@ -115,68 +62,21 @@ function currentDate(): Date {
 	return date;
 }
 
-@reduxForm.reduxForm(
-	{
-		form: FORM_NAME,
-		fields: [
-			"name",
-			"recurring",
-			"frequency",
-			"recurrenceMultiple",
-			"startingOn",
-			"account",
-			"amount"
-		],
-		initialValues: {
-			startingOn: currentDate(),
-			recurring: 1,
-			frequency: Frequency.MONTH,
-			recurrenceMultiple: 1
-		},
-		validate
-	},
+@connect(
 	(state: AppState) => ({budgets2: calculateBudget2s(state), updraft: state.updraft}),
 	(dispatch: Redux.Dispatch<any>) => bindActionCreators({
 		updraftAdd,
 		change: reduxForm.change
 	}, dispatch)
 )
-export class BudgetPage extends Component<Props> {
+export class BudgetPage extends React.Component<Props, State> {
+	state = {
+		add: false,
+		editing: -1
+	}
+	
 	render() {
 		const { budgets2, fields, handleSubmit } = this.props;
-
-		const wrapErrorHelper = (props: any, error: string) => {
-			if (error) {
-				props.bsStyle = "error";
-				props.help = error;
-			}
-			props.hasFeedback = true;
-		};
-
-		const wrapError = (field: ReduxForm.Field<any>, supressEmptyError?: boolean) => {
-			let props: any = _.extend({}, field);
-			let error: string = null;
-			const isEmpty = (field.value === undefined || field.value == "")
-			if (field.error && field.touched && (!supressEmptyError || !isEmpty)) {
-				error = field.error;
-			}
-			wrapErrorHelper(props, error);
-			return props;
-		};
-
-		const wrapValidator = (budget: Budget2, fieldName: string) => {
-			return {
-				validate: (newValue: string): string => {
-					let currentValue = (budget.budget as any)[fieldName];
-					if (newValue != currentValue) {
-						let res = validate({ [fieldName]: newValue }, this.props) as any;
-						return res[fieldName];
-					}
-				}
-			}
-		};
-
-		const recurring = valueOf(fields.recurring) != "0";
 
 		return <Grid>
 			<Row>budgets</Row>
@@ -191,132 +91,69 @@ export class BudgetPage extends Component<Props> {
 					</tr>
 				</thead>
 				<tbody>
-					{_.map(budgets2, (budget: Budget2) =>
+					{_.map(budgets2, (budget: Budget2, index: number) =>
 						<tr key={budget.budget.dbid}>
-							<td>
-								<XText
-									{...wrapValidator(budget, "name")}
-									onChange={(value: any) => this.editBudget(budget, "name", value)}
-									value={budget.budget.name}
-								/>
-							</td>
-							<td>
-								<XText
-									{...wrapValidator(budget, "amount") }
-									onChange={(value: any) => this.editBudget(budget, "amount", value) }
-									value={formatCurrency(budget.budget.amount)}
-								/>
-							</td>
+							<td>{budget.budget.name}</td>
+							<td>{formatCurrency(budget.budget.amount)}</td>
 							<td>{budget.next.toString()}</td>
 							<td>
-								<Button type="button" bsStyle="danger" onClick={() => this.deleteBudget(budget)}><Icon name="trash-o"/></Button>
+								<Button
+									type="button"
+									bsStyle="link"
+									onClick={() => this.onEditBudget(budget.budget.dbid)}
+								>
+									<Icon name="edit"/>
+								</Button>
 							</td>
 						</tr>
 					)}
 				</tbody>
-				<tfoot>
-					<tr>
-						<td>
-							<Input
-								type="text"
-								placeholder={t("BudgetPage.namePlaceholder")}
-								{...wrapError(fields.name)}
-							/>
-						</td>
-						<td>
-							<CurrencyInput
-								placeholder={t("BudgetPage.amountPlaceholder") }
-								{...wrapError(fields.amount) } />
-						</td>
-						<td>
-							<div className="form-inline">
-								<DatePicker
-									{...fields.startingOn}
-								/>
-								{" "}
-								<Input type="select" {...fields.recurring}>
-									<option value="0">{t("BudgetPage.once")}</option>
-									<option value="1">{t("BudgetPage.repeatEvery")}</option>
-								</Input>
-								{" "}
-								{recurring &&
-									<Input
-										style={{width:100}}
-										type="number"
-										min={1}
-										{...wrapError(fields.recurrenceMultiple)}
-									/>
-								}
-								{" "}
-								{recurring &&
-									<EnumSelect {...fields.frequency} enum={Frequency}/>
-								}
-							</div>
-						</td>
-						<td>
-							<AccountSelect {...fields.account}/>
-						</td>
-						<td>
-							<Button type="button" bsStyle="success" onClick={handleSubmit(this.onAddBudget)}>
-								<Icon name="plus"/>
-							</Button>
-						</td>
-					</tr>
-				</tfoot>
 			</Table>
+			<AddBudgetDialog
+				show={this.state.add || this.state.editing != -1}
+				editing={this.state.editing}
+				onSave={this.onBudgetSave}
+				onEdit={this.onBudgetEdit}
+				onCancel={this.onModalHide}
+				onDelete={this.onDelete}
+			/>
+			<Button onClick={this.onAddBudget}>{t("BudgetPage.add")}</Button>
 		</Grid>;
 	}
-
-	makeBudget(dbid: number): Budget {
-		const { fields } = this.props;
-		let budget: Budget = {
-			dbid,
-			name: valueOf(fields.name),
-			account: 0, //TODO: fields.account.value,
-			amount: valueOf(fields.amount)
-		};
-
-		if (valueOf(fields.recurring) != "0") {
-			budget.rruleOpts = {
-				freq: Frequency.toRRuleFreq(valueOf(fields.frequency)),
-				dtstart: valueOf(fields.startingOn),
-			};
-		}
-		else {
-			budget.rruleOpts = {
-				freq: RRule.MONTHLY,
-				dtstart: valueOf(fields.startingOn),
-				count: 1
-			};
-		}
-
-		return budget;
-	}
-
+	
 	@autobind
 	onAddBudget() {
+		this.setState({add: true});
+	}
+	
+	@autobind
+	onEditBudget(dbid: number) {
+		this.setState({editing: dbid})
+	}
+
+	@autobind
+	onModalHide() {
+		this.setState({add: false, editing: -1});
+	}
+
+	@autobind
+	onBudgetSave(budget: Budget) {
 		const { updraft, updraftAdd, resetForm } = this.props;
-
-		const dbid = Date.now();
-		const budget = this.makeBudget(dbid);
-
 		updraftAdd(updraft, Updraft.makeSave(updraft.budgetTable, Date.now())(budget));
-		resetForm();
+		this.onModalHide();
 	}
-
+	
 	@autobind
-	editBudget(budget: Budget2, key: string, value: any) {
+	onBudgetEdit(change: BudgetChange) {
 		const { updraft, updraftAdd } = this.props;
-
-		let change: BudgetChange = { dbid: budget.budget.dbid };
-		(change as any)[key] = { $set: value } as Updraft.Mutate.setter<any>;
-
 		updraftAdd(updraft, Updraft.makeChange(updraft.budgetTable, Date.now())(change));
+		this.onModalHide();
 	}
 
 	@autobind
-	deleteBudget(budget: Budget2) {
+	onDelete(dbid: number) {
 		const { updraft, updraftAdd } = this.props;
-		updraftAdd(updraft, Updraft.makeDelete(updraft.budgetTable, Date.now())(budget.budget.dbid));
+		updraftAdd(updraft, Updraft.makeDelete(updraft.budgetTable, Date.now())(dbid));
+		this.onModalHide();
 	}
 }

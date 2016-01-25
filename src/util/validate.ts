@@ -3,7 +3,7 @@
 
 import { t } from "i18next-client";
 
-export function valueOf<T>(x: ReduxForm.Field<any>) {
+export function valueOf<T>(x: ReduxForm.Field<T>): T {
 	return x.value || x.defaultValue;
 }
 

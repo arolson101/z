@@ -47,7 +47,7 @@ const accountKeys = [
 ];
 
 
-export function validate(values: any, props: Props): Object {
+function validate(values: any, props: Props): Object {
 	const errors: any = { accounts: [] as any[] };
 	let v = new ValidateHelper(values, errors);
 

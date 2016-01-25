@@ -1,4 +1,5 @@
 export * from "./addAccountDialog";
+export * from "./addBudgetDialog";
 export * from "./accountSelect";
 export * from "./app";
 export * from "./breadcrumbs";

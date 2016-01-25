@@ -113,13 +113,29 @@
 
 	"BudgetPage": {
 		"nameHeader": "Name",
-		"namePlaceholder": "Name",
-		"amountPlaceholder": "Amount",
-		"nextOccurrenceHeader": "Next Occurrence",
+		"nextOccurrenceHeader": "Next",
 		"accountHeader": "Account",
 		"amountHeader": "Amount",
 		"once": "once",
-		"repeatEvery": "repeat every"
+		"repeatEvery": "repeat every",
+		"add": "Add Budget Item"
+	},
+	
+	"AddBudgetDialog": {
+		"addTitle": "Add Budget Item",
+		"editTitle": "Edit Budget Item",
+		"nameLabel": "Name",
+		"namePlaceholder": "",
+		"amountLabel": "Amount",
+		"amountPlaceholder": "",
+		"recurLabel": "Repeating",
+		"once": "Once",
+		"repeatEvery": "Repeat Every",
+		"accountLabel": "Account",
+		"cancel": "Cancel",
+		"delete": "Delete Budget Item",
+		"add": "Add Budget Item",
+		"save": "Save Budget Item"
 	},
 
 	"validate": {
