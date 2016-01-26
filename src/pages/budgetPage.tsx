@@ -15,7 +15,7 @@ import { t, bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { Component, AddBudgetDialog } from "../components";
 import { AppState, UpdraftState, BudgetCollection } from "../state";
 import { valueOf, ValidateHelper } from "../util";
-import { formatCurrency } from "../i18n";
+import { formatCurrency, formatDate } from "../i18n";
 
 // TODO: refresh on day change
 
@@ -50,6 +50,7 @@ export const calculateBudget2s = createSelector(
 				next: rrule.after(now, true)
 			} as Budget2;
 		})
+		.filter((budget: Budget2) => budget.next != null)
 		.sortBy((budget: Budget2) => budget.next)
 		.value();
 	}
@@ -95,7 +96,7 @@ export class BudgetPage extends React.Component<Props, State> {
 						<tr key={budget.budget.dbid}>
 							<td>{budget.budget.name}</td>
 							<td>{formatCurrency(budget.budget.amount)}</td>
-							<td>{budget.next.toString()}</td>
+							<td>{formatDate(budget.next)}</td>
 							<td>
 								<Button
 									type="button"

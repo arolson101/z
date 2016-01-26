@@ -71,3 +71,7 @@ export function formatCurrency(amount: number): string {
 	let n = numeral(amount);
 	return n.format("($0,0.00)");
 }
+
+export function formatDate(date: Date): string {
+	return moment(date).format("l");
+}

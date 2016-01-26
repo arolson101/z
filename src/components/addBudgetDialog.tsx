@@ -62,20 +62,8 @@ function validate(values: any, props: Props): Object {
 	const errors: any = { accounts: [] as any[] };
 	let v = new ValidateHelper(values, errors);
 
-	const names = _.reduce(
-		props.budgets,
-		(set: any, budget: Budget) => {
-			if (budget.dbid != props.editing) {
-				set[budget.name] = true;
-			}
-			return set;
-		},
-		{}
-	);
-
 	v.checkNonempty("name");
 	v.checkNonempty("recurrenceMultiple");
-	v.checkUnique("name", names);
 	v.checkNumber("amount");
 
 	return errors;
@@ -96,7 +84,7 @@ function validate(values: any, props: Props): Object {
 		],
 		initialValues: {
 			startingOn: currentDate(),
-			recurring: 1,
+			recurring: Recurrance.Repeat,
 			frequency: Frequency.MONTH,
 			recurrenceMultiple: 1
 		},
@@ -117,9 +105,15 @@ export class AddBudgetDialog extends Component<Props> {
 				const rrule = RRule.fromString(src.rruleString);
 				const recurring = (rrule.options.count != 1); 
 				if (recurring != (valueOf(fields.recurring) == Recurrance.Repeat)) {
-					fields.recurring.onChange(recurring ? 1 : 0);
+					fields.recurring.onChange(recurring ? Recurrance.Repeat : Recurrance.Once);
 				}
-				// TODO: frequency
+				if (rrule.options.interval != valueOf(fields.recurrenceMultiple)) {
+					fields.recurrenceMultiple.onChange(rrule.options.interval);
+				}
+				const frequency = Frequency.fromRRuleFreq(rrule.options.freq);
+				if (frequency != valueOf(fields.frequency)) {
+					fields.frequency.onChange(frequency);
+				}
 				const startingOn = rrule.options.dtstart;
 				if (startingOn != valueOf(fields.startingOn)) {
 					fields.startingOn.onChange(startingOn);
@@ -237,8 +231,9 @@ export class AddBudgetDialog extends Component<Props> {
 
 		if (valueOf(fields.recurring) == Recurrance.Repeat) {
 			budget.rruleString = new RRule({
-				freq: Frequency.toRRuleFreq(valueOf(fields.frequency)),
+				freq: Frequency.toRRuleFreq(valueOf(fields.frequency) * 1),
 				dtstart: valueOf(fields.startingOn),
+				interval: valueOf(fields.recurrenceMultiple)
 			}).toString();
 		}
 		else {

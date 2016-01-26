@@ -4,7 +4,12 @@
 import { t } from "i18next-client";
 
 export function valueOf<T>(x: ReduxForm.Field<T>): T {
-	return x.value || x.defaultValue;
+	if (typeof x.value != "undefined") {
+		return x.value;
+	}
+	else {
+		return x.defaultValue;
+	}
 }
 
 export interface ValidateErrorSet {
