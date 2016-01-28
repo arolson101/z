@@ -12,7 +12,8 @@ import RRule = require("rrule");
 
 import { Budget, BudgetChange, Frequency } from "../types";
 import { t, bindActionCreators, updraftAdd, updatePath } from "../actions";
-import { Component, AddBudgetDialog } from "../components";
+import { Component } from "../components";
+import { AddBudgetDialog } from "../dialogs";
 import { AppState, UpdraftState, BudgetCollection } from "../state";
 import { valueOf, ValidateHelper } from "../util";
 import { formatCurrency, formatDate } from "../i18n";

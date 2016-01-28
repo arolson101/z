@@ -7,17 +7,12 @@ import {Alert, Panel, Button, Grid, Input, Label, Modal, OverlayTrigger, Row, Co
 import * as Icon from "react-fa";
 import { t } from "i18next-client";
 import { verify } from "updraft";
+import * as reduxForm from "redux-form";
 
-import { Component } from "./component";
+import { Component, ImageCheckbox, EnumSelect, CurrencyInput, AccountSelect, DatePicker } from "../components";
 import { ValidateHelper, valueOf } from "../util";
 import { Budget, BudgetChange, Frequency, RRule } from "../types";
 import { AppState, BudgetCollection } from "../state";
-import * as reduxForm from "redux-form";
-import { ImageCheckbox } from "./imageCheckbox";
-import { EnumSelect } from "./enumSelect";
-import { CurrencyInput } from "./currencyInput";
-import { AccountSelect } from "./accountSelect";
-import { DatePicker } from "./datePicker";
 
 enum Recurrance {
 	Once,

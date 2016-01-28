@@ -22,13 +22,12 @@ import {
 	Select2,
 	FadeTransitionGroup,
 	ImageCheckbox,
-	XTextForm,
-	XSelectForm,
-	EnumSelect,
+ } from "../components";
+import {
 	AccountField,
 	AccountFieldArray,
 	AddAccountDialog
- } from "../components";
+ } from "../dialogs";
 import { historyMixin, EnumEx, ValidateHelper, valueOf } from "../util";
 import { bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { readAccountProfiles } from "../online";

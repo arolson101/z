@@ -6,13 +6,11 @@ import * as React from "react";
 import {Alert, Panel, Button, Grid, Input, Label, Modal, OverlayTrigger, Row, Col, Table, Tooltip} from "react-bootstrap";
 import * as Icon from "react-fa";
 import { t } from "i18next-client";
+import * as reduxForm from "redux-form";
 
-import { Component } from "./component";
 import { ValidateHelper, valueOf } from "../util";
 import { Account, AccountType, _Account, AccountTable, defaultAccount } from "../types";
-import * as reduxForm from "redux-form";
-import { ImageCheckbox } from "./imageCheckbox";
-import { EnumSelect } from "./enumSelect";
+import { Component, ImageCheckbox, EnumSelect } from "../components";
 
 
 export interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field<number>, ReduxForm.Field<number>, ReduxForm.Field<string>, ReduxForm.Field<AccountType>, ReduxForm.Field<boolean>> {}
