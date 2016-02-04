@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "webpack-dev-server --content-base app/ --inline --history-api-fallback --no-info",
-    "chrome": "open -a Google\\ Chrome http://localhost:8765/webpack-dev-server/ --args --disable-web-security"
+    "chrome": "open -a Google\\ Chrome http://localhost:8765/webpack-dev-server/ --args --disable-web-security",
+		"start": "node_modules/.bin/electron app"
   },
   "author": "",
   "license": "ISC",
@@ -56,6 +57,7 @@
     "blanket": "^1.2.1",
     "chai": "^3.4.1",
     "css-loader": "^0.23.1",
+    "electron-prebuilt": "^0.36.7",
     "file-loader": "^0.8.5",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
@@ -72,7 +74,7 @@
     "ts-node": "^0.5.5",
     "typescript": "^1.7.5",
     "typescript-register": "^1.1.0",
-    "webpack": "^1.12.10",
-    "webpack-dev-server": "^1.14.0"
+    "webpack": "^1.12.12",
+    "webpack-dev-server": "^1.14.1"
   }
 }

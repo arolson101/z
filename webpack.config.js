@@ -10,52 +10,57 @@ var production = 0;
 module.exports = {
   context: path.join(__dirname, 'src'),
 
-	entry: {
-		vendor:
-		[
-			"bootstrap/dist/css/bootstrap.min.css",
-			"bootstrap-datepicker/dist/css/bootstrap-datepicker3.css",
-			"select2/dist/css/select2.css",
-			"x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css",
+	entry: //{
+		// vendor:
+		// [
+		// 	"bootstrap/dist/css/bootstrap.min.css",
+		// 	"bootstrap-datepicker/dist/css/bootstrap-datepicker3.css",
+		// 	"select2/dist/css/select2.css",
+		// 	"x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css",
 
-			"bootstrap",
-			"bootstrap-datepicker/dist/js/bootstrap-datepicker.js",
-			"core-decorators",
-			"current-locale",
-			"filist",
-			"history",
-			"i18next-client",
-			"jquery",
-			"lodash",
-			//"metisMenu",
-			"moment",
-			"numeral",
-			"ofx4js",
-			"radium",
-			"react",
-			"react-dom",
-			"react-bootstrap",
-			"react-fa",
-			"react-ladda",
-			"react-mixin",
-			"react-router",
-			"redux",
-			"redux-devtools",
-			"redux-devtools-dock-monitor",
-			"redux-devtools-log-monitor",
-			"redux-form",
-			"redux-simple-router",
-			"rrule",
-			"rrule/lib/nlp",
-			"safe-access",
-			"select2",
-			"string-hash",
-			"sortablejs",
-			"updraft",
-			"x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js",
+		// 	"bootstrap",
+		// 	"bootstrap-datepicker/dist/js/bootstrap-datepicker.js",
+		// 	"core-decorators",
+		// 	"current-locale",
+		// 	"filist",
+		// 	"history",
+		// 	"i18next-client",
+		// 	"jquery",
+		// 	"lodash",
+		// 	//"metisMenu",
+		// 	"moment",
+		// 	"numeral",
+		// 	"ofx4js",
+		// 	"radium",
+		// 	"react",
+		// 	"react-dom",
+		// 	"react-bootstrap",
+		// 	"react-fa",
+		// 	"react-ladda",
+		// 	"react-mixin",
+		// 	"react-router",
+		// 	"redux",
+		// 	"redux-devtools",
+		// 	"redux-devtools-dock-monitor",
+		// 	"redux-devtools-log-monitor",
+		// 	"redux-form",
+		// 	"redux-simple-router",
+		// 	"rrule",
+		// 	"rrule/lib/nlp",
+		// 	"safe-access",
+		// 	"select2",
+		// 	"string-hash",
+		// 	"sortablejs",
+		// 	"updraft",
+		// 	"x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js",
+		// ],
+		//app:
+		 [
+			"./index.ts"
 		],
-		app: "./index.ts",
-	},
+	//},
+	
+	target: "atom",
 
 	output: {
 		path: __dirname + "/app",
@@ -88,11 +93,11 @@ module.exports = {
 			}
 		}),
 
-		// separate vendor chunk
-		new webpack.optimize.CommonsChunkPlugin({
-			name: "vendor",
-			filename: "vendor.js"
-		}),
+		// // separate vendor chunk
+		// new webpack.optimize.CommonsChunkPlugin({
+		// 	name: "vendor",
+		// 	filename: "vendor.js"
+		// }),
 
 		// globals
 		new webpack.ProvidePlugin({
@@ -114,7 +119,8 @@ module.exports = {
 		}
 	},
 
-	devtool: "source-map"
+	//devtool: "source-map"
+	devtool: "eval"
 };
 
 
