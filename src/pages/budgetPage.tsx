@@ -14,7 +14,7 @@ import { Budget, BudgetChange, Frequency } from "../types";
 import { t, bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { Component } from "../components";
 import { AddBudgetDialog } from "../dialogs";
-import { AppState, UpdraftState, BudgetCollection } from "../state";
+import { AppState, UpdraftState, BudgetCollection, AccountCollection } from "../state";
 import { valueOf, ValidateHelper } from "../util";
 import { formatCurrency, formatDate } from "../i18n";
 
