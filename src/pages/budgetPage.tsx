@@ -24,10 +24,12 @@ interface Budget2 {
 	budget: Budget;
 	rrule: __RRule.RRule;
 	next: Date;
+	last: Date;
 }
 
 interface Props extends ReduxForm.Props {
 	budgets2: Budget2[];
+	accounts: AccountCollection;
 	updraft: UpdraftState;
 	updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
 	change?: (form: string, field: string, value: any) => any;
@@ -48,11 +50,11 @@ export const calculateBudget2s = createSelector(
 			return {
 				budget,
 				rrule,
-				next: rrule.after(now, true)
+				next: rrule.after(now, true),
+				last: rrule.before(now, false)
 			} as Budget2;
 		})
-		.filter((budget: Budget2) => budget.next != null)
-		.sortBy((budget: Budget2) => budget.next)
+		.sortBy((budget: Budget2) => budget.next || budget.last)
 		.value();
 	}
 );
@@ -65,7 +67,11 @@ function currentDate(): Date {
 }
 
 @connect(
-	(state: AppState) => ({budgets2: calculateBudget2s(state), updraft: state.updraft}),
+	(state: AppState) => ({
+		accounts: state.accounts,
+		budgets2: calculateBudget2s(state),
+		updraft: state.updraft
+	}),
 	(dispatch: Redux.Dispatch<any>) => bindActionCreators({
 		updraftAdd,
 		change: reduxForm.change
@@ -89,15 +95,18 @@ export class BudgetPage extends React.Component<Props, State> {
 						<th>{t("BudgetPage.amountHeader")}</th>
 						<th>{t("BudgetPage.nextOccurrenceHeader")}</th>
 						<th>{t("BudgetPage.accountHeader")}</th>
+						<th>{t("BudgetPage.editHeader")}</th>
 						<th></th>
 					</tr>
 				</thead>
 				<tbody>
-					{_.map(budgets2, (budget: Budget2, index: number) =>
-						<tr key={budget.budget.dbid}>
+					{_.map(budgets2, (budget: Budget2, index: number) => {
+						const account = this.props.accounts[budget.budget.account];
+						return <tr key={budget.budget.dbid}>
 							<td>{budget.budget.name}</td>
 							<td>{formatCurrency(budget.budget.amount)}</td>
-							<td>{formatDate(budget.next)}</td>
+							<td>{formatDate(budget.next || budget.last)}</td>
+							<td>{account ? account.name : t("BudgetPage.noAccount")}</td>
 							<td>
 								<Button
 									type="button"
@@ -108,7 +117,7 @@ export class BudgetPage extends React.Component<Props, State> {
 								</Button>
 							</td>
 						</tr>
-					)}
+					})}
 				</tbody>
 			</Table>
 			<AddBudgetDialog
