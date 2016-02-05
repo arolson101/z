@@ -9,6 +9,8 @@ import { Input } from "react-bootstrap";
 import { verify } from "updraft";
 import * as moment from "moment";
 
+//require("bootstrap-datepicker/dist/css/bootstrap-datepicker3.css");
+//require("bootstrap-datepicker/dist/js/bootstrap-datepicker.js");
 
 interface Props {
 	value: Date;

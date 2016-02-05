@@ -7,6 +7,15 @@ var ForkCheckerPlugin = require('awesome-typescript-loader').ForkCheckerPlugin;
 
 var production = 0;
 
+var nodeModules = {};
+fs.readdirSync('node_modules')
+  .filter(function(x) {
+    return ['.bin'].indexOf(x) === -1;
+  })
+  .forEach(function(mod) {
+    nodeModules[mod] = 'commonjs ' + mod;
+  });
+
 module.exports = {
   context: path.join(__dirname, 'src'),
 
@@ -60,7 +69,9 @@ module.exports = {
 		],
 	//},
 	
-	target: "atom",
+	//target: "electron",
+  //externals: nodeModules,
+  //externals: /^[a-z\-0-9]+$/,
 
 	output: {
 		path: __dirname + "/app",
@@ -75,7 +86,7 @@ module.exports = {
 
 	module: {
 		loaders: [
-			{ test: /\.tsx?$/, loader: 'awesome-typescript-loader?forkChecker=true' },
+			{ test: /\.tsx?$/, loaders: ['react-hot', 'awesome-typescript-loader?forkChecker=true'] },
 			{ test: /\.css$/, loader: "style-loader!css-loader" },
 			{ test: /\.(svg|woff|woff2|ttf|eot)($|\?)/, loader: "file?name=fonts/[name].[ext]" },
 			{ test: /\.(png|gif|jpg)($|\?)/, loader: "file?name=images/[name].[ext]" },

@@ -14,6 +14,8 @@ import { createDevTools, persistState } from "redux-devtools";
 import LogMonitor from "redux-devtools-log-monitor";
 import DockMonitor from "redux-devtools-dock-monitor";
 
+require("bootstrap/dist/css/bootstrap.min.css");
+
 
 import { App } from "./components/index";
 import { AccountsPage, BudgetPage, NewAccountPage } from "./pages/index";

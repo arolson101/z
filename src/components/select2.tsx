@@ -6,6 +6,9 @@ import { Input, InputProps } from "react-bootstrap";
 import { autobind } from "core-decorators";
 import { verify } from "updraft";
 
+require("select2/dist/css/select2.css");
+require("select2/dist/js/select2.js");
+
 
 interface Props extends InputProps {
 	onChange?(e: JQueryEventObject): any;

@@ -1,5 +1,7 @@
 'use strict';
 
+require('module').globalPaths.push(__dirname + "/node_modules");
+
 const electron = require('electron');
 const app = electron.app;  // Module to control application life.
 const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
@@ -18,7 +20,7 @@ if (dev) {
   var server = new WebpackDevServer(compiler, {
 		contentBase: "app",
     hot: true,
-    //historyApiFallback: true,
+    historyApiFallback: true,
     //stats: { colors: true }
     noInfo: true
   });
@@ -45,7 +47,7 @@ app.on('ready', function() {
 	mainWindow = new BrowserWindow({width: 1280, height: 1024});
 
 	// and load the index.html of the app.
-	mainWindow.loadURL(dev ? ('http://localhost:' + port + '/') :  "file://" + __dirname + "/index.html");
+	mainWindow.loadURL(dev ? ('http://localhost:' + port + '/') :  "http://localhost:8080");
 
 	// Open the DevTools.
 	mainWindow.webContents.openDevTools();

@@ -6,6 +6,8 @@ import * as ReactDOM from "react-dom";
 import { autobind } from "core-decorators";
 import { Component } from "./component";
 
+// require("x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css");
+// require("x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js");
 
 interface ChangeProps {
 	onChange?: (newValue: any) => void;
@@ -21,29 +23,29 @@ export class XEditable extends Component<XEditableProps> {
 		</a>;
 	}
 	
-	get $a() {
+	$a(): any {
 		return $(ReactDOM.findDOMNode(this.refs["a"]));
 	}
 	
 	componentDidMount() {
-		let { $a } = this;
+		let { $a } = this.$a();
 		$a.editable(this.props);
 		$a.on("save", this.onSave);
 	}
 	
 	componentWillReceiveProps(nextProps: Props) {
-		let { $a } = this;
+		let { $a } = this.$a();
 		$a.editable(this.props);
 	}
 		
 	componentWillUnmount() {
-		let { $a } = this;
+		let { $a } = this.$a();
 		$a.editable("destroy");
 	}
 
 	@autobind
 	onSave(e: Event, params: XEditable.SaveParams) {
-		let { $a } = this;
+		let { $a } = this.$a();
 		$a.removeClass("editable-unsaved");
 		if (this.props.onChange) {
 			this.props.onChange(params.newValue);
