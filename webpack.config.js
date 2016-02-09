@@ -10,7 +10,8 @@ var production = 0;
 var nodeModules = {};
 fs.readdirSync('node_modules')
   .filter(function(x) {
-    return ['.bin'].indexOf(x) === -1;
+    //if(x.match(/react/)) return false;
+    return ['.bin', 'react-fa'].indexOf(x) === -1;
   })
   .forEach(function(mod) {
     nodeModules[mod] = 'commonjs ' + mod;
@@ -70,7 +71,7 @@ module.exports = {
 	//},
 	
 	//target: "electron",
-  //externals: nodeModules,
+  externals: nodeModules,
   //externals: /^[a-z\-0-9]+$/,
 
 	output: {
