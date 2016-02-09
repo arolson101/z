@@ -5,10 +5,10 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { createStore, combineReducers, applyMiddleware, compose } from "redux";
 import { connect, Provider } from "react-redux";
-import { syncReduxAndRouter } from "redux-simple-router";
+import { syncHistory } from "redux-simple-router";
 import { createHistory, createHashHistory } from "history";
 import * as thunk from "redux-thunk";
-import { Router, Route } from "react-router";
+import { Router, Route, /*browserHistory, createMemoryHistory*/ browserHistory } from "react-router";
 
 import { createDevTools, persistState } from "redux-devtools";
 import LogMonitor from "redux-devtools-log-monitor";
@@ -86,7 +86,7 @@ export function main(root: HTMLElement) {
 	const store = finalCreateStore(appState);
 	const history = createHistory();
 
-	syncReduxAndRouter(history, store);
+	syncHistory(history, store);
 
 	store.dispatch(i18nInit());
 	store.dispatch(fiInit());
@@ -101,7 +101,7 @@ export function main(root: HTMLElement) {
 	ReactDOM.render(
 		<Provider store={store}>
 			<div>
-				<Router history={history}>
+				<Router history={browserHistory}>
 					<Route path="/" component={App}>
 						<Route path="accounts" component={AccountsPage}/>
 						<Route path="newAccount" component={NewAccountPage}/>

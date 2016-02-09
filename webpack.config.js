@@ -82,6 +82,11 @@ module.exports = {
 	resolve: {
 		extensions: ['', '.js', '.jsx', '.ts', '.tsx'],
 		//root: [path.join(__dirname, "bower_components")]
+    
+    alias: {
+      // https://github.com/i18next/i18next/issues/477
+      i18next: 'i18next/lib/index.js'
+    }
 	},
 
 	module: {

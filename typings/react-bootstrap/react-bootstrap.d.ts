@@ -120,6 +120,8 @@ declare module "react-bootstrap" {
         eventKey?: any;
         header?: boolean;
         href?: string;
+        onClick?: Function;
+        onKeyDown?: Function;
         onSelect?: Function;
         target?: string;
         title?: string;
@@ -337,7 +339,7 @@ declare module "react-bootstrap" {
         placement?: string;
         positionLeft?: number;
         positionTop?: number;
-        title: any; // TODO: Add more specific type
+        title?: any; // TODO: Add more specific type
     }
     interface Popover extends React.ReactElement<PopoverProps> { }
     interface PopoverClass extends React.ComponentClass<PopoverProps> { }
@@ -450,6 +452,33 @@ declare module "react-bootstrap" {
     interface NavItemClass extends React.ComponentClass<NavItemProps> { }
     var NavItem: NavItemClass;
 
+    // <Navbar.Brand />
+    // ----------------------------------------
+    interface NavbarBrandProps extends React.Props<NavbarBrandClass> {
+    }
+    interface NavbarBrand extends React.ReactElement<NavbarBrandProps> { }
+    interface NavbarBrandClass extends  React.ComponentClass<NavbarBrandProps> { }
+
+    // <Navbar.Collapse />
+    // ----------------------------------------
+    interface NavbarCollapseProps extends React.Props<NavbarCollapseClass> {
+    }
+    interface NavbarCollapse extends React.ReactElement<NavbarCollapseProps> { }
+    interface NavbarCollapseClass extends  React.ComponentClass<NavbarCollapseProps> { }
+
+    // <Navbar.Header />
+    // ----------------------------------------
+    interface NavbarHeaderProps extends React.Props<NavbarHeaderClass> {
+    }
+    interface NavbarHeader extends React.ReactElement<NavbarHeaderProps> { }
+    interface NavbarHeaderClass extends  React.ComponentClass<NavbarHeaderProps> { }
+
+    // <Navbar.Toggle />
+    // ----------------------------------------
+    interface NavbarToggleProps extends React.Props<NavbarToggleClass> {
+    }
+    interface NavbarToggle extends React.ReactElement<NavbarToggleProps> { }
+    interface NavbarToggleClass extends  React.ComponentClass<NavbarToggleProps> { }
 
     // <Navbar />
     // ----------------------------------------
@@ -472,7 +501,12 @@ declare module "react-bootstrap" {
         toggleNavKey?: string | number;
     }
     interface Navbar extends React.ReactElement<NavbarProps> { }
-    interface NavbarClass extends  React.ComponentClass<NavbarProps> { }
+    interface NavbarClass extends React.ComponentClass<NavbarProps> {
+        Brand: NavbarBrandClass;
+        Collapse: NavbarCollapseClass;
+        Header: NavbarHeaderClass;
+        Toggle: NavbarToggleClass;
+    }
     var Navbar: NavbarClass;
     
     // <NavBrand />
@@ -822,6 +856,7 @@ declare module "react-bootstrap" {
     // <Input />
     // ----------------------------------------
     interface InputProps extends React.Props<InputClass> {
+        defaultValue?: any;
         addonAfter?: any; // TODO: Add more specific type
         addonBefore?: any; // TODO: Add more specific type
         bsSize?: string;

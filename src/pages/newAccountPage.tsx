@@ -28,7 +28,7 @@ import {
 	AccountFieldArray,
 	AddAccountDialog
  } from "../dialogs";
-import { historyMixin, EnumEx, ValidateHelper, valueOf } from "../util";
+import { EnumEx, ValidateHelper, valueOf } from "../util";
 import { bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { readAccountProfiles } from "../online";
 
@@ -110,7 +110,6 @@ function validate(values: any, props: Props): Object {
 }
 
 
-@historyMixin
 @reduxForm.reduxForm(
 	{
 		form: "newAccount",
@@ -518,7 +517,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 		.then(
 			(accounts: Account[]) => {
 				accounts.forEach((account: Account) => {
-					if (!_.any(fields.accounts, (a) => a.number.value == account.number)) {
+					if (!_.some(fields.accounts, (a) => a.number.value == account.number)) {
 						fields.accounts.addField(account);
 					}
 				});

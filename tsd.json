@@ -6,76 +6,91 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "node/node.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "chai/chai.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "mocha/mocha.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "redux/redux.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "redux-thunk/redux-thunk.d.ts": {
-      "commit": "56df28f76adb7c11c019282699afdc6e9b0a96f6"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "es6-collections/es6-collections.d.ts": {
-      "commit": "961b76f37bdfcff459cab9ed9fd3f204f0633d5e"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "es6-promise/es6-promise.d.ts": {
-      "commit": "961b76f37bdfcff459cab9ed9fd3f204f0633d5e"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "rx/rx.d.ts": {
-      "commit": "16134c168d021351acb1673ee9659644fc58c424"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "rx/rx-lite.d.ts": {
-      "commit": "16134c168d021351acb1673ee9659644fc58c424"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "react/react.d.ts": {
-      "commit": "7a3d6944036902996b87981e6150900952b35628"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "react-redux/react-redux.d.ts": {
-      "commit": "7a3d6944036902996b87981e6150900952b35628"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "react-router/react-router.d.ts": {
-      "commit": "7a3d6944036902996b87981e6150900952b35628"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "react/react-dom.d.ts": {
-      "commit": "7a3d6944036902996b87981e6150900952b35628"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "react-mixin/react-mixin.d.ts": {
-      "commit": "923c5431d9447db9d5cf41adc5914e3c94c1ff10"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "i18next/i18next.d.ts": {
-      "commit": "56df28f76adb7c11c019282699afdc6e9b0a96f6"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "jquery/jquery.d.ts": {
-      "commit": "56df28f76adb7c11c019282699afdc6e9b0a96f6"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "lodash/lodash.d.ts": {
-      "commit": "24e12a7af994afa2226af70fbfae0adc78736a9e"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "react-bootstrap/react-bootstrap.d.ts": {
-      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "select2/select2.d.ts": {
-      "commit": "24e12a7af994afa2226af70fbfae0adc78736a9e"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "core-decorators/core-decorators.d.ts": {
-      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "react/react-addons-transition-group.d.ts": {
-      "commit": "4c41545030eba44b27ce7209112dbf862f6b1d78"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "react/react-addons-css-transition-group.d.ts": {
-      "commit": "4c41545030eba44b27ce7209112dbf862f6b1d78"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "moment/moment-node.d.ts": {
-      "commit": "fe563dff3428bac1260d1794e2c2ecf8f097535a"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "numeraljs/numeraljs.d.ts": {
-      "commit": "d1f6bde13f2209be42e86c3686761e8bfcbb50a5"
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "express/express.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "i18next-express-middleware/i18next-express-middleware.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "i18next-sprintf-postprocessor/i18next-sprintf-postprocessor.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "serve-static/serve-static.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "mime/mime.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     }
   }
 }

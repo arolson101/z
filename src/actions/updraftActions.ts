@@ -100,8 +100,8 @@ export function updraftAdd(state: UpdraftState, ...changes: Updraft.TableChange<
 	return (dispatch: Dispatch) => {
 		return state.store.add(...changes)
 		.then(() => {
-			let tables = _.pluck(changes, "table") as Updraft.TableAny[];
-			tables = _.unique(tables);
+			let tables = _.map(changes, "table") as Updraft.TableAny[];
+			tables = _.uniq(tables);
 			let promises = tables.map((table) => {
 				const loadAction = tableLoadActionMap.get(table.spec);
 				return dispatch(loadAction(table)) as Promise<any>;

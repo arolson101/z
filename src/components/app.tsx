@@ -18,6 +18,8 @@ export class App extends Component<Props> {
 		if (!this.props.locale) {
 			return <div>...</div>;
 		}
+    
+    t("validate.noAccounts");
 
 		return (
 			<div>

@@ -60,7 +60,7 @@ export function defineUpdraftCollection<Element, Mutator, Query>(tableSpec: Updr
 		state = state || {};
 		switch (action.type) {
 			case SET_ITEMS:
-				return _.indexBy((action as SetItemsAction<Element>).items, pk);
+				return _.keyBy((action as SetItemsAction<Element>).items, pk);
 		}
 		return state;
 	};
