@@ -34,6 +34,7 @@
     "react-bootstrap": "^0.28.2",
     "react-dom": "^0.14.6",
     "react-fa": "^4.0.0",
+    "react-hot-loader": "^2.0.0-alpha-4",
     "react-ladda": "^4.0.0",
     "react-mixin": "^3.0.3",
     "react-redux": "^4.0.6",
