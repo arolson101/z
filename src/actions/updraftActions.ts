@@ -15,7 +15,16 @@ import {
 } from "../types";
 import { UpdraftCollection, defineUpdraftCollection } from "../util";
 
+
+export interface KnownDb {
+  name: string;
+  path: string;
+  size: number;
+  lastUpdate: Date;
+}
+
 export interface UpdraftState {
+  knownDbs?: KnownDb[];
 	store?: Updraft.Store;
 	accountTable?: AccountTable;
 	institutionTable?: InstitutionTable;
@@ -74,7 +83,7 @@ export function updraftOpened(state: UpdraftState): UpdraftOpenAction {
 }
 
 export function updraftReducer(state: UpdraftState, action?: Action): UpdraftState {
-	state = state || null;
+	state = state || { knownDbs: [] };
 	switch (action.type) {
 		case UPDRAFT_OPENED:
 			return (action as UpdraftOpenAction).state;

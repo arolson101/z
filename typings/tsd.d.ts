@@ -36,3 +36,5 @@
 /// <reference path="serve-static/serve-static.d.ts" />
 /// <reference path="mime/mime.d.ts" />
 /// <reference path="rx/rx-lite.d.ts" />
+/// <reference path="sqlite3/sqlite3.d.ts" />
+/// <reference path="sanitize-filename/sanitize-filename.d.ts" />

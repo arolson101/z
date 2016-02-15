@@ -2,6 +2,7 @@
 "use strict";
 
 import { t } from "i18next-client";
+import sanitize = require("sanitize-filename");
 
 export function valueOf<T>(x: ReduxForm.Field<T>): T {
 	if (typeof x.value != "undefined") {
@@ -30,23 +31,43 @@ export class ValidateHelper<Props> {
 		this.errors = errors;
 	}
 
-	checkNonempty(key: string) {
+	checkNonempty(key: string): boolean {
 		if (!this.values[key] && !this.errors[key]) {
 			this.errors[key] = t("validate.nonempty");
+      return false;
 		}
+    return true;
 	}
 
-	checkUnique(key: string, otherValues: { [key: string]: any }) {
+	checkUnique(key: string, otherValues: { [key: string]: any }): boolean {
 		const value = this.values[key];
 		if ((value in otherValues) && !this.errors[key]) {
 			this.errors[key] = t("validate.unique");
+      return false;
 		}
+    return true;
 	}
 
-	checkNumber(key: string) {
+	checkNumber(key: string): boolean {
 		const value = this.values[key];
 		if (!isNumeric(value) && !this.errors[key]) {
 			this.errors[key] = t("validate.numeric");
+      return false;
 		}
+    return true;
 	}
+  
+  checkFilename(key: string): boolean {
+    const value = this.values[key];
+    if (!this.checkNonempty(key)) {
+      return false;
+    }
+    
+    if (sanitize(value) != value) {
+      this.errors[key] = t("validate.filename");
+      return false;
+    }
+    
+    return true;
+  }
 }

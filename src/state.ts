@@ -20,6 +20,7 @@ import {
 	fiReducer,
 	t,
 	UpdraftState,
+  KnownDb,
 	updraftReducer
 } from "./actions";
 

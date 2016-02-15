@@ -91,6 +91,12 @@
     },
     "mime/mime.d.ts": {
       "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "sqlite3/sqlite3.d.ts": {
+      "commit": "bda9391b4987bbf91a713ccaf586c108106ced1f"
+    },
+    "sanitize-filename/sanitize-filename.d.ts": {
+      "commit": "bda9391b4987bbf91a713ccaf586c108106ced1f"
     }
   }
 }

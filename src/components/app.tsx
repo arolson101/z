@@ -1,26 +1,102 @@
 ///<reference path="../project.d.ts"/>
 "use strict";
 
+import { autobind } from "core-decorators";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router";
-import { Component } from "./component";
+import { Grid, Col, Button, ListGroup, ListGroupItem } from "react-bootstrap";
+import * as Icon from "react-fa";
+
 import { Breadcrumbs } from "./breadcrumbs";
-import { AppState, t } from "../state";
+import { AppState, t, UpdraftState, KnownDb } from "../state";
+import { PromptDbNameDialog, NewDbInfo } from "../dialogs/promptDbNameDialog";
 
 interface Props extends React.Props<any> {
 	locale: string;
+  updraft: UpdraftState;
 }
 
-@connect((state: AppState) => ({ locale: state.locale }))
-export class App extends Component<Props> {
+interface State {
+  promptDbName: boolean;
+}
+
+@connect((state: AppState) => ({ locale: state.locale, updraft: state.updraft }))
+export class App extends React.Component<Props, State> {
+  state = {
+    promptDbName: false
+  }
+  
 	render() {
 		if (!this.props.locale) {
-			return <div>...</div>;
+			return this.renderNoLocale();
 		}
-    
-    t("validate.noAccounts");
+    else if (!this.props.updraft.store) {
+      return this.renderNoStore();
+    }
+    else {
+      return this.renderMain();
+    }
+  }
 
+  renderNoLocale() {
+    return <div>...</div>;
+  }
+  
+  renderNoStore() {
+    return (
+      <Grid>
+        <Col>
+          <ListGroup>
+            {this.props.updraft.knownDbs.map((db: KnownDb) => 
+              <ListGroupItem
+                key={db.name}
+                header={db.name}
+                onClick={() => this.onOpenDb(db.name)}
+              >
+                1234 bytes
+                <br/> last modified: yesterday
+              </ListGroupItem>
+            )}
+            <PromptDbNameDialog
+              show={this.state.promptDbName}
+              onSave={this.onCreateDb}
+              onCancel={this.onCancelDb}
+            />
+            <ListGroupItem bsStyle="info" onClick={this.onAddDb} header={t("App.AddDbHeader")}>
+              {t("App.AddDbDescription")}
+            </ListGroupItem>
+          </ListGroup>
+        </Col>
+      </Grid>
+    );
+  }
+  
+  showAddDb(show: boolean) {
+    this.setState({promptDbName: show});
+  }
+  
+  @autobind
+  onAddDb() {
+    this.showAddDb(true);
+  }
+  
+  @autobind
+  onCreateDb(info: NewDbInfo) {
+  }
+  
+  @autobind
+  onCancelDb() {
+    this.showAddDb(false);
+  }
+  
+  @autobind
+  onOpenDb(name: string) {
+    
+  }
+
+  
+  renderMain() {
 		return (
 			<div>
 				<Breadcrumbs items={[
