@@ -1,3 +1,4 @@
+///<reference path="../typings/tsd.d.ts"/>
 'use strict';
 
 require('module').globalPaths.push(__dirname + "/node_modules");
@@ -5,6 +6,8 @@ require('module').globalPaths.push(__dirname + "/node_modules");
 const electron = require('electron');
 const app = electron.app;  // Module to control application life.
 const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
+const fs = require('fs');
+const path = require('path');
 
 const dev = true;
 const port = 3000;
@@ -43,14 +46,22 @@ app.on('window-all-closed', function() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
+  var initPath = path.join(app.getDataPath(), "init.json");
+  
+  var data = readConfig(initPath);
+  
 	// Create the browser window.
-	mainWindow = new BrowserWindow({width: 1280, height: 1024});
+	mainWindow = new BrowserWindow(data.bounds);
 
 	// and load the index.html of the app.
 	mainWindow.loadURL(dev ? ('http://localhost:' + port + '/') :  "http://localhost:8080");
 
 	// Open the DevTools.
 	mainWindow.webContents.openDevTools();
+  
+  mainWindow.on('close', function() {
+    writeConfig(initPath);
+  });
 
 	// Emitted when the window is closed.
 	mainWindow.on('closed', function() {
@@ -60,3 +71,33 @@ app.on('ready', function() {
 		mainWindow = null;
 	});
 });
+
+
+function readConfig(initPath) {
+  var data;
+  try {
+    data = JSON.parse(fs.readFileSync(initPath, 'utf8'));
+  }
+  catch(e) {
+  }
+  
+  if (!data) {
+    data = {};
+  }
+  
+  if (!data.bounds) {
+    data.bounds = {
+      width: 1280,
+      height: 1024
+    };
+  }
+  
+  return data;
+}
+
+function writeConfig(initPath) {
+  var data = { 
+    bounds: mainWindow.getBounds()
+  };
+  fs.writeFileSync(initPath, JSON.stringify(data));
+}
