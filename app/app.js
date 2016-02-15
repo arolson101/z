@@ -48,10 +48,10 @@ app.on('window-all-closed', function() {
 app.on('ready', function() {
   var initPath = path.join(app.getDataPath(), "init.json");
   
-  var data = readConfig(initPath);
+  var config = readConfig(initPath);
   
 	// Create the browser window.
-	mainWindow = new BrowserWindow(data.bounds);
+	mainWindow = new BrowserWindow(config);
 
 	// and load the index.html of the app.
 	mainWindow.loadURL(dev ? ('http://localhost:' + port + '/') :  "http://localhost:8080");
@@ -81,23 +81,19 @@ function readConfig(initPath) {
   catch(e) {
   }
   
-  if (!data) {
-    data = {};
-  }
-  
-  if (!data.bounds) {
-    data.bounds = {
+  return Object.assign(
+    {
       width: 1280,
       height: 1024
-    };
-  }
-  
-  return data;
+    },
+    data
+  );
 }
 
 function writeConfig(initPath) {
-  var data = { 
-    bounds: mainWindow.getBounds()
-  };
+  var data = Object.assign(
+    {}, 
+    mainWindow.getBounds()
+  );
   fs.writeFileSync(initPath, JSON.stringify(data));
 }
