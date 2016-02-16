@@ -46,7 +46,7 @@ app.on('window-all-closed', function() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
-  var initPath = path.join(app.getDataPath(), "init.json");
+  var initPath = path.join(app.getPath("userData"), "init.json");
   
   var config = readConfig(initPath);
   
