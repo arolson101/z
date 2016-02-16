@@ -20,7 +20,7 @@ export interface KnownDb {
   name: string;
   path: string;
   size: number;
-  lastUpdate: Date;
+  lastModified: Date;
 }
 
 export interface UpdraftState {

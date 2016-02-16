@@ -13,8 +13,10 @@
 	},
   
   "App": {
-    "AddDbHeader": "Create",
-    "AddDbDescription": "Create a new data file"
+    "AddDbHeader": "+ New",
+    "AddDbDescription": "Create a new data file",
+    "FileSize": "File size: __fileSize__",
+    "LastModified": "Last modified: __lastModified__"
   },
 
 	"Frequency": {

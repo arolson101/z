@@ -6,6 +6,7 @@ import * as moment from "moment";
 import currentLocaleFunction = require("current-locale");
 import { verify } from "updraft";
 import * as numeral from "numeral";
+import filesize = require("filesize");
 
 import { Thunk, Dispatch, setLocale } from "./actions";
 
@@ -74,4 +75,12 @@ export function formatCurrency(amount: number): string {
 
 export function formatDate(date: Date): string {
 	return moment(date).format("l");
+}
+
+export function formatRelativeTime(date: Date): string {
+	return moment(date).fromNow();
+}
+
+export function formatFilesize(size: number): string {
+  return filesize(size);
 }

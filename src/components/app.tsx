@@ -11,6 +11,7 @@ import * as Icon from "react-fa";
 import { Breadcrumbs } from "./breadcrumbs";
 import { AppState, t, UpdraftState, KnownDb } from "../state";
 import { PromptDbNameDialog, NewDbInfo } from "../dialogs/promptDbNameDialog";
+import { formatFilesize, formatRelativeTime } from "../i18n";
 
 interface Props extends React.Props<any> {
 	locale: string;
@@ -54,8 +55,9 @@ export class App extends React.Component<Props, State> {
                 header={db.name}
                 onClick={() => this.onOpenDb(db.name)}
               >
-                1234 bytes
-                <br/> last modified: yesterday
+                {t("App.FileSize", {fileSize: formatFilesize(db.size)})}
+                <br/>
+                {t("App.LastModified", {lastModified: formatRelativeTime(db.lastModified)})}
               </ListGroupItem>
             )}
             <PromptDbNameDialog
@@ -63,7 +65,7 @@ export class App extends React.Component<Props, State> {
               onSave={this.onCreateDb}
               onCancel={this.onCancelDb}
             />
-            <ListGroupItem bsStyle="info" onClick={this.onAddDb} header={t("App.AddDbHeader")}>
+            <ListGroupItem onClick={this.onAddDb} header={t("App.AddDbHeader")}>
               {t("App.AddDbDescription")}
             </ListGroupItem>
           </ListGroup>

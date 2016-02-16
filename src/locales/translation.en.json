@@ -11,17 +11,19 @@
 		"CREDITLINE": "Credit Line",
 		"CREDITCARD": "Credit Card"
 	},
+  
+  "App": {
+    "AddDbHeader": "New",
+    "AddDbDescription": "Create a new data file",
+    "FileSize": "File size: __fileSize__",
+    "LastModified": "Last modified: __lastModified__"
+  },
 
 	"Frequency": {
 		"YEAR": "Year(s)",
 		"MONTH": "Month(s)",
 		"WEEK": "Week(s)",
 		"DAY": "Day(s)"
-	},
-
-	"sbAdmin2": {
-		"toggleNav": "Toggle navigation",
-		"brand": "SB Admin v2.0"
 	},
 
 	"sidebar": {
@@ -118,7 +120,8 @@
 		"amountHeader": "Amount",
 		"once": "once",
 		"repeatEvery": "repeat every",
-		"add": "Add Budget Item"
+		"add": "Add Budget Item",
+    "editHeader": "Edit"
 	},
 	
 	"AddBudgetDialog": {
@@ -137,11 +140,22 @@
 		"add": "Add Budget Item",
 		"save": "Save Budget Item"
 	},
+  
+  "PromptDbNameDialog": {
+    "title": "New Datastore",
+    "nameLabel": "Name",
+    "namePlaceholder": "asdf",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "",
+    "cancel": "Cancel",
+    "save": "Ok"
+  },
 
 	"validate": {
 		"nonempty": "Required",
 		"unique": "Already used",
 		"noAccounts": "You must add at least one account",
-		"numeric": "Invalid number"
+		"numeric": "Invalid number",
+    "filename": "Invalid character(s)"
 	}
 }

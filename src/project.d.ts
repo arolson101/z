@@ -177,6 +177,12 @@ declare module "string-hash" {
 }
 
 
+declare module "filesize" {
+	function filesize(input: number): string;
+	export = filesize;
+}
+
+
 interface WebpackHMR {
 	accept(dependencies: string[], callback: (updatedDependencies: any) => void): void;
 	accept(dependency: string, callback: () => void): void;
