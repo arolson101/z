@@ -13,7 +13,7 @@
 	},
   
   "App": {
-    "AddDbHeader": "+ New",
+    "AddDbHeader": "New",
     "AddDbDescription": "Create a new data file",
     "FileSize": "File size: __fileSize__",
     "LastModified": "Last modified: __lastModified__"

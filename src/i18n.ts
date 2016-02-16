@@ -10,19 +10,6 @@ import filesize = require("filesize");
 
 import { Thunk, Dispatch, setLocale } from "./actions";
 
-require("file?name=/locales/translation.dev.json!./locales/translation.dev.json");
-require("file?name=/locales/translation.en.json!./locales/translation.en.json");
-require("file?name=/locales/translation.en-AU.json!./locales/translation.en-AU.json");
-require("file?name=/locales/translation.en-CA.json!./locales/translation.en-CA.json");
-require("file?name=/locales/translation.en-GB.json!./locales/translation.en-GB.json");
-require("file?name=/locales/translation.en-US.json!./locales/translation.en-US.json");
-
-// TODO: make these separate loads, rather than bundled in via webpack
-//require("moment/locale/en-us"); - implicit default
-require("moment/locale/en-au");
-require("moment/locale/en-ca");
-require("moment/locale/en-gb");
-
 
 export const supportedLocales = [
 	"en-AU",

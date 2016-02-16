@@ -129,13 +129,6 @@ module.exports = {
 		}),
 	],
 
-	resolveLoader: {
-		root: __dirname + "/node_modules",
-		alias: {
-			'copy': 'file-loader?name=/[name].[ext]',
-		}
-	},
-
 	//devtool: "source-map"
 	devtool: "eval"
 };
