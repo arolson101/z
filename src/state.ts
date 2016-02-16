@@ -31,6 +31,7 @@ export {
 	BudgetCollection,
 	InstitutionCollection,
 	UpdraftState,
+	KnownDb,
 	connect
 };
 

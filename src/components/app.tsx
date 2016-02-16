@@ -10,7 +10,7 @@ import * as Icon from "react-fa";
 
 import { Breadcrumbs } from "./breadcrumbs";
 import { AppState, t, UpdraftState, KnownDb } from "../state";
-import { PromptDbNameDialog, NewDbInfo } from "../dialogs/promptDbNameDialog";
+import { CreateDbDialog, NewDbInfo } from "../dialogs/createDbDialog";
 
 interface Props extends React.Props<any> {
 	locale: string;
@@ -58,7 +58,7 @@ export class App extends React.Component<Props, State> {
                 <br/> last modified: yesterday
               </ListGroupItem>
             )}
-            <PromptDbNameDialog
+            <CreateDbDialog
               show={this.state.promptDbName}
               onSave={this.onCreateDb}
               onCancel={this.onCancelDb}

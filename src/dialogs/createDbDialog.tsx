@@ -57,7 +57,7 @@ function validate(values: any, props: Props): Object {
 		validate
 	}
 )
-export class PromptDbNameDialog extends Component<Props> {
+export class CreateDbDialog extends Component<Props> {
 	render() {
 		const { fields, handleSubmit } = this.props;
 
@@ -84,29 +84,29 @@ export class PromptDbNameDialog extends Component<Props> {
 			<Modal show={this.props.show} onHide={this.onCancel}>
 				<form onSubmit={handleSubmit(this.onSave)}>
 					<Modal.Header closeButton>
-						<Modal.Title>{t("PromptDbNameDialog.title")}</Modal.Title>
+						<Modal.Title>{t("CreateDbDialog.title")}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Input
 							type="text"
-							label={t("PromptDbNameDialog.nameLabel")}
-							placeholder={t("PromptDbNameDialog.namePlaceholder")}
+							label={t("CreateDbDialog.nameLabel")}
+							placeholder={t("CreateDbDialog.namePlaceholder")}
 							{...wrapError(fields.name)}
 						/>
 						<Input
 							type="text"
-							label={t("PromptDbNameDialog.passwordLabel")}
-							placeholder={t("PromptDbNameDialog.passwordPlaceholder")}
+							label={t("CreateDbDialog.passwordLabel")}
+							placeholder={t("CreateDbDialog.passwordPlaceholder")}
 							{...wrapError(fields.password)}
 						/>
 					</Modal.Body>
 					<Modal.Footer>
-						<Button onClick={this.onCancel}>{t("PromptDbNameDialog.cancel")}</Button>
+						<Button onClick={this.onCancel}>{t("CreateDbDialog.cancel")}</Button>
 						<Button
 							bsStyle="primary"
 							type="submit"
 						>
-							{t("PromptDbNameDialog.save")}
+							{t("CreateDbDialog.save")}
 						</Button>
 					</Modal.Footer>
 				</form>
