@@ -5,12 +5,11 @@ import { autobind } from "core-decorators";
 import * as React from "react";
 import {Alert, Panel, Button, Grid, Input, Label, Modal, OverlayTrigger, Row, Col, Table, Tooltip} from "react-bootstrap";
 import * as Icon from "react-fa";
-import { t } from "i18next-client";
 import { verify } from "updraft";
 import * as reduxForm from "redux-form";
 
 import { Component } from "../components/component";
-import { ValidateHelper, valueOf } from "../util";
+import { ValidateHelper, valueOf, translate, TranslateProps } from "../util";
 import { Budget, BudgetChange, Frequency, RRule } from "../types";
 import { AppState, BudgetCollection } from "../state";
 
@@ -21,7 +20,7 @@ export interface NewDbInfo {
 }
 
 
-interface Props extends ReduxForm.Props, React.Props<any> {
+interface Props extends ReduxForm.Props, React.Props<any>, TranslateProps {
 	fields?: {
 		name: ReduxForm.Field<string>;
 		password: ReduxForm.Field<string>;
@@ -47,6 +46,7 @@ function validate(values: any, props: Props): Object {
 }
 
 
+@translate(["PromptDbNameDialog"])
 @reduxForm.reduxForm(
 	{
 		form: "promptDbName",
@@ -59,7 +59,7 @@ function validate(values: any, props: Props): Object {
 )
 export class PromptDbNameDialog extends Component<Props> {
 	render() {
-		const { fields, handleSubmit } = this.props;
+		const { fields, handleSubmit, t } = this.props;
 
 		const wrapErrorHelper = (props: any, error: string) => {
 			if (error) {
@@ -84,29 +84,29 @@ export class PromptDbNameDialog extends Component<Props> {
 			<Modal show={this.props.show} onHide={this.onCancel}>
 				<form onSubmit={handleSubmit(this.onSave)}>
 					<Modal.Header closeButton>
-						<Modal.Title>{t("PromptDbNameDialog.title")}</Modal.Title>
+						<Modal.Title>{t("title")}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Input
 							type="text"
-							label={t("PromptDbNameDialog.nameLabel")}
-							placeholder={t("PromptDbNameDialog.namePlaceholder")}
+							label={t("nameLabel")}
+							placeholder={t("namePlaceholder")}
 							{...wrapError(fields.name)}
 						/>
 						<Input
 							type="text"
-							label={t("PromptDbNameDialog.passwordLabel")}
-							placeholder={t("PromptDbNameDialog.passwordPlaceholder")}
+							label={t("passwordLabel")}
+							placeholder={t("passwordPlaceholder")}
 							{...wrapError(fields.password)}
 						/>
 					</Modal.Body>
 					<Modal.Footer>
-						<Button onClick={this.onCancel}>{t("PromptDbNameDialog.cancel")}</Button>
+						<Button onClick={this.onCancel}>{t("cancel")}</Button>
 						<Button
 							bsStyle="primary"
 							type="submit"
 						>
-							{t("PromptDbNameDialog.save")}
+							{t("save")}
 						</Button>
 					</Modal.Footer>
 				</form>

@@ -7,8 +7,7 @@ import { Row, Grid, Panel } from "react-bootstrap";
 import * as Icon from "react-fa";
 
 import { AccountGroup, accountGroups, Component } from "../components";
-
-import { AppState, FI, t, InstitutionCollection, AccountCollection } from "../state";
+import { AppState, FI, InstitutionCollection, AccountCollection } from "../state";
 import { Account, Institution } from "../types";
 
 interface Props {

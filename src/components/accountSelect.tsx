@@ -8,8 +8,9 @@ import * as Icon from "react-fa";
 import { createSelector } from "reselect";
 
 import { Component } from "./component";
-import { AppState, FI, t } from "../state";
+import { AppState, FI } from "../state";
 import { Account, Institution } from "../types";
+import { translate, TranslateProps } from "../util";
 
 export interface AccountGroup {
 	institution: Institution;
@@ -32,17 +33,20 @@ export const accountGroups = createSelector(
 );
 
 
-interface Props extends InputProps {
+interface Props extends InputProps, TranslateProps {
 	accountGroups?: AccountGroup[];
 }
 
+@translate(["accountSelect"])
 @connect(
 	(state: AppState) => ({accountGroups: accountGroups(state)})
 )
 export class AccountSelect extends Component<Props> {
 	render() {
+    const { t } = this.props;
+    
 		return <Input type="select" {...this.props}>
-			<option>{t("accountSelect.none")}</option>
+			<option>{t("none")}</option>
 			{_.map(this.props.accountGroups, (accountGroup) =>
 				<optgroup key={accountGroup.institution.dbid} label={accountGroup.institution.name}>
 					{_.map(accountGroup.accounts, (account) =>

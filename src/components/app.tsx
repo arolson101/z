@@ -9,11 +9,12 @@ import { Grid, Col, Button, ListGroup, ListGroupItem } from "react-bootstrap";
 import * as Icon from "react-fa";
 
 import { Breadcrumbs } from "./breadcrumbs";
-import { AppState, t, UpdraftState, KnownDb } from "../state";
+import { AppState, UpdraftState, KnownDb } from "../state";
 import { PromptDbNameDialog, NewDbInfo } from "../dialogs/promptDbNameDialog";
 import { formatFilesize, formatRelativeTime } from "../i18n";
+import { translate, TranslateProps } from "../util";
 
-interface Props extends React.Props<any> {
+interface Props extends React.Props<any>, TranslateProps {
 	locale: string;
   updraft: UpdraftState;
 }
@@ -22,6 +23,8 @@ interface State {
   promptDbName: boolean;
 }
 
+
+@translate(["App"])
 @connect((state: AppState) => ({ locale: state.locale, updraft: state.updraft }))
 export class App extends React.Component<Props, State> {
   state = {
@@ -45,6 +48,8 @@ export class App extends React.Component<Props, State> {
   }
   
   renderNoStore() {
+    const { t } = this.props;
+
     return (
       <Grid>
         <Col>
@@ -55,9 +60,9 @@ export class App extends React.Component<Props, State> {
                 header={db.name}
                 onClick={() => this.onOpenDb(db.name)}
               >
-                {t("App.FileSize", {fileSize: formatFilesize(db.size)})}
+                {t("FileSize", {fileSize: formatFilesize(db.size)})}
                 <br/>
-                {t("App.LastModified", {lastModified: formatRelativeTime(db.lastModified)})}
+                {t("LastModified", {lastModified: formatRelativeTime(db.lastModified)})}
               </ListGroupItem>
             )}
             <PromptDbNameDialog
@@ -65,8 +70,8 @@ export class App extends React.Component<Props, State> {
               onSave={this.onCreateDb}
               onCancel={this.onCancelDb}
             />
-            <ListGroupItem onClick={this.onAddDb} header={t("App.AddDbHeader")}>
-              {t("App.AddDbDescription")}
+            <ListGroupItem onClick={this.onAddDb} header={t("AddDbHeader")}>
+              {t("AddDbDescription")}
             </ListGroupItem>
           </ListGroup>
         </Col>

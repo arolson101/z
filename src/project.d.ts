@@ -313,3 +313,26 @@ declare module __RRule {
 declare module "rrule" {
 	export = __RRule.RRule;
 }
+
+declare module "i18next-node-fs-backend" {
+    import * as i18next from "i18next";
+
+    interface i18nextFilesystemBackendProcessor {
+        (): any;
+        process(value: any, key: string, options: Object): void;
+    }
+
+    var FilesystemBackend: i18nextFilesystemBackendProcessor;
+    export default FilesystemBackend;
+}
+
+declare module "react-i18next" {
+	import * as React from "react";
+	import { ClassDecorator } from "react-redux";
+
+  interface I18nextProviderProps {
+    i18n: I18nextStatic;
+  }
+  export class I18nextProvider extends React.Component<I18nextProviderProps, any> {}
+  function translate(namespaces: string[]): ClassDecorator;
+}

@@ -5,10 +5,9 @@ import { autobind } from "core-decorators";
 import * as React from "react";
 import {Alert, Panel, Button, Grid, Input, Label, Modal, OverlayTrigger, Row, Col, Table, Tooltip} from "react-bootstrap";
 import * as Icon from "react-fa";
-import { t } from "i18next-client";
 import * as reduxForm from "redux-form";
 
-import { ValidateHelper, valueOf } from "../util";
+import { ValidateHelper, valueOf, translate, TranslateProps } from "../util";
 import { Account, AccountType, _Account, AccountTable, defaultAccount } from "../types";
 import { Component, ImageCheckbox, EnumSelect } from "../components";
 
@@ -16,7 +15,7 @@ import { Component, ImageCheckbox, EnumSelect } from "../components";
 export interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field<number>, ReduxForm.Field<number>, ReduxForm.Field<string>, ReduxForm.Field<AccountType>, ReduxForm.Field<boolean>> {}
 export interface AccountFieldArray extends ReduxForm.FieldArray<AccountField> {}
 
-interface Props extends ReduxForm.Props, React.Props<any> {
+interface Props extends ReduxForm.Props, React.Props<any>, TranslateProps {
 	fields?: {
 		visible: ReduxForm.Field<boolean>;
 		type: ReduxForm.Field<number>;
@@ -79,6 +78,8 @@ function validate(values: any, props: Props): Object {
 	return errors;
 }
 
+
+@translate(["AddAccountDialog"])
 @reduxForm.reduxForm(
 	{
 		form: "addAccount",
@@ -104,7 +105,7 @@ export class AddAccountDialog extends Component<Props> {
 	}
 
 	render() {
-		const { fields, handleSubmit } = this.props;
+		const { fields, handleSubmit, t } = this.props;
 
 		const wrapErrorHelper = (props: any, error: string) => {
 			if (error) {
@@ -131,33 +132,33 @@ export class AddAccountDialog extends Component<Props> {
 			<Modal show={this.props.show} onHide={this.onCancel}>
 				<form onSubmit={handleSubmit(this.onSave)}>
 					<Modal.Header closeButton>
-						<Modal.Title>{adding ? t("AddAccountDialog.addTitle") : t("AddAccountDialog.editTitle")}</Modal.Title>
+						<Modal.Title>{adding ? t("addTitle") : t("editTitle")}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
-						<EnumSelect label={t("AddAccountDialog.typeLabel")} {...fields.type} enum={AccountType}/>
+						<EnumSelect label={t("typeLabel")} {...fields.type} enum={AccountType}/>
 						<Input
 							type="text"
-							label={t("AddAccountDialog.nameLabel")}
-							placeholder={t("AddAccountDialog.namePlaceholder")}
+							label={t("nameLabel")}
+							placeholder={t("namePlaceholder")}
 							{...wrapError(fields.name)}
 						/>
 						<Input
 							type="text"
-							label={t("AddAccountDialog.numberLabel")}
-							placeholder={t("AddAccountDialog.numberPlaceholder")}
+							label={t("numberLabel")}
+							placeholder={t("numberPlaceholder")}
 							{...wrapError(fields.number)}
 						/>
 					</Modal.Body>
 					<Modal.Footer>
-						<Button onClick={this.onCancel}>{t("AddAccountDialog.cancel")}</Button>
+						<Button onClick={this.onCancel}>{t("cancel")}</Button>
 						{this.props.editing != -1 &&
-							<Button onClick={this.onDelete} bsStyle="danger">{t("AddAccountDialog.delete")}</Button>
+							<Button onClick={this.onDelete} bsStyle="danger">{t("delete")}</Button>
 						}
 						<Button
 							bsStyle="primary"
 							type="submit"
 						>
-							{adding ? t("AddAccountDialog.add") : t("AddAccountDialog.save")}
+							{adding ? t("add") : t("save")}
 						</Button>
 					</Modal.Footer>
 				</form>

@@ -5,12 +5,11 @@ import { autobind } from "core-decorators";
 import * as React from "react";
 import {Alert, Panel, Button, Grid, Input, Label, Modal, OverlayTrigger, Row, Col, Table, Tooltip} from "react-bootstrap";
 import * as Icon from "react-fa";
-import { t } from "i18next-client";
 import { verify } from "updraft";
 import * as reduxForm from "redux-form";
 
 import { Component, ImageCheckbox, EnumSelect, CurrencyInput, AccountSelect, DatePicker } from "../components";
-import { ValidateHelper, valueOf } from "../util";
+import { ValidateHelper, valueOf, translate, TranslateProps } from "../util";
 import { Budget, BudgetChange, Frequency, RRule } from "../types";
 import { AppState, BudgetCollection } from "../state";
 
@@ -20,7 +19,7 @@ enum Recurrance {
 }
 
 
-interface Props extends ReduxForm.Props, React.Props<any> {
+interface Props extends ReduxForm.Props, React.Props<any>, TranslateProps {
 	fields?: {
 		account: ReduxForm.Field<number>;
 		name: ReduxForm.Field<string>;
@@ -65,6 +64,7 @@ function validate(values: any, props: Props): Object {
 }
 
 
+@translate(["AddBudgetDialog"])
 @reduxForm.reduxForm(
 	{
 		form: "addBudget",
@@ -124,7 +124,7 @@ export class AddBudgetDialog extends Component<Props> {
 	}
 
 	render() {
-		const { fields, handleSubmit } = this.props;
+		const { fields, handleSubmit, t } = this.props;
 
 		const wrapErrorHelper = (props: any, error: string) => {
 			if (error) {
@@ -152,20 +152,20 @@ export class AddBudgetDialog extends Component<Props> {
 			<Modal show={this.props.show} onHide={this.onCancel}>
 				<form onSubmit={handleSubmit(this.onSave)}>
 					<Modal.Header closeButton>
-						<Modal.Title>{adding ? t("AddBudgetDialog.addTitle") : t("AddBudgetDialog.editTitle")}</Modal.Title>
+						<Modal.Title>{adding ? t("addTitle") : t("editTitle")}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Input
 							type="text"
-							label={t("AddBudgetDialog.nameLabel")}
-							placeholder={t("AddBudgetDialog.namePlaceholder")}
+							label={t("nameLabel")}
+							placeholder={t("namePlaceholder")}
 							{...wrapError(fields.name)}
 						/>
 						<CurrencyInput
-							label={t("AddBudgetDialog.amountLabel")}
-							placeholder={t("AddBudgetDialog.amountPlaceholder") }
+							label={t("amountLabel")}
+							placeholder={t("amountPlaceholder") }
 							{...wrapError(fields.amount) } />
-						<Input label={t("AddBudgetDialog.recurLabel")}>
+						<Input label={t("recurLabel")}>
 							<Row>
 								<Col xs={4}>
 									<DatePicker
@@ -174,8 +174,8 @@ export class AddBudgetDialog extends Component<Props> {
 								</Col>
 								<Col xs={3}>
 									<Input type="select" {...fields.recurring}>
-										<option value="0">{t("AddBudgetDialog.once")}</option>
-										<option value="1">{t("AddBudgetDialog.repeatEvery")}</option>
+										<option value="0">{t("once")}</option>
+										<option value="1">{t("repeatEvery")}</option>
 									</Input>
 								</Col>
 								{recurring &&
@@ -195,18 +195,18 @@ export class AddBudgetDialog extends Component<Props> {
 								}
 							</Row>
 						</Input>
-						<AccountSelect label={t("AddBudgetDialog.accountLabel")} {...fields.account}/>
+						<AccountSelect label={t("accountLabel")} {...fields.account}/>
 					</Modal.Body>
 					<Modal.Footer>
-						<Button onClick={this.onCancel}>{t("AddBudgetDialog.cancel")}</Button>
+						<Button onClick={this.onCancel}>{t("cancel")}</Button>
 						{this.props.editing != -1 &&
-							<Button onClick={this.onDelete} bsStyle="danger">{t("AddBudgetDialog.delete")}</Button>
+							<Button onClick={this.onDelete} bsStyle="danger">{t("delete")}</Button>
 						}
 						<Button
 							bsStyle="primary"
 							type="submit"
 						>
-							{adding ? t("AddBudgetDialog.add") : t("AddBudgetDialog.save")}
+							{adding ? t("add") : t("save")}
 						</Button>
 					</Modal.Footer>
 				</form>

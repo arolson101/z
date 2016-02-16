@@ -9,7 +9,7 @@ import { syncHistory } from "redux-simple-router";
 import { createHistory, createHashHistory } from "history";
 import * as thunk from "redux-thunk";
 import { Router, Route, /*browserHistory, createMemoryHistory*/ browserHistory } from "react-router";
-
+import { I18nextProvider } from "react-i18next";
 import { createDevTools, persistState } from "redux-devtools";
 import LogMonitor from "redux-devtools-log-monitor";
 import DockMonitor from "redux-devtools-dock-monitor";
@@ -21,7 +21,7 @@ import { App } from "./components/index";
 import { AccountsPage, BudgetPage, NewAccountPage } from "./pages/index";
 import { Action, addAccount, AccountCollection } from "./actions/index";
 import { appState, AppState } from "./state";
-import { i18nInit } from "./i18n";
+import { i18n, i18nInit } from "./i18n";
 import { fiInit } from "./fi";
 import { updraftInit } from "./updraft";
 
@@ -99,20 +99,22 @@ export function main(root: HTMLElement) {
 	// }
 
 	ReactDOM.render(
-		<Provider store={store}>
-			<div>
-				<Router history={browserHistory}>
-					<Route path="/" component={App}>
-						<Route path="accounts" component={AccountsPage}/>
-						<Route path="newAccount" component={NewAccountPage}/>
-						<Route path="budgets" component={BudgetPage}/>
-					</Route>
-				</Router>
+    <I18nextProvider i18n={i18n}>
+      <Provider store={store}>
+        <div>
+          <Router history={browserHistory}>
+            <Route path="/" component={App}>
+              <Route path="accounts" component={AccountsPage}/>
+              <Route path="newAccount" component={NewAccountPage}/>
+              <Route path="budgets" component={BudgetPage}/>
+            </Route>
+          </Router>
 
-				{__DEVELOPMENT__ &&
-					<DevTools/>
-				}
-			</div>
-		</Provider>
+          {__DEVELOPMENT__ &&
+            <DevTools/>
+          }
+        </div>
+      </Provider>
+    </I18nextProvider>
 		, root);
 }

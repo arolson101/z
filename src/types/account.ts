@@ -2,7 +2,7 @@
 "use strict";
 
 import { Column, Mutate as M, Query as Q } from "updraft";
-import { t } from "i18next-client";
+import { i18n } from "../i18n";
 
 // see ofx4js.domain.data.banking.AccountType
 export enum AccountType {
@@ -15,7 +15,7 @@ export enum AccountType {
 
 export module AccountType {
 	export function parse(idx: string): AccountType { return (AccountType as any)[idx]; }
-	export function tr(name: string): string { return t("AccountTypes." + name); }
+	export function tr(name: string): string { return i18n.t("AccountTypes." + name); }
 }
 
 export interface _Account<key, id, str, tAccountType, bool> {

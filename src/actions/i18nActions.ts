@@ -2,12 +2,8 @@
 "use strict";
 
 import { Action } from "./action";
-import * as i18n from "i18next-client";
 
 const SET_LOCALE = "i18n/setLocale";
-
-type tFcn = (key: string, values?: Object) => string;
-export const t: tFcn = i18n.t;
 
 interface SetLocaleAction extends Action {
 	locale: string;
