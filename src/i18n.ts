@@ -34,6 +34,7 @@ export function loadLocale(locale: string): Promise<string> {
     .use(FilesystemBackend)
     .init({
         lng: locale,
+        fallbackLng: "en",
         backend: {
           loadPath: "app/locales/{{ns}}.{{lng}}.json"
         }
