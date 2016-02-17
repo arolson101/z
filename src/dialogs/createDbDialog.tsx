@@ -9,9 +9,9 @@ import { verify } from "updraft";
 import * as reduxForm from "redux-form";
 
 import { Component } from "../components/component";
-import { ValidateHelper, valueOf, translate, TranslateProps } from "../util";
+import { ValidateHelper, valueOf } from "../util";
 import { Budget, BudgetChange, Frequency, RRule } from "../types";
-import { AppState, BudgetCollection } from "../state";
+import { AppState, BudgetCollection, t } from "../state";
 
 
 export interface NewDbInfo {
@@ -20,10 +20,11 @@ export interface NewDbInfo {
 }
 
 
-interface Props extends ReduxForm.Props, React.Props<any>, TranslateProps {
+interface Props extends ReduxForm.Props, React.Props<any> {
 	fields?: {
 		name: ReduxForm.Field<string>;
-		password: ReduxForm.Field<string>;
+		password1: ReduxForm.Field<string>;
+		password2: ReduxForm.Field<string>;
 
 		// index signature to make typescript happy
 		[field: string]: ReduxForm.FieldOpt;
@@ -40,26 +41,31 @@ function validate(values: any, props: Props): Object {
 	let v = new ValidateHelper(values, errors);
 
 	v.checkFilename("name");
-	v.checkNonempty("password");
+	v.checkNonempty("password1");
+	v.checkNonempty("password2");
+  
+  if (!errors["password1"] && values["password1"] != values["password2"]) {
+    errors["password2"] = t("validate.passwordsMatch");
+  }
 
 	return errors;
 }
 
 
-@translate()
 @reduxForm.reduxForm(
 	{
 		form: "promptDbName",
 		fields: [
 			"name",
-      "password"
+      "password1",
+      "password2"
 		],
 		validate
 	}
 )
 export class CreateDbDialog extends Component<Props> {
 	render() {
-		const { fields, handleSubmit, t } = this.props;
+		const { fields, handleSubmit } = this.props;
 
 		const wrapErrorHelper = (props: any, error: string) => {
 			if (error) {
@@ -97,7 +103,13 @@ export class CreateDbDialog extends Component<Props> {
 							type="text"
 							label={t("CreateDbDialog.passwordLabel")}
 							placeholder={t("CreateDbDialog.passwordPlaceholder")}
-							{...wrapError(fields.password)}
+							{...wrapError(fields.password1)}
+						/>
+						<Input
+							type="text"
+							label={t("CreateDbDialog.confirmPasswordLabel")}
+							placeholder={t("CreateDbDialog.confirmPasswordPlaceholder")}
+							{...wrapError(fields.password2)}
 						/>
 					</Modal.Body>
 					<Modal.Footer>
@@ -119,7 +131,7 @@ export class CreateDbDialog extends Component<Props> {
 		const { fields, resetForm, onSave } = this.props;
     onSave({
       name: valueOf(fields.name),
-      password: valueOf(fields.password)
+      password: valueOf(fields.password1)
     });
 		resetForm();
 	}

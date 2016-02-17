@@ -13,7 +13,7 @@ import * as reduxForm from "redux-form";
 import access = require("safe-access");
 import hash = require("string-hash");
 
-import { connect, AppState, FI, UpdraftState } from "../state";
+import { connect, AppState, FI, UpdraftState, t } from "../state";
 import {
 	Account, AccountType, _Account, AccountTable,
 	Institution, InstitutionTable } from "../types";
@@ -28,11 +28,11 @@ import {
 	AccountFieldArray,
 	AddAccountDialog
  } from "../dialogs";
-import { EnumEx, ValidateHelper, valueOf, translate, TranslateProps } from "../util";
+import { EnumEx, ValidateHelper, valueOf } from "../util";
 import { bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { readAccountProfiles } from "../online";
 
-interface Props extends ReduxForm.Props, TranslateProps {
+interface Props extends ReduxForm.Props {
 	isNew?: boolean;
 	updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
 	updatePath?: (path: string) => any;
@@ -103,14 +103,13 @@ function validate(values: any, props: Props): Object {
 	v.checkNonempty("name");
 
 	if (!values.accounts.length) {
-		errors["accounts"] = props.t("validate.noAccounts");
+		errors["accounts"] = t("validate.noAccounts");
 	}
 
 	return errors;
 }
 
 
-@translate()
 @reduxForm.reduxForm(
 	{
 		form: "newAccount",
@@ -143,7 +142,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 	}
 
 	render() {
-		const { fields, filist, handleSubmit, t } = this.props;
+		const { fields, filist, handleSubmit } = this.props;
 		const canGetAccounts: boolean = (
 			!!fields.ofx.value &&
 			!!fields.username.value &&

@@ -15,8 +15,8 @@ import { bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { Component } from "../components";
 import { AddBudgetDialog } from "../dialogs";
 import { AppState, UpdraftState, BudgetCollection, AccountCollection } from "../state";
-import { valueOf, ValidateHelper, translate, TranslateProps } from "../util";
-import { formatCurrency, formatDate } from "../i18n";
+import { valueOf, ValidateHelper } from "../util";
+import { formatCurrency, formatDate, t } from "../i18n";
 
 // TODO: refresh on day change
 
@@ -27,7 +27,7 @@ interface Budget2 {
 	last: Date;
 }
 
-interface Props extends ReduxForm.Props, TranslateProps {
+interface Props extends ReduxForm.Props {
 	budgets2: Budget2[];
 	accounts: AccountCollection;
 	updraft: UpdraftState;
@@ -66,7 +66,7 @@ function currentDate(): Date {
 	return date;
 }
 
-@translate()
+
 @connect(
 	(state: AppState) => ({
 		accounts: state.accounts,
@@ -85,7 +85,7 @@ export class BudgetPage extends React.Component<Props, State> {
 	}
 	
 	render() {
-		const { t, budgets2, fields, handleSubmit } = this.props;
+		const { budgets2, fields, handleSubmit } = this.props;
 
 		return <Grid>
 			<Row>budgets</Row>

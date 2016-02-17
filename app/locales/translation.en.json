@@ -144,9 +144,11 @@
   "CreateDbDialog": {
     "title": "New Datastore",
     "nameLabel": "Name",
-    "namePlaceholder": "asdf",
+    "namePlaceholder": "filename",
     "passwordLabel": "Password",
     "passwordPlaceholder": "",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "",
     "cancel": "Cancel",
     "save": "Ok"
   },
@@ -156,6 +158,7 @@
 		"unique": "Already used",
 		"noAccounts": "You must add at least one account",
 		"numeric": "Invalid number",
-    "filename": "Invalid character(s)"
+    "filename": "Invalid character(s)",
+    "passwordsMatch": "Passwords must match"
 	}
 }

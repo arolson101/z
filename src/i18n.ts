@@ -17,16 +17,20 @@ const appPath = electron.remote.app.getAppPath();
 
 
 export const supportedLocales = [
-	"en-AU",
-	"en-CA",
-	"en-GB",
-	"en-US",
+  "en-AU",
+  "en-CA",
+  "en-GB",
+  "en-US",
 ];
 
 const fallbackLocale = "en-US";
 
 export const i18n = i18next
   .use(FilesystemBackend);
+
+export function t(key: string, options?: Object): string {
+  return i18n.t(key, options);
+}
 
 export function loadLocale(locale: string): Promise<string> {
 	return new Promise((resolve, reject) => {

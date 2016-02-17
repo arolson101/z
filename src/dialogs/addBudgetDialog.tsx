@@ -9,9 +9,9 @@ import { verify } from "updraft";
 import * as reduxForm from "redux-form";
 
 import { Component, ImageCheckbox, EnumSelect, CurrencyInput, AccountSelect, DatePicker } from "../components";
-import { ValidateHelper, valueOf, translate, TranslateProps } from "../util";
+import { ValidateHelper, valueOf } from "../util";
 import { Budget, BudgetChange, Frequency, RRule } from "../types";
-import { AppState, BudgetCollection } from "../state";
+import { AppState, BudgetCollection, t } from "../state";
 
 enum Recurrance {
 	Once,
@@ -19,7 +19,7 @@ enum Recurrance {
 }
 
 
-interface Props extends ReduxForm.Props, React.Props<any>, TranslateProps {
+interface Props extends ReduxForm.Props, React.Props<any> {
 	fields?: {
 		account: ReduxForm.Field<number>;
 		name: ReduxForm.Field<string>;
@@ -64,7 +64,6 @@ function validate(values: any, props: Props): Object {
 }
 
 
-@translate()
 @reduxForm.reduxForm(
 	{
 		form: "addBudget",
@@ -124,7 +123,7 @@ export class AddBudgetDialog extends Component<Props> {
 	}
 
 	render() {
-		const { fields, handleSubmit, t } = this.props;
+		const { fields, handleSubmit } = this.props;
 
 		const wrapErrorHelper = (props: any, error: string) => {
 			if (error) {

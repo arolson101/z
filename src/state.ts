@@ -22,9 +22,11 @@ import {
   KnownDb,
 	updraftReducer
 } from "./actions";
+import { t } from "./i18n";
 
 export {
 	FI,
+  t,
 	AccountCollection,
 	BudgetCollection,
 	InstitutionCollection,

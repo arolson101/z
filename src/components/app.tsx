@@ -9,12 +9,11 @@ import { Grid, Col, Button, ListGroup, ListGroupItem } from "react-bootstrap";
 import * as Icon from "react-fa";
 
 import { Breadcrumbs } from "./breadcrumbs";
-import { AppState, UpdraftState, KnownDb } from "../state";
+import { AppState, UpdraftState, KnownDb, t } from "../state";
 import { CreateDbDialog, NewDbInfo } from "../dialogs/createDbDialog";
 import { formatFilesize, formatRelativeTime } from "../i18n";
-import { translate, TranslateProps } from "../util";
 
-interface Props extends React.Props<any>, TranslateProps {
+interface Props extends React.Props<any> {
 	locale: string;
   updraft: UpdraftState;
 }
@@ -24,7 +23,6 @@ interface State {
 }
 
 
-@translate()
 @connect((state: AppState) => ({ locale: state.locale, updraft: state.updraft }))
 export class App extends React.Component<Props, State> {
   state = {
@@ -48,10 +46,6 @@ export class App extends React.Component<Props, State> {
   }
   
   renderNoStore() {
-    const { t } = this.props;
-		
-		console.log(t("App.AddDbHeader"));
-
     return (
       <Grid>
         <Col>

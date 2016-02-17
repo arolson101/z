@@ -7,7 +7,8 @@ import {Alert, Panel, Button, Grid, Input, Label, Modal, OverlayTrigger, Row, Co
 import * as Icon from "react-fa";
 import * as reduxForm from "redux-form";
 
-import { ValidateHelper, valueOf, translate, TranslateProps } from "../util";
+import { t } from "../state";
+import { ValidateHelper, valueOf } from "../util";
 import { Account, AccountType, _Account, AccountTable, defaultAccount } from "../types";
 import { Component, ImageCheckbox, EnumSelect } from "../components";
 
@@ -15,7 +16,7 @@ import { Component, ImageCheckbox, EnumSelect } from "../components";
 export interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field<number>, ReduxForm.Field<number>, ReduxForm.Field<string>, ReduxForm.Field<AccountType>, ReduxForm.Field<boolean>> {}
 export interface AccountFieldArray extends ReduxForm.FieldArray<AccountField> {}
 
-interface Props extends ReduxForm.Props, React.Props<any>, TranslateProps {
+interface Props extends ReduxForm.Props, React.Props<any> {
 	fields?: {
 		visible: ReduxForm.Field<boolean>;
 		type: ReduxForm.Field<number>;
@@ -79,7 +80,6 @@ function validate(values: any, props: Props): Object {
 }
 
 
-@translate()
 @reduxForm.reduxForm(
 	{
 		form: "addAccount",
@@ -105,7 +105,7 @@ export class AddAccountDialog extends Component<Props> {
 	}
 
 	render() {
-		const { fields, handleSubmit, t } = this.props;
+		const { fields, handleSubmit } = this.props;
 
 		const wrapErrorHelper = (props: any, error: string) => {
 			if (error) {
