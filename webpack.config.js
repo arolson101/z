@@ -7,10 +7,9 @@ var ForkCheckerPlugin = require('awesome-typescript-loader').ForkCheckerPlugin;
 
 var production = 0;
 
-var nodeModules = {};
+var nodeModules = { "electron": "commonjs electron" };
 fs.readdirSync('node_modules')
   .filter(function(x) {
-    //if(x.match(/react/)) return false;
     return ['.bin', 'react-fa'].indexOf(x) === -1;
   })
   .forEach(function(mod) {
@@ -128,13 +127,6 @@ module.exports = {
 			"ofx4js": "ofx4js",
 		}),
 	],
-
-	resolveLoader: {
-		root: __dirname + "/node_modules",
-		alias: {
-			'copy': 'file-loader?name=/[name].[ext]',
-		}
-	},
 
 	//devtool: "source-map"
 	devtool: "eval"

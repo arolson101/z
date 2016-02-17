@@ -1,7 +1,7 @@
 {
 	"appBrand": "Easy Money",
 
-	"RecentTransactions": "Recent Transactions 2",
+	"RecentTransactions": "Recent Transactions",
 	"Budget": "Budget",
 
 	"AccountTypes": {
@@ -13,8 +13,10 @@
 	},
   
   "App": {
-    "AddDbHeader": "Create",
-    "AddDbDescription": "Create a new data file"
+    "AddDbHeader": "New",
+    "AddDbDescription": "Create a new data file",
+    "FileSize": "File size: {{fileSize}}",
+    "LastModified": "Last modified: {{lastModified}}"
   },
 
 	"Frequency": {
@@ -71,7 +73,7 @@
 		"getAccountList": "Get account list from server",
 		"errorGettingAccounts": "Error Getting Accounts",
 		"successGettingAccounts": "Success",
-		"successGettingAccountsMessage": "Found __numAccounts__ accounts",
+		"successGettingAccountsMessage": "Found {{numAccounts}} accounts",
 		"toggleVisTooltip": "Show or hide account from sidebar",
 		"accounts": "Accounts",
 		"accountVisible": "Visible",

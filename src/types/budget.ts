@@ -3,7 +3,7 @@
 
 import { Column, Mutate as M, Query as Q, verify } from "updraft";
 import RRule = require("rrule");
-import { t } from "i18next-client";
+import { i18n } from "../i18n";
 
 export { RRule };
 
@@ -42,7 +42,7 @@ export enum Frequency {
 
 export module Frequency {
 	export function parse(idx: string): Frequency { return (Frequency as any)[idx]; }
-	export function tr(name: string): string { return t("Frequency." + name); }
+	export function tr(name: string): string { return i18n.t("Frequency." + name); }
 	export function toRRuleFreq(value: Frequency): __RRule.Frequency {
 		verify(typeof value == "number", "value is not a number: %s", value);
 		switch (value) {

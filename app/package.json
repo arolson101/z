@@ -3,8 +3,5 @@
   "version": "1.0.0",
   "description": "",
   "author": "",
-  "license": "ISC",
-  "main": "app.js",
-  "dependencies": {
-  }
+  "main": "app.js"
 }

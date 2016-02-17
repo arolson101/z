@@ -11,11 +11,11 @@ import { createSelector } from "reselect";
 import RRule = require("rrule");
 
 import { Budget, BudgetChange, Frequency } from "../types";
-import { t, bindActionCreators, updraftAdd, updatePath } from "../actions";
+import { bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { Component } from "../components";
 import { AddBudgetDialog } from "../dialogs";
 import { AppState, UpdraftState, BudgetCollection, AccountCollection } from "../state";
-import { valueOf, ValidateHelper } from "../util";
+import { valueOf, ValidateHelper, translate, TranslateProps } from "../util";
 import { formatCurrency, formatDate } from "../i18n";
 
 // TODO: refresh on day change
@@ -27,7 +27,7 @@ interface Budget2 {
 	last: Date;
 }
 
-interface Props extends ReduxForm.Props {
+interface Props extends ReduxForm.Props, TranslateProps {
 	budgets2: Budget2[];
 	accounts: AccountCollection;
 	updraft: UpdraftState;
@@ -66,6 +66,7 @@ function currentDate(): Date {
 	return date;
 }
 
+@translate(["BudgetPage"])
 @connect(
 	(state: AppState) => ({
 		accounts: state.accounts,
@@ -84,18 +85,18 @@ export class BudgetPage extends React.Component<Props, State> {
 	}
 	
 	render() {
-		const { budgets2, fields, handleSubmit } = this.props;
+		const { t, budgets2, fields, handleSubmit } = this.props;
 
 		return <Grid>
 			<Row>budgets</Row>
 			<Table>
 				<thead>
 					<tr>
-						<th>{t("BudgetPage.nameHeader")}</th>
-						<th>{t("BudgetPage.amountHeader")}</th>
-						<th>{t("BudgetPage.nextOccurrenceHeader")}</th>
-						<th>{t("BudgetPage.accountHeader")}</th>
-						<th>{t("BudgetPage.editHeader")}</th>
+						<th>{t("nameHeader")}</th>
+						<th>{t("amountHeader")}</th>
+						<th>{t("nextOccurrenceHeader")}</th>
+						<th>{t("accountHeader")}</th>
+						<th>{t("editHeader")}</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -106,7 +107,7 @@ export class BudgetPage extends React.Component<Props, State> {
 							<td>{budget.budget.name}</td>
 							<td>{formatCurrency(budget.budget.amount)}</td>
 							<td>{formatDate(budget.next || budget.last)}</td>
-							<td>{account ? account.name : t("BudgetPage.noAccount")}</td>
+							<td>{account ? account.name : t("noAccount")}</td>
 							<td>
 								<Button
 									type="button"
@@ -128,7 +129,7 @@ export class BudgetPage extends React.Component<Props, State> {
 				onCancel={this.onModalHide}
 				onDelete={this.onDelete}
 			/>
-			<Button onClick={this.onAddBudget}>{t("BudgetPage.add")}</Button>
+			<Button onClick={this.onAddBudget}>{t("add")}</Button>
 		</Grid>;
 	}
 	

@@ -1,26 +1,19 @@
 ///<reference path="./project.d.ts"/>
 "use strict";
 
-import * as i18n from "i18next-client";
+import electron = require("electron");
 import * as moment from "moment";
 import currentLocaleFunction = require("current-locale");
 import { verify } from "updraft";
 import * as numeral from "numeral";
+import filesize = require("filesize");
+import i18next = require("i18next");
+import FilesystemBackend = require("i18next-node-fs-backend");
+import path = require("path");
 
 import { Thunk, Dispatch, setLocale } from "./actions";
 
-require("file?name=/locales/translation.dev.json!./locales/translation.dev.json");
-require("file?name=/locales/translation.en.json!./locales/translation.en.json");
-require("file?name=/locales/translation.en-AU.json!./locales/translation.en-AU.json");
-require("file?name=/locales/translation.en-CA.json!./locales/translation.en-CA.json");
-require("file?name=/locales/translation.en-GB.json!./locales/translation.en-GB.json");
-require("file?name=/locales/translation.en-US.json!./locales/translation.en-US.json");
-
-// TODO: make these separate loads, rather than bundled in via webpack
-//require("moment/locale/en-us"); - implicit default
-require("moment/locale/en-au");
-require("moment/locale/en-ca");
-require("moment/locale/en-gb");
+const appPath = electron.remote.app.getAppPath();
 
 
 export const supportedLocales = [
@@ -32,20 +25,29 @@ export const supportedLocales = [
 
 const fallbackLocale = "en-US";
 
+export const i18n = i18next
+  .use(FilesystemBackend);
+
 export function loadLocale(locale: string): Promise<string> {
 	return new Promise((resolve, reject) => {
-		i18n.init({
-			lng: locale,
-			resGetPath: 'locales/__ns__.__lng__.json'
-		}, (err: any) => {
-			if (err) {
-				reject(err);
-			}
-			else {
-				resolve(locale);
-			}
-		})
-	});
+    i18n
+    .use(FilesystemBackend)
+    .init({
+        lng: locale,
+        backend: {
+          loadPath: "app/locales/translation.{{ns}}.{{lng}}.json"
+        }
+      },
+      (err: any) => {
+        if (err) {
+          reject(err);
+        }
+        else {
+          resolve(locale);
+        }
+      }
+    );
+  });
 }
 
 
@@ -74,4 +76,12 @@ export function formatCurrency(amount: number): string {
 
 export function formatDate(date: Date): string {
 	return moment(date).format("l");
+}
+
+export function formatRelativeTime(date: Date): string {
+	return moment(date).fromNow();
+}
+
+export function formatFilesize(size: number): string {
+  return filesize(size);
 }

@@ -1,7 +1,7 @@
 ///<reference path="../project.d.ts"/>
 "use strict";
 
-import { t } from "i18next-client";
+import { i18n } from "../i18n";
 import sanitize = require("sanitize-filename");
 
 export function valueOf<T>(x: ReduxForm.Field<T>): T {
@@ -33,7 +33,7 @@ export class ValidateHelper<Props> {
 
 	checkNonempty(key: string): boolean {
 		if (!this.values[key] && !this.errors[key]) {
-			this.errors[key] = t("validate.nonempty");
+			this.errors[key] = i18n.t("validate.nonempty");
       return false;
 		}
     return true;
@@ -42,7 +42,7 @@ export class ValidateHelper<Props> {
 	checkUnique(key: string, otherValues: { [key: string]: any }): boolean {
 		const value = this.values[key];
 		if ((value in otherValues) && !this.errors[key]) {
-			this.errors[key] = t("validate.unique");
+			this.errors[key] = i18n.t("validate.unique");
       return false;
 		}
     return true;
@@ -51,7 +51,7 @@ export class ValidateHelper<Props> {
 	checkNumber(key: string): boolean {
 		const value = this.values[key];
 		if (!isNumeric(value) && !this.errors[key]) {
-			this.errors[key] = t("validate.numeric");
+			this.errors[key] = i18n.t("validate.numeric");
       return false;
 		}
     return true;
@@ -64,7 +64,7 @@ export class ValidateHelper<Props> {
     }
     
     if (sanitize(value) != value) {
-      this.errors[key] = t("validate.filename");
+      this.errors[key] = i18n.t("validate.filename");
       return false;
     }
     

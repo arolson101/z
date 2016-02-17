@@ -13,7 +13,7 @@ import * as reduxForm from "redux-form";
 import access = require("safe-access");
 import hash = require("string-hash");
 
-import { connect, AppState, FI, t, UpdraftState } from "../state";
+import { connect, AppState, FI, UpdraftState } from "../state";
 import {
 	Account, AccountType, _Account, AccountTable,
 	Institution, InstitutionTable } from "../types";
@@ -28,11 +28,11 @@ import {
 	AccountFieldArray,
 	AddAccountDialog
  } from "../dialogs";
-import { EnumEx, ValidateHelper, valueOf } from "../util";
+import { EnumEx, ValidateHelper, valueOf, translate, TranslateProps } from "../util";
 import { bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { readAccountProfiles } from "../online";
 
-interface Props extends ReduxForm.Props {
+interface Props extends ReduxForm.Props, TranslateProps {
 	isNew?: boolean;
 	updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
 	updatePath?: (path: string) => any;
@@ -103,13 +103,14 @@ function validate(values: any, props: Props): Object {
 	v.checkNonempty("name");
 
 	if (!values.accounts.length) {
-		errors["accounts"] = t("validate.noAccounts");
+		errors["accounts"] = props.t("validate:noAccounts");
 	}
 
 	return errors;
 }
 
 
+@translate(["NewAccountPage"])
 @reduxForm.reduxForm(
 	{
 		form: "newAccount",
@@ -142,7 +143,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 	}
 
 	render() {
-		const { fields, filist, handleSubmit } = this.props;
+		const { fields, filist, handleSubmit, t } = this.props;
 		const canGetAccounts: boolean = (
 			!!fields.ofx.value &&
 			!!fields.username.value &&
@@ -174,9 +175,9 @@ export class NewAccountPage extends React.Component<Props, State> {
 				<Row>
 					<Col xs={12}>
 						<Select2
-							label={t("NewAccountPage.institutionLabel")}
-							help={t("NewAccountPage.institutionHelp")}
-							placeholder={t("NewAccountPage.institutionPlaceholder")}
+							label={t("institutionLabel")}
+							help={t("institutionHelp")}
+							placeholder={t("institutionPlaceholder")}
 							opts={{allowClear:true}}
 							{...fields.institution}
 							onChange={this.onInstitutionChange}
@@ -193,9 +194,9 @@ export class NewAccountPage extends React.Component<Props, State> {
 					<Col xs={12} md={6}>
 						<Input
 							type="text"
-							label={t("NewAccountPage.nameLabel")}
-							help={t("NewAccountPage.nameHelp")}
-							placeholder={t("NewAccountPage.namePlaceholder")}
+							label={t("nameLabel")}
+							help={t("nameHelp")}
+							placeholder={t("namePlaceholder")}
 							{...wrapError(fields.name)}
 						/>
 					</Col>
@@ -203,8 +204,8 @@ export class NewAccountPage extends React.Component<Props, State> {
 					<Col xs={12} md={6}>
 						<Input
 							type="text"
-							label={t("NewAccountPage.webLabel")}
-							placeholder={t("NewAccountPage.webPlaceholder")}
+							label={t("webLabel")}
+							placeholder={t("webPlaceholder")}
 							{...fields.web}
 						/>
 					</Col>
@@ -215,8 +216,8 @@ export class NewAccountPage extends React.Component<Props, State> {
 						<Input
 							type="textarea"
 							rows={4}
-							label={t("NewAccountPage.addressLabel")}
-							placeholder={t("NewAccountPage.addressPlaceholder")}
+							label={t("addressLabel")}
+							placeholder={t("addressPlaceholder")}
 							{...fields.address}
 						/>
 					</Col>
@@ -225,8 +226,8 @@ export class NewAccountPage extends React.Component<Props, State> {
 						<Input
 							type="textarea"
 							rows={4}
-							label={t("NewAccountPage.notesLabel")}
-							placeholder={t("NewAccountPage.notesPlaceholder")}
+							label={t("notesLabel")}
+							placeholder={t("notesPlaceholder")}
 							{...fields.notes}
 						/>
 					</Col>
@@ -234,20 +235,20 @@ export class NewAccountPage extends React.Component<Props, State> {
 
 				<Input
 					type="checkbox"
-					label={t("NewAccountPage.enableOnline")}
+					label={t("enableOnline")}
 					{...fields.online}
 				/>
 
 				<Collapse in={fields.online.checked}>
 					<div>
-						<Panel header={t("NewAccountPage.ofxInfo")}>
+						<Panel header={t("ofxInfo")}>
 							<Row>
 								<Col xs={6} md={3}>
 									<Input
 										type="text"
-										label={t("NewAccountPage.fidLabel")}
-										help={t("NewAccountPage.fidHelp")}
-										placeholder={t("NewAccountPage.fidPlaceholder")}
+										label={t("fidLabel")}
+										help={t("fidHelp")}
+										placeholder={t("fidPlaceholder")}
 										{...fields.fid}
 									/>
 								</Col>
@@ -255,9 +256,9 @@ export class NewAccountPage extends React.Component<Props, State> {
 								<Col xs={6} md={3}>
 									<Input
 										type="text"
-										label={t("NewAccountPage.orgLabel")}
-										help={t("NewAccountPage.orgHelp")}
-										placeholder={t("NewAccountPage.orgPlaceholder")}
+										label={t("orgLabel")}
+										help={t("orgHelp")}
+										placeholder={t("orgPlaceholder")}
 										{...fields.org}
 									/>
 								</Col>
@@ -265,23 +266,23 @@ export class NewAccountPage extends React.Component<Props, State> {
 								<Col xs={12} md={6}>
 									<Input
 										type="text"
-										label={t("NewAccountPage.ofxLabel")}
-										help={t("NewAccountPage.ofxHelp")}
-										placeholder={t("NewAccountPage.ofxPlaceholder")}
+										label={t("ofxLabel")}
+										help={t("ofxHelp")}
+										placeholder={t("ofxPlaceholder")}
 										{...fields.ofx}
 									/>
 								</Col>
 							</Row>
 						</Panel>
 
-						<Panel header={t("NewAccountPage.userpassInfo")}>
+						<Panel header={t("userpassInfo")}>
 							<Row>
 								<Col xs={6}>
 									<Input
 										type="text"
-										label={t("NewAccountPage.usernameLabel")}
-										help={t("NewAccountPage.usernameHelp")}
-										placeholder={t("NewAccountPage.usernamePlaceholder")}
+										label={t("usernameLabel")}
+										help={t("usernameHelp")}
+										placeholder={t("usernamePlaceholder")}
 										{...fields.username}
 									/>
 								</Col>
@@ -289,9 +290,9 @@ export class NewAccountPage extends React.Component<Props, State> {
 								<Col xs={6}>
 									<Input
 										type="text"
-										label={t("NewAccountPage.passwordLabel")}
-										help={t("NewAccountPage.passwordHelp")}
-										placeholder={t("NewAccountPage.passwordPlaceholder")}
+										label={t("passwordLabel")}
+										help={t("passwordHelp")}
+										placeholder={t("passwordPlaceholder")}
 										{...fields.password}
 									/>
 								</Col>
@@ -300,14 +301,14 @@ export class NewAccountPage extends React.Component<Props, State> {
 					</div>
 				</Collapse>
 
-				<Panel header={t("NewAccountPage.accounts")}>
+				<Panel header={t("accounts")}>
 					<Table>
 						<thead>
 							<tr>
-								<th>{t("NewAccountPage.accountVisible")}</th>
-								<th>{t("NewAccountPage.accountType")}</th>
-								<th>{t("NewAccountPage.accountName")}</th>
-								<th>{t("NewAccountPage.accountNumber")}</th>
+								<th>{t("accountVisible")}</th>
+								<th>{t("accountType")}</th>
+								<th>{t("accountName")}</th>
+								<th>{t("accountNumber")}</th>
 								<th></th>
 							</tr>
 						</thead>
@@ -351,8 +352,8 @@ export class NewAccountPage extends React.Component<Props, State> {
 							onDismiss={() => this.setState({gettingAccountsSuccess: null})}
 							dismissAfter={2000}
 							>
-							<h4>{t("NewAccountPage.successGettingAccounts")}</h4>
-							<p>{t("NewAccountPage.successGettingAccountsMessage", {numAccounts: this.state.gettingAccountsSuccess})}</p>
+							<h4>{t("successGettingAccounts")}</h4>
+							<p>{t("successGettingAccountsMessage", {numAccounts: this.state.gettingAccountsSuccess})}</p>
 						</Alert>
 					}
 					{this.state.gettingAccountsError &&
@@ -360,7 +361,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 							bsStyle="danger"
 							onDismiss={() => this.setState({gettingAccountsError: null})}
 							>
-							<h4>{t("NewAccountPage.errorGettingAccounts")}</h4>
+							<h4>{t("errorGettingAccounts")}</h4>
 							<p>{this.state.gettingAccountsError}</p>
 						</Alert>
 					}
@@ -373,7 +374,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 							<Button
 								type="button"
 								bsStyle="success"
-								onClick={this.onAddAccount}>{t("NewAccountPage.addAccount")}
+								onClick={this.onAddAccount}>{t("addAccount")}
 							</Button>
 							{" "}
 							{fields.online.checked &&
@@ -384,7 +385,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 									onClick={this.onGetAccountList}
 									>
 										<Icon name={this.state.gettingAccounts ? "fa-spinner fa-pulse" : "download"}/>
-										{" " + t("NewAccountPage.getAccountList")}
+										{" " + t("getAccountList")}
 								</Button>
 							}
 						</Col>
@@ -392,12 +393,12 @@ export class NewAccountPage extends React.Component<Props, State> {
 				</Panel>
 
 				<div className="modal-footer">
-					<Button onClick={this.onClose}>{t("NewAccountPage.close")}</Button>
+					<Button onClick={this.onClose}>{t("close")}</Button>
 					<Button
 						bsStyle="primary"
 						onClick={handleSubmit(this.onSave)}
 					>
-						{t("NewAccountPage.save")}
+						{t("save")}
 					</Button>
 				</div>
 

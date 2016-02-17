@@ -18,20 +18,18 @@ import {
 	institutionCollectionReducer,
 	FI,
 	fiReducer,
-	t,
 	UpdraftState,
   KnownDb,
 	updraftReducer
 } from "./actions";
 
 export {
-	t,
 	FI,
 	AccountCollection,
 	BudgetCollection,
 	InstitutionCollection,
 	UpdraftState,
-	KnownDb,
+  KnownDb,
 	connect
 };
 
