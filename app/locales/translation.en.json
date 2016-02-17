@@ -1,6 +1,6 @@
 {
 	"appBrand": "Easy Money",
-
+  
 	"RecentTransactions": "Recent Transactions",
 	"Budget": "Budget",
 
@@ -13,8 +13,10 @@
 	},
   
   "App": {
-    "AddDbHeader": "New",
-    "AddDbDescription": "Create a new data file",
+    "CreateDbHeader": "New",
+    "CreateDbDescription": "Create a new data file",
+    "OpenDbHeader": "Open",
+    "OpenDbDescription": "Open an existing data file",
     "FileSize": "File size: {{fileSize}}",
     "LastModified": "Last modified: {{lastModified}}"
   },
@@ -142,15 +144,23 @@
 	},
   
   "CreateDbDialog": {
-    "title": "New Datastore",
-    "nameLabel": "Name",
-    "namePlaceholder": "filename",
+    "createTitle": "New Datastore",
+    "openTitle": "Open Datastore",
+    "pathLabel": "Path",
+    "pathPlaceholder": "File location",
+    "browseButton": "...",
+    "openDialogTitle": "Create store",
+    "saveDialogTitle": "Create store",
+    "filetypeName": "Z database files",
+    "filetypeExt": "zdb",
+    "filetypeAll": "All files",
     "passwordLabel": "Password",
     "passwordPlaceholder": "",
     "confirmPasswordLabel": "Confirm Password",
     "confirmPasswordPlaceholder": "",
     "cancel": "Cancel",
-    "save": "Ok"
+    "open": "Open",
+    "create": "Create"
   },
 
 	"validate": {

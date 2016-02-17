@@ -10,23 +10,28 @@ import * as Icon from "react-fa";
 
 import { Breadcrumbs } from "./breadcrumbs";
 import { AppState, UpdraftState, KnownDb, t } from "../state";
-import { CreateDbDialog, NewDbInfo } from "../dialogs/createDbDialog";
+import { CreateDbDialog } from "../dialogs/createDbDialog";
 import { formatFilesize, formatRelativeTime } from "../i18n";
 
 interface Props extends React.Props<any> {
 	locale: string;
   updraft: UpdraftState;
+	history: ReactRouter.History;
 }
 
 interface State {
-  promptDbName: boolean;
+  createDbDialogShown?: boolean;
+  createDbDialogOpen?: boolean;
 }
 
 
-@connect((state: AppState) => ({ locale: state.locale, updraft: state.updraft }))
+@connect(
+  (state: AppState) => ({ locale: state.locale, updraft: state.updraft })
+)
 export class App extends React.Component<Props, State> {
   state = {
-    promptDbName: false
+    createDbDialogShown: false,
+    createDbDialogOpen: false
   }
   
 	render() {
@@ -62,12 +67,16 @@ export class App extends React.Component<Props, State> {
               </ListGroupItem>
             )}
             <CreateDbDialog
-              show={this.state.promptDbName}
-              onSave={this.onCreateDb}
+              show={this.state.createDbDialogShown}
+              open={this.state.createDbDialogOpen}
               onCancel={this.onCancelDb}
+              history={this.props.history}
             />
-            <ListGroupItem onClick={this.onAddDb} header={t("App.AddDbHeader")}>
-              {t("App.AddDbDescription")}
+            <ListGroupItem onClick={this.onOpenDb} header={t("App.OpenDbHeader")}>
+              {t("App.OpenDbDescription")}
+            </ListGroupItem>
+            <ListGroupItem onClick={this.onShowCreate} header={t("App.CreateDbHeader")}>
+              {t("App.CreateDbDescription")}
             </ListGroupItem>
           </ListGroup>
         </Col>
@@ -75,27 +84,23 @@ export class App extends React.Component<Props, State> {
     );
   }
   
-  showAddDb(show: boolean) {
-    this.setState({promptDbName: show});
+  showCreateDb(show: boolean, open: boolean = false) {
+    this.setState({createDbDialogShown: show, createDbDialogOpen: open});
   }
   
   @autobind
-  onAddDb() {
-    this.showAddDb(true);
-  }
-  
-  @autobind
-  onCreateDb(info: NewDbInfo) {
+  onShowCreate() {
+    this.showCreateDb(true, false);
   }
   
   @autobind
   onCancelDb() {
-    this.showAddDb(false);
+    this.showCreateDb(false);
   }
   
   @autobind
   onOpenDb(name: string) {
-    
+    this.showCreateDb(true, true);
   }
 
   

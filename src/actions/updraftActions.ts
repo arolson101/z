@@ -14,6 +14,7 @@ import {
 	budgetSpec
 } from "../types";
 import { UpdraftCollection, defineUpdraftCollection } from "../util";
+import sqlite3 = require("sqlite3");
 
 
 export interface KnownDb {
@@ -25,6 +26,7 @@ export interface KnownDb {
 
 export interface UpdraftState {
   knownDbs?: KnownDb[];
+  sdb?: sqlite3.Database;
 	store?: Updraft.Store;
 	accountTable?: AccountTable;
 	institutionTable?: InstitutionTable;
@@ -118,4 +120,83 @@ export function updraftAdd(state: UpdraftState, ...changes: Updraft.TableChange<
 			return Promise.all(promises);
 		});
 	};
-};
+}
+
+
+export interface CreateDbInfo {
+  path: string;
+  password: string;
+}
+
+
+export function updraftCreateDb(info: CreateDbInfo): ThunkPromise {
+  return openDb(info.path, info.password, sqlite3.OPEN_CREATE);
+}
+
+
+export function updraftOpenDb(info: CreateDbInfo): ThunkPromise {
+  return openDb(info.path, info.password, sqlite3.OPEN_READWRITE);
+}
+
+
+function openDb(path: string, password: string, mode: number): ThunkPromise {
+	return (dispatch: Dispatch) => {
+    return sqliteOpen(path, mode)
+    .then(sdb => sqliteKey(sdb, password))
+    .then(sdb => {
+      let db = Updraft.createSQLiteWrapper(sdb);
+      let store = Updraft.createStore({db});
+      let state: UpdraftState = {
+        store,
+        sdb
+      };
+      
+      state.accountTable = store.createTable(accountSpec);
+      state.institutionTable = store.createTable(institutionSpec);
+      state.budgetTable = store.createTable(budgetSpec);
+      
+      return store.open()
+      .then(() => {
+        dispatch(updraftOpened(state));
+        dispatch(updraftLoadData(state));
+      });
+    });
+  };
+}
+
+
+function sqliteOpen(path: string, mode: number): Promise<sqlite3.Database> {
+  return new Promise<sqlite3.Database>((resolve, reject) => {
+    let sdb = new sqlite3.Database(path, /*mode,*/ (err: Error) => {
+      if (err) {
+        reject(err);
+      }
+      else {
+        resolve(sdb);
+      }
+    });
+  });
+}
+
+
+function sqliteKey(sdb: sqlite3.Database, key: string): Promise<sqlite3.Database> {
+  return new Promise<sqlite3.Database>((resolve, reject) => {
+    // set the key
+    sdb.run("PRAGMA key='" + key.replace("'", "''") + "';", (err: Error) => {
+      if (err) {
+        reject(err);
+      }
+      else {
+        // test the key
+        sdb.run("SELECT count(*) FROM sqlite_master;", (err2: Error) => {
+          if (err2) {
+            reject(err2);
+          }
+          else {
+            resolve(sdb);
+          }
+        });
+      }
+    });
+  });
+}
