@@ -37,7 +37,8 @@ interface Props extends InputProps, TranslateProps {
 	accountGroups?: AccountGroup[];
 }
 
-@translate(["accountSelect"])
+
+@translate()
 @connect(
 	(state: AppState) => ({accountGroups: accountGroups(state)})
 )
@@ -46,7 +47,7 @@ export class AccountSelect extends Component<Props> {
     const { t } = this.props;
     
 		return <Input type="select" {...this.props}>
-			<option>{t("none")}</option>
+			<option>{t("AccountSelect.none")}</option>
 			{_.map(this.props.accountGroups, (accountGroup) =>
 				<optgroup key={accountGroup.institution.dbid} label={accountGroup.institution.name}>
 					{_.map(accountGroup.accounts, (account) =>

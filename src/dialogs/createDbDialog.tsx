@@ -46,7 +46,7 @@ function validate(values: any, props: Props): Object {
 }
 
 
-@translate(["PromptDbNameDialog"])
+@translate()
 @reduxForm.reduxForm(
 	{
 		form: "promptDbName",
@@ -84,29 +84,29 @@ export class CreateDbDialog extends Component<Props> {
 			<Modal show={this.props.show} onHide={this.onCancel}>
 				<form onSubmit={handleSubmit(this.onSave)}>
 					<Modal.Header closeButton>
-						<Modal.Title>{t("title")}</Modal.Title>
+						<Modal.Title>{t("CreateDbDialog.title")}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
 						<Input
 							type="text"
-							label={t("nameLabel")}
-							placeholder={t("namePlaceholder")}
+							label={t("CreateDbDialog.nameLabel")}
+							placeholder={t("CreateDbDialog.namePlaceholder")}
 							{...wrapError(fields.name)}
 						/>
 						<Input
 							type="text"
-							label={t("passwordLabel")}
-							placeholder={t("passwordPlaceholder")}
+							label={t("CreateDbDialog.passwordLabel")}
+							placeholder={t("CreateDbDialog.passwordPlaceholder")}
 							{...wrapError(fields.password)}
 						/>
 					</Modal.Body>
 					<Modal.Footer>
-						<Button onClick={this.onCancel}>{t("cancel")}</Button>
+						<Button onClick={this.onCancel}>{t("CreateDbDialog.cancel")}</Button>
 						<Button
 							bsStyle="primary"
 							type="submit"
 						>
-							{t("save")}
+							{t("CreateDbDialog.save")}
 						</Button>
 					</Modal.Footer>
 				</form>

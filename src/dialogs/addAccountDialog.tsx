@@ -79,7 +79,7 @@ function validate(values: any, props: Props): Object {
 }
 
 
-@translate(["AddAccountDialog"])
+@translate()
 @reduxForm.reduxForm(
 	{
 		form: "addAccount",
@@ -132,33 +132,33 @@ export class AddAccountDialog extends Component<Props> {
 			<Modal show={this.props.show} onHide={this.onCancel}>
 				<form onSubmit={handleSubmit(this.onSave)}>
 					<Modal.Header closeButton>
-						<Modal.Title>{adding ? t("addTitle") : t("editTitle")}</Modal.Title>
+						<Modal.Title>{adding ? t("AddAccountDialog.addTitle") : t("AddAccountDialog.editTitle")}</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
-						<EnumSelect label={t("typeLabel")} {...fields.type} enum={AccountType}/>
+						<EnumSelect label={t("AddAccountDialog.typeLabel")} {...fields.type} enum={AccountType}/>
 						<Input
 							type="text"
-							label={t("nameLabel")}
-							placeholder={t("namePlaceholder")}
+							label={t("AddAccountDialog.nameLabel")}
+							placeholder={t("AddAccountDialog.namePlaceholder")}
 							{...wrapError(fields.name)}
 						/>
 						<Input
 							type="text"
-							label={t("numberLabel")}
-							placeholder={t("numberPlaceholder")}
+							label={t("AddAccountDialog.numberLabel")}
+							placeholder={t("AddAccountDialog.numberPlaceholder")}
 							{...wrapError(fields.number)}
 						/>
 					</Modal.Body>
 					<Modal.Footer>
-						<Button onClick={this.onCancel}>{t("cancel")}</Button>
+						<Button onClick={this.onCancel}>{t("AddAccountDialog.cancel")}</Button>
 						{this.props.editing != -1 &&
-							<Button onClick={this.onDelete} bsStyle="danger">{t("delete")}</Button>
+							<Button onClick={this.onDelete} bsStyle="danger">{t("AddAccountDialog.delete")}</Button>
 						}
 						<Button
 							bsStyle="primary"
 							type="submit"
 						>
-							{adding ? t("add") : t("save")}
+							{adding ? t("AddAccountDialog.add") : t("AddAccountDialog.save")}
 						</Button>
 					</Modal.Footer>
 				</form>

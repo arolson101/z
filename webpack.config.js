@@ -7,8 +7,9 @@ var ForkCheckerPlugin = require('awesome-typescript-loader').ForkCheckerPlugin;
 
 var production = 0;
 
-var nodeModules = { "electron": "commonjs electron" };
+var nodeModules = {};
 fs.readdirSync('node_modules')
+	.concat(["electron"])
   .filter(function(x) {
     return ['.bin', 'react-fa'].indexOf(x) === -1;
   })
@@ -19,59 +20,11 @@ fs.readdirSync('node_modules')
 module.exports = {
   context: path.join(__dirname, 'src'),
 
-	entry: //{
-		// vendor:
-		// [
-		// 	"bootstrap/dist/css/bootstrap.min.css",
-		// 	"bootstrap-datepicker/dist/css/bootstrap-datepicker3.css",
-		// 	"select2/dist/css/select2.css",
-		// 	"x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css",
-
-		// 	"bootstrap",
-		// 	"bootstrap-datepicker/dist/js/bootstrap-datepicker.js",
-		// 	"core-decorators",
-		// 	"current-locale",
-		// 	"filist",
-		// 	"history",
-		// 	"i18next-client",
-		// 	"jquery",
-		// 	"lodash",
-		// 	//"metisMenu",
-		// 	"moment",
-		// 	"numeral",
-		// 	"ofx4js",
-		// 	"radium",
-		// 	"react",
-		// 	"react-dom",
-		// 	"react-bootstrap",
-		// 	"react-fa",
-		// 	"react-ladda",
-		// 	"react-mixin",
-		// 	"react-router",
-		// 	"redux",
-		// 	"redux-devtools",
-		// 	"redux-devtools-dock-monitor",
-		// 	"redux-devtools-log-monitor",
-		// 	"redux-form",
-		// 	"redux-simple-router",
-		// 	"rrule",
-		// 	"rrule/lib/nlp",
-		// 	"safe-access",
-		// 	"select2",
-		// 	"string-hash",
-		// 	"sortablejs",
-		// 	"updraft",
-		// 	"x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js",
-		// ],
-		//app:
-		 [
-			"./index.ts"
-		],
-	//},
+	entry: [
+		"./index.ts"
+	],
 	
-	//target: "electron",
   externals: nodeModules,
-  //externals: /^[a-z\-0-9]+$/,
 
 	output: {
 		path: __dirname + "/app",
@@ -81,12 +34,6 @@ module.exports = {
 
 	resolve: {
 		extensions: ['', '.js', '.jsx', '.ts', '.tsx'],
-		//root: [path.join(__dirname, "bower_components")]
-    
-    alias: {
-      // https://github.com/i18next/i18next/issues/477
-      i18next: 'i18next/lib/index.js'
-    }
 	},
 
 	module: {
@@ -108,12 +55,6 @@ module.exports = {
 				NODE_ENV: JSON.stringify(production ? "production" : "development")
 			}
 		}),
-
-		// // separate vendor chunk
-		// new webpack.optimize.CommonsChunkPlugin({
-		// 	name: "vendor",
-		// 	filename: "vendor.js"
-		// }),
 
 		// globals
 		new webpack.ProvidePlugin({

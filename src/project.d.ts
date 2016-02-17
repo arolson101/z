@@ -334,5 +334,7 @@ declare module "react-i18next" {
     i18n: I18nextStatic;
   }
   export class I18nextProvider extends React.Component<I18nextProviderProps, any> {}
+  function translate(): ClassDecorator;
+  function translate(namespace: string): ClassDecorator;
   function translate(namespaces: string[]): ClassDecorator;
 }

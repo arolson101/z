@@ -10,7 +10,7 @@ import * as Icon from "react-fa";
 
 import { Breadcrumbs } from "./breadcrumbs";
 import { AppState, UpdraftState, KnownDb } from "../state";
-import { PromptDbNameDialog, NewDbInfo } from "../dialogs/promptDbNameDialog";
+import { CreateDbDialog, NewDbInfo } from "../dialogs/createDbDialog";
 import { formatFilesize, formatRelativeTime } from "../i18n";
 import { translate, TranslateProps } from "../util";
 
@@ -24,7 +24,7 @@ interface State {
 }
 
 
-@translate(["App"])
+@translate()
 @connect((state: AppState) => ({ locale: state.locale, updraft: state.updraft }))
 export class App extends React.Component<Props, State> {
   state = {
@@ -49,6 +49,8 @@ export class App extends React.Component<Props, State> {
   
   renderNoStore() {
     const { t } = this.props;
+		
+		console.log(t("App.AddDbHeader"));
 
     return (
       <Grid>
@@ -60,9 +62,9 @@ export class App extends React.Component<Props, State> {
                 header={db.name}
                 onClick={() => this.onOpenDb(db.name)}
               >
-                {t("FileSize", {fileSize: formatFilesize(db.size)})}
+                {t("App.FileSize", {fileSize: formatFilesize(db.size)})}
                 <br/>
-                {t("LastModified", {lastModified: formatRelativeTime(db.lastModified)})}
+                {t("App.LastModified", {lastModified: formatRelativeTime(db.lastModified)})}
               </ListGroupItem>
             )}
             <CreateDbDialog
@@ -70,8 +72,8 @@ export class App extends React.Component<Props, State> {
               onSave={this.onCreateDb}
               onCancel={this.onCancelDb}
             />
-            <ListGroupItem onClick={this.onAddDb} header={t("AddDbHeader")}>
-              {t("AddDbDescription")}
+            <ListGroupItem onClick={this.onAddDb} header={t("App.AddDbHeader")}>
+              {t("App.AddDbDescription")}
             </ListGroupItem>
           </ListGroup>
         </Col>

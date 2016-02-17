@@ -66,7 +66,7 @@ function currentDate(): Date {
 	return date;
 }
 
-@translate(["BudgetPage"])
+@translate()
 @connect(
 	(state: AppState) => ({
 		accounts: state.accounts,
@@ -92,11 +92,11 @@ export class BudgetPage extends React.Component<Props, State> {
 			<Table>
 				<thead>
 					<tr>
-						<th>{t("nameHeader")}</th>
-						<th>{t("amountHeader")}</th>
-						<th>{t("nextOccurrenceHeader")}</th>
-						<th>{t("accountHeader")}</th>
-						<th>{t("editHeader")}</th>
+						<th>{t("BudgetPage.nameHeader")}</th>
+						<th>{t("BudgetPage.amountHeader")}</th>
+						<th>{t("BudgetPage.nextOccurrenceHeader")}</th>
+						<th>{t("BudgetPage.accountHeader")}</th>
+						<th>{t("BudgetPage.editHeader")}</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -107,7 +107,7 @@ export class BudgetPage extends React.Component<Props, State> {
 							<td>{budget.budget.name}</td>
 							<td>{formatCurrency(budget.budget.amount)}</td>
 							<td>{formatDate(budget.next || budget.last)}</td>
-							<td>{account ? account.name : t("noAccount")}</td>
+							<td>{account ? account.name : t("BudgetPage.noAccount")}</td>
 							<td>
 								<Button
 									type="button"
@@ -129,7 +129,7 @@ export class BudgetPage extends React.Component<Props, State> {
 				onCancel={this.onModalHide}
 				onDelete={this.onDelete}
 			/>
-			<Button onClick={this.onAddBudget}>{t("add")}</Button>
+			<Button onClick={this.onAddBudget}>{t("BudgetPage.add")}</Button>
 		</Grid>;
 	}
 	

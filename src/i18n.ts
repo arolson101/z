@@ -35,7 +35,7 @@ export function loadLocale(locale: string): Promise<string> {
     .init({
         lng: locale,
         backend: {
-          loadPath: "app/locales/translation.{{ns}}.{{lng}}.json"
+          loadPath: "app/locales/{{ns}}.{{lng}}.json"
         }
       },
       (err: any) => {

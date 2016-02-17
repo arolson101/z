@@ -141,7 +141,7 @@
 		"save": "Save Budget Item"
 	},
   
-  "PromptDbNameDialog": {
+  "CreateDbDialog": {
     "title": "New Datastore",
     "nameLabel": "Name",
     "namePlaceholder": "asdf",
