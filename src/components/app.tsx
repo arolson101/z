@@ -4,9 +4,7 @@
 import { autobind } from "core-decorators";
 import * as React from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router";
-import { Grid, Col, Button, ListGroup, ListGroupItem } from "react-bootstrap";
-import * as Icon from "react-fa";
+import { Grid, Col, ListGroup, ListGroupItem } from "react-bootstrap";
 
 import { Breadcrumbs } from "./breadcrumbs";
 import { AppState, UpdraftState, KnownDb, t } from "../state";
@@ -14,9 +12,9 @@ import { CreateDbDialog } from "../dialogs/createDbDialog";
 import { formatFilesize, formatRelativeTime } from "../i18n";
 
 interface Props extends React.Props<any> {
-	locale: string;
+  locale: string;
   updraft: UpdraftState;
-	history: ReactRouter.History;
+  history: ReactRouter.History;
 }
 
 interface State {
@@ -32,12 +30,12 @@ export class App extends React.Component<Props, State> {
   state = {
     createDbDialogShown: false,
     createDbDialogOpen: false
-  }
-  
-	render() {
-		if (!this.props.locale) {
-			return this.renderNoLocale();
-		}
+  };
+
+  render() {
+    if (!this.props.locale) {
+      return this.renderNoLocale();
+    }
     else if (!this.props.updraft.store) {
       return this.renderNoStore();
     }
@@ -49,13 +47,13 @@ export class App extends React.Component<Props, State> {
   renderNoLocale() {
     return <div>...</div>;
   }
-  
+
   renderNoStore() {
     return (
       <Grid>
         <Col>
           <ListGroup>
-            {this.props.updraft.knownDbs.map((db: KnownDb) => 
+            {this.props.updraft.knownDbs.map((db: KnownDb) =>
               <ListGroupItem
                 key={db.name}
                 header={db.name}
@@ -83,38 +81,38 @@ export class App extends React.Component<Props, State> {
       </Grid>
     );
   }
-  
+
   showCreateDb(show: boolean, open: boolean = false) {
     this.setState({createDbDialogShown: show, createDbDialogOpen: open});
   }
-  
+
   @autobind
   onShowCreate() {
     this.showCreateDb(true, false);
   }
-  
+
   @autobind
   onCancelDb() {
     this.showCreateDb(false);
   }
-  
+
   @autobind
   onOpenDb(name: string) {
     this.showCreateDb(true, true);
   }
 
-  
+
   renderMain() {
-		return (
-			<div>
-				<Breadcrumbs items={[
-					{href: "/", title: "Home"},
-					{href: "/accounts", title: "accounts"},
-					{href: "/newAccount", title: "new account"},
-					{href: "/budgets", title: "budgets"}
-				]}/>
-				{this.props.children}
-			</div>
-		);
-	}
+    return (
+      <div>
+        <Breadcrumbs items={[
+          {href: "/", title: "Home"},
+          {href: "/accounts", title: "accounts"},
+          {href: "/newAccount", title: "new account"},
+          {href: "/budgets", title: "budgets"}
+        ]}/>
+        {this.props.children}
+      </div>
+    );
+  }
 }

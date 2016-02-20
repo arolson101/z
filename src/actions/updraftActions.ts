@@ -3,15 +3,15 @@
 
 import { Action, Dispatch, Thunk, ThunkPromise } from "./action";
 import {
-	Account,
-	AccountTable,
-	accountSpec,
-	Institution,
-	InstitutionTable,
-	institutionSpec,
-	Budget,
-	BudgetTable,
-	budgetSpec
+  Account,
+  AccountTable,
+  accountSpec,
+  Institution,
+  InstitutionTable,
+  institutionSpec,
+  Budget,
+  BudgetTable,
+  budgetSpec
 } from "../types";
 import { UpdraftCollection, defineUpdraftCollection } from "../util";
 import sqlite3 = require("sqlite3");
@@ -27,14 +27,14 @@ export interface KnownDb {
 export interface UpdraftState {
   knownDbs?: KnownDb[];
   sdb?: sqlite3.Database;
-	store?: Updraft.Store;
-	accountTable?: AccountTable;
-	institutionTable?: InstitutionTable;
-	budgetTable?: BudgetTable;
+  store?: Updraft.Store;
+  accountTable?: AccountTable;
+  institutionTable?: InstitutionTable;
+  budgetTable?: BudgetTable;
 }
 
 interface UpdraftOpenAction extends Action {
-	state: UpdraftState;
+  state: UpdraftState;
 }
 
 
@@ -42,9 +42,9 @@ export { Account };
 export type AccountCollection = UpdraftCollection<Account>;
 
 export const {
-	load: loadAccounts,
-	add: addAccount,
-	reducer: accountCollectionReducer
+  load: loadAccounts,
+  add: addAccount,
+  reducer: accountCollectionReducer
 } = defineUpdraftCollection(accountSpec);
 
 
@@ -52,9 +52,9 @@ export { Budget };
 export type BudgetCollection = UpdraftCollection<Budget>;
 
 export const {
-	load: loadBudgets,
-	add: addBudget,
-	reducer: budgetCollectionReducer
+  load: loadBudgets,
+  add: addBudget,
+  reducer: budgetCollectionReducer
 } = defineUpdraftCollection(budgetSpec);
 
 
@@ -62,64 +62,64 @@ export { Institution };
 export type InstitutionCollection = UpdraftCollection<Institution>;
 
 export const {
-	load: loadInstitutions,
-	add: addInstitution,
-	reducer: institutionCollectionReducer
+  load: loadInstitutions,
+  add: addInstitution,
+  reducer: institutionCollectionReducer
 } = defineUpdraftCollection(institutionSpec);
 
 
 const UPDRAFT_OPENED = "updraft/opened";
 
-type loadAction = (table: Updraft.TableAny) => ThunkPromise; 
+type loadAction = (table: Updraft.TableAny) => ThunkPromise;
 const tableLoadActionMap = new Map<Updraft.TableSpecAny, loadAction>([
-	[accountSpec, loadAccounts],
-	[institutionSpec, loadInstitutions],
-	[budgetSpec, loadBudgets]
+  [accountSpec, loadAccounts],
+  [institutionSpec, loadInstitutions],
+  [budgetSpec, loadBudgets]
 ]);
 
 export function updraftOpened(state: UpdraftState): UpdraftOpenAction {
-	return {
-		type: UPDRAFT_OPENED,
-		state
-	};
+  return {
+    type: UPDRAFT_OPENED,
+    state
+  };
 }
 
 export function updraftReducer(state: UpdraftState, action?: Action): UpdraftState {
-	state = state || { knownDbs: [] };
-	switch (action.type) {
-		case UPDRAFT_OPENED:
-			return (action as UpdraftOpenAction).state;
-	}
-	
-	return state;
+  state = state || { knownDbs: [] };
+  switch (action.type) {
+    case UPDRAFT_OPENED:
+      return (action as UpdraftOpenAction).state;
+    default:
+      return state;
+  }
 }
 
 function tableForSpec(state: UpdraftState, spec: Updraft.TableSpecAny): Updraft.TableAny {
-	return _.find(state as any, (value: any, key: string) => value && ((value as Updraft.TableAny).spec === spec));
+  return _.find(state as any, (value: any, key: string) => value && ((value as Updraft.TableAny).spec === spec));
 }
 
 export function updraftLoadData(state: UpdraftState): Thunk {
-	return (dispatch: Dispatch) => {
-		tableLoadActionMap.forEach((loadAction, spec) => {
-			const table = tableForSpec(state, spec);
-			dispatch(loadAction(table));
-		});
-	};
+  return (dispatch: Dispatch) => {
+    tableLoadActionMap.forEach((loadAction, spec) => {
+      const table = tableForSpec(state, spec);
+      dispatch(loadAction(table));
+    });
+  };
 }
 
 export function updraftAdd(state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]): ThunkPromise {
-	return (dispatch: Dispatch) => {
-		return state.store.add(...changes)
-		.then(() => {
-			let tables = _.map(changes, "table") as Updraft.TableAny[];
-			tables = _.uniq(tables);
-			let promises = tables.map((table) => {
-				const loadAction = tableLoadActionMap.get(table.spec);
-				return dispatch(loadAction(table)) as Promise<any>;
-			});
-			return Promise.all(promises);
-		});
-	};
+  return (dispatch: Dispatch) => {
+    return state.store.add(...changes)
+    .then(() => {
+      let tables = _.map(changes, "table") as Updraft.TableAny[];
+      tables = _.uniq(tables);
+      let promises = tables.map((table) => {
+        const loadAction = tableLoadActionMap.get(table.spec);
+        return dispatch(loadAction(table)) as Promise<any>;
+      });
+      return Promise.all(promises);
+    });
+  };
 }
 
 
@@ -140,7 +140,7 @@ export function updraftOpenDb(info: CreateDbInfo): ThunkPromise {
 
 
 function openDb(path: string, password: string, mode: number): ThunkPromise {
-	return (dispatch: Dispatch) => {
+  return (dispatch: Dispatch) => {
     return sqliteOpen(path, mode)
     .then(sdb => sqliteKey(sdb, password))
     .then(sdb => {
@@ -150,11 +150,11 @@ function openDb(path: string, password: string, mode: number): ThunkPromise {
         store,
         sdb
       };
-      
+
       state.accountTable = store.createTable(accountSpec);
       state.institutionTable = store.createTable(institutionSpec);
       state.budgetTable = store.createTable(budgetSpec);
-      
+
       return store.open()
       .then(() => {
         dispatch(updraftOpened(state));

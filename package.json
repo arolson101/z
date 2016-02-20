@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "tslint": "node_modules/.bin/tslint 'src/**/*.ts*'",
     "serve": "webpack-dev-server --content-base app/ --inline --history-api-fallback --no-info",
     "chrome": "open -a Google\\ Chrome http://localhost:8765/webpack-dev-server/ --args --disable-web-security",
     "start": "node_modules/.bin/electron app",
@@ -87,6 +88,8 @@
     "sockjs-client": "^1.0.3",
     "style-loader": "^0.13.0",
     "ts-node": "^0.5.5",
+    "tslint": "^3.4.0",
+    "tslint-loader": "^2.1.0",
     "typescript": "^1.7.5",
     "typescript-register": "^1.1.0",
     "webpack": "^1.12.12",

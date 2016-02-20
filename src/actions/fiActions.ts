@@ -1,5 +1,4 @@
 ///<reference path="../project.d.ts"/>
-"use strict";
 
 import { Action } from "./action";
 import { verify } from "updraft";
@@ -22,11 +21,11 @@ export function fiLoaded(filist: FI[]): FIAction {
   };
 }
 
-export function fiReducer(state: FI[], action: Action): FI[] {
-  state = state || null;
+export function fiReducer(state: FI[] = null, action: Action): FI[] {
   switch (action.type) {
     case FI_LOADED:
-      return (action as FIAction).filist; 
+      return (action as FIAction).filist;
+    default:
+      return state;
   }
-  return state;
 }

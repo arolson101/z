@@ -1,5 +1,4 @@
 ///<reference path="../project.d.ts"/>
-"use strict";
 
 import { Column, Mutate as M, Query as Q } from "updraft";
 import { t } from "../i18n";
@@ -14,8 +13,8 @@ export enum AccountType {
 }
 
 export module AccountType {
-	export function parse(idx: string): AccountType { return (AccountType as any)[idx]; }
-	export function tr(name: string): string { return t("AccountTypes." + name); }
+  export function parse(idx: string): AccountType { return (AccountType as any)[idx]; }
+  export function tr(name: string): string { return t("AccountTypes." + name); }
 }
 
 export interface _Account<key, id, str, tAccountType, bool> {
@@ -28,7 +27,7 @@ export interface _Account<key, id, str, tAccountType, bool> {
 }
 
 export interface Account extends _Account<number, number, string, AccountType, boolean> {
-	[key: string]: any;
+  [key: string]: any;
 }
 export interface AccountQuery extends _Account<Q.num, Q.num, Q.str, Q.enm<AccountType>, Q.bool> {}
 export interface AccountChange extends _Account<number, M.num, M.str, M.enm<AccountType>, M.bool> {}
@@ -36,7 +35,7 @@ export type AccountTable = Updraft.Table<Account, AccountChange, AccountQuery>;
 export type AccountTableSpec = Updraft.TableSpec<Account, AccountChange, AccountQuery>;
 
 export const accountSpec: AccountTableSpec = {
-	name: "accounts",
+  name: "accounts",
   columns: {
     dbid: Column.Int().Key(),
     institution: Column.Int(),

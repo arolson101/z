@@ -1,12 +1,11 @@
 ///<reference path="./project.d.ts"/>
-"use strict";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { createStore, combineReducers, applyMiddleware, compose } from "redux";
+import { createStore, applyMiddleware, compose } from "redux";
 import { connect, Provider } from "react-redux";
 import { syncHistory } from "redux-simple-router";
-import { createHistory, createHashHistory } from "history";
+import { createHistory/*, createHashHistory*/ } from "history";
 import * as thunk from "redux-thunk";
 import { Router, Route, /*browserHistory, createMemoryHistory*/ browserHistory } from "react-router";
 import { createDevTools, persistState } from "redux-devtools";
@@ -18,41 +17,41 @@ require("bootstrap/dist/css/bootstrap.min.css");
 
 import { App } from "./components/index";
 import { AccountsPage, BudgetPage, NewAccountPage } from "./pages/index";
-import { Action, addAccount, AccountCollection } from "./actions/index";
+import { Action, AccountCollection } from "./actions/index";
 import { appState, AppState } from "./state";
-import { i18n, i18nInit } from "./i18n";
+import { i18nInit } from "./i18n";
 import { fiInit } from "./fi";
 import { updraftInit } from "./updraft";
 
 const DevTools = createDevTools(
-	<DockMonitor toggleVisibilityKey="ctrl-h" changePositionKey="ctrl-q" defaultIsVisible={false}>
-		<LogMonitor theme="tomorrow"/>
-	</DockMonitor>
+  <DockMonitor toggleVisibilityKey="ctrl-h" changePositionKey="ctrl-q" defaultIsVisible={false}>
+    <LogMonitor theme="tomorrow"/>
+  </DockMonitor>
 );
 
 interface Props {
-	accounts: AccountCollection;
+  accounts: AccountCollection;
 }
 
 
 class AccountList extends React.Component<Props, any> {
-	render() {
-		return <div>{Object.keys(this.props.accounts).length} accounts:
-			{Object.keys(this.props.accounts).map((accountId: any) => {
-				let accountIdn: number = accountId;
-				let account = this.props.accounts[accountIdn];
-				return <div key={accountIdn}>{account.name}</div>;
-			})}
-		</div>;
-	}
+  render() {
+    return <div>{Object.keys(this.props.accounts).length} accounts:
+      {Object.keys(this.props.accounts).map((accountId: any) => {
+        let accountIdn: number = accountId;
+        let account = this.props.accounts[accountIdn];
+        return <div key={accountIdn}>{account.name}</div>;
+      })}
+    </div>;
+  }
 }
 
 
 @connect((state: AppState) => ({ accounts: state.accounts }))
 class AppAccountList extends React.Component<any, any> {
-	render() {
-		return <AccountList {...this.props}/>;
-	}
+  render() {
+    return <AccountList {...this.props}/>;
+  }
 }
 
 
@@ -60,7 +59,7 @@ function getDebugSessionKey() {
   // You can write custom logic here!
   // By default we try to read the key from ?debug_session=<key> in the address bar
   const matches = window.location.href.match(/[?&]debug_session=([^&]+)\b/);
-  return (matches && matches.length > 0)? matches[1] : null;
+  return (matches && matches.length > 0) ? matches[1] : null;
 }
 
 
@@ -68,36 +67,36 @@ type createStoreFunction<State, Action> = (reducer: Redux.Reducer<State, Action>
 
 
 export function main(root: HTMLElement) {
-	const middleware: any[] = [thunk];
+  const middleware: any[] = [thunk];
 
-	let finalCreateStore: createStoreFunction<AppState, Action>;
-	if (__DEVELOPMENT__) {
-		finalCreateStore = compose(
-			applyMiddleware(...middleware),
-			persistState(getDebugSessionKey()),
-			DevTools.instrument()
-		)(createStore);
-	}
-	else {
-		finalCreateStore = applyMiddleware(...middleware)(createStore);
-	}
+  let finalCreateStore: createStoreFunction<AppState, Action>;
+  if (__DEVELOPMENT__) {
+    finalCreateStore = compose(
+      applyMiddleware(...middleware),
+      persistState(getDebugSessionKey()),
+      DevTools.instrument()
+    )(createStore);
+  }
+  else {
+    finalCreateStore = applyMiddleware(...middleware)(createStore);
+  }
 
-	const store = finalCreateStore(appState);
-	const history = createHistory();
+  const store = finalCreateStore(appState);
+  const history = createHistory();
 
-	syncHistory(history, store);
+  syncHistory(history, store);
 
-	store.dispatch(i18nInit());
-	store.dispatch(fiInit());
-	store.dispatch(updraftInit());
-	
-	// if (module.hot) {
-	// 	module.hot.accept("./state", () => {
-	// 		store.replaceReducer(require("./state").appState);
-	// 	});
-	// }
+  store.dispatch(i18nInit());
+  store.dispatch(fiInit());
+  store.dispatch(updraftInit());
 
-	ReactDOM.render(
+  // if (module.hot) {
+  //  module.hot.accept("./state", () => {
+  //    store.replaceReducer(require("./state").appState);
+  //  });
+  // }
+
+  ReactDOM.render(
     <Provider store={store}>
       <div>
         <Router history={browserHistory}>
@@ -112,6 +111,7 @@ export function main(root: HTMLElement) {
           <DevTools/>
         }
       </div>
-    </Provider>
-		, root);
+    </Provider>,
+    root
+  );
 }

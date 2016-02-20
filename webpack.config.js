@@ -23,7 +23,7 @@ module.exports = {
 	entry: [
 		"./index.ts"
 	],
-	
+
   externals: nodeModules,
 
 	output: {
@@ -37,6 +37,10 @@ module.exports = {
 	},
 
 	module: {
+    preLoaders: [
+      { test: /\.tsx?$/, loader: "tslint" }
+    ],
+
 		loaders: [
 			{ test: /\.tsx?$/, loaders: ['react-hot', 'awesome-typescript-loader?forkChecker=true'] },
 			{ test: /\.css$/, loader: "style-loader!css-loader" },
@@ -44,6 +48,11 @@ module.exports = {
 			{ test: /\.(png|gif|jpg)($|\?)/, loader: "file?name=images/[name].[ext]" },
 		]
 	},
+
+  tslint: {
+//    emitErrors: true,
+//    failOnHint: true
+  },
 
 	plugins: [
 		new ForkCheckerPlugin(),
@@ -62,7 +71,7 @@ module.exports = {
 			$: "jquery",
 			jQuery: "jquery",
 			"window.jQuery": "jquery",
-			"React": "react/addons",
+			"React": "react",
 			"ReactBootstrap": "react-bootstrap",
 			"Updraft": "updraft",
 			"ofx4js": "ofx4js",

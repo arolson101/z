@@ -32,9 +32,6 @@
     "rx/rx-lite.d.ts": {
       "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
-    "react/react.d.ts": {
-      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
-    },
     "react-redux/react-redux.d.ts": {
       "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
@@ -100,6 +97,9 @@
     },
     "github-electron/github-electron.d.ts": {
       "commit": "85af69c91599a6c904618545f0613970e1ff3f64"
+    },
+    "react/react-global.d.ts": {
+      "commit": "95433230a9913054c57c715e6b91a9ae738d0b97"
     }
   }
 }
