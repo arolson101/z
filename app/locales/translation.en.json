@@ -143,7 +143,7 @@
 		"save": "Save Budget Item"
 	},
   
-  "CreateDbDialog": {
+  "OpenDbDialog": {
     "createTitle": "New Datastore",
     "openTitle": "Open Datastore",
     "pathLabel": "Path",
@@ -158,6 +158,8 @@
     "passwordPlaceholder": "",
     "confirmPasswordLabel": "Confirm Password",
     "confirmPasswordPlaceholder": "",
+    "errorOpening": "Error Opening File",
+    "errorCreating": "Error Creating File",
     "cancel": "Cancel",
     "open": "Open",
     "create": "Create"

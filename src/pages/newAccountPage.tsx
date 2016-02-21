@@ -8,6 +8,7 @@ import * as Icon from "react-fa";
 import * as reduxForm from "redux-form";
 import access = require("safe-access");
 import hash = require("string-hash");
+import { browserHistory } from "react-router";
 
 import { AppState, FI, UpdraftState, t } from "../state";
 import {
@@ -33,7 +34,6 @@ interface Props extends ReduxForm.Props {
   updatePath?: (path: string) => any;
   filist: FI[];
   updraft: UpdraftState;
-  history: ReactRouter.History;
   fields: {
     name: ReduxForm.Field<string>;
     web: ReduxForm.Field<string>;
@@ -535,7 +535,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 
   @autobind
   onClose() {
-    this.props.history.replace("/");
+    browserHistory.replace("/");
   }
 
   makeInstitution(dbid: number): Institution {
@@ -584,7 +584,7 @@ export class NewAccountPage extends React.Component<Props, State> {
       ...accounts.map(Updraft.makeSave(updraft.accountTable, time))
     )
     .then(() => {
-      this.props.history.replace("/accounts");
+      browserHistory.replace("/accounts");
     });
   }
 }

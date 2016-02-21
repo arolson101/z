@@ -8,7 +8,7 @@ import { Grid, Col, ListGroup, ListGroupItem } from "react-bootstrap";
 
 import { Breadcrumbs } from "./breadcrumbs";
 import { AppState, UpdraftState, KnownDb, t } from "../state";
-import { CreateDbDialog } from "../dialogs/createDbDialog";
+import { OpenDbDialog } from "../dialogs/openDbDialog";
 import { formatFilesize, formatRelativeTime } from "../i18n";
 
 interface Props extends React.Props<any> {
@@ -36,7 +36,7 @@ export class App extends React.Component<Props, State> {
     if (!this.props.locale) {
       return this.renderNoLocale();
     }
-    else if (!this.props.updraft.store) {
+    else if (!this.props.updraft.store || this.state.createDbDialogShown) {
       return this.renderNoStore();
     }
     else {
@@ -53,7 +53,7 @@ export class App extends React.Component<Props, State> {
       <Grid>
         <Col>
           <ListGroup>
-            {this.props.updraft.knownDbs.map((db: KnownDb) =>
+            {/*this.props.updraft.knownDbs.map((db: KnownDb) =>
               <ListGroupItem
                 key={db.name}
                 header={db.name}
@@ -63,12 +63,11 @@ export class App extends React.Component<Props, State> {
                 <br/>
                 {t("App.LastModified", {lastModified: formatRelativeTime(db.lastModified)})}
               </ListGroupItem>
-            )}
-            <CreateDbDialog
+            )*/}
+            <OpenDbDialog
               show={this.state.createDbDialogShown}
               open={this.state.createDbDialogOpen}
               onCancel={this.onCancelDb}
-              history={this.props.history}
             />
             <ListGroupItem onClick={this.onOpenDb} header={t("App.OpenDbHeader")}>
               {t("App.OpenDbDescription")}

@@ -4,10 +4,10 @@
 import electron = require("electron");
 import { autobind } from "core-decorators";
 import * as React from "react";
-import { Button, Input, Modal } from "react-bootstrap";
+import { Alert, Button, Input, Modal } from "react-bootstrap";
 import * as reduxForm from "redux-form";
+import { browserHistory } from "react-router";
 
-import { StatelessComponent } from "../components/component";
 import { ValidateHelper, valueOf } from "../util";
 import { t } from "../state";
 import { bindActionCreators, updraftCreateDb, updraftOpenDb } from "../actions";
@@ -28,10 +28,15 @@ interface Props extends ReduxForm.Props, React.Props<any> {
     [field: string]: ReduxForm.FieldOpt;
   };
 
-  history: ReactRouter.History;
   show: boolean;
   open: boolean;
   onCancel: Function;
+}
+
+
+interface State {
+  opening?: boolean;
+  errorMessage?: string;
 }
 
 
@@ -73,7 +78,12 @@ function validate(values: any, props: Props): Object {
     dispatch
   )
 )
-export class CreateDbDialog extends StatelessComponent<Props> {
+export class OpenDbDialog extends React.Component<Props, State> {
+  state = {
+    opening: false,
+    errorMessage: ""
+  };
+
   render() {
     const { fields, handleSubmit, open } = this.props;
 
@@ -98,41 +108,55 @@ export class CreateDbDialog extends StatelessComponent<Props> {
 
     return (
       <Modal show={this.props.show} onHide={this.onCancel}>
-        <form onSubmit={handleSubmit(this.onSave)}>
+        <form onSubmit={handleSubmit(this.onSubmit)}>
           <Modal.Header closeButton>
-            <Modal.Title>{open ? t("CreateDbDialog.openTitle") : t("CreateDbDialog.createTitle")}</Modal.Title>
+            <Modal.Title>{open ? t("OpenDbDialog.openTitle") : t("OpenDbDialog.createTitle")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Input
               type="text"
-              label={t("CreateDbDialog.pathLabel")}
-              placeholder={t("CreateDbDialog.pathPlaceholder")}
+              label={t("OpenDbDialog.pathLabel")}
+              placeholder={t("OpenDbDialog.pathPlaceholder")}
               value={valueOf(fields.path)}
-              buttonAfter={<Button onClick={this.onBrowse}>{t("CreateDbDialog.browseButton")}</Button>}
+              buttonAfter={<Button onClick={this.onBrowse}>{t("OpenDbDialog.browseButton")}</Button>}
             />
             <Input
               type="password"
-              label={t("CreateDbDialog.passwordLabel")}
-              placeholder={t("CreateDbDialog.passwordPlaceholder")}
+              label={t("OpenDbDialog.passwordLabel")}
+              placeholder={t("OpenDbDialog.passwordPlaceholder")}
               {...wrapError(fields.password1)}
             />
             {!open &&
               <Input
                 type="password"
-                label={t("CreateDbDialog.confirmPasswordLabel")}
-                placeholder={t("CreateDbDialog.confirmPasswordPlaceholder")}
+                label={t("OpenDbDialog.confirmPasswordLabel")}
+                placeholder={t("OpenDbDialog.confirmPasswordPlaceholder")}
                 {...wrapError(fields.password2)}
               />
             }
+            {this.state.errorMessage &&
+              <Alert
+                bsStyle="danger"
+                onDismiss={() => this.setState({errorMessage: undefined})}
+                >
+                <h4>{open ? t("OpenDbDialog.errorOpening") : t("OpenDbDialog.errorCreating")}</h4>
+                <p>{this.state.errorMessage}</p>
+              </Alert>
+            }
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.onCancel}>{t("CreateDbDialog.cancel")}</Button>
+            <Button
+              onClick={this.onCancel}
+              disabled={this.state.opening}
+            >
+              {t("OpenDbDialog.cancel")}
+            </Button>
             <Button
               bsStyle="primary"
               type="submit"
-              disabled={!!fields.path.error}
+              disabled={!!fields.path.error && this.state.opening}
             >
-              {open ? t("CreateDbDialog.open") : t("CreateDbDialog.create")}
+              {open ? t("OpenDbDialog.open") : t("OpenDbDialog.create")}
             </Button>
           </Modal.Footer>
         </form>
@@ -146,11 +170,11 @@ export class CreateDbDialog extends StatelessComponent<Props> {
       dialog.showOpenDialog(
         null,
         {
-          title: t("CreateDbDialog.openDialogTitle"),
+          title: t("OpenDbDialog.openDialogTitle"),
           defaultPath: electron.remote.app.getPath("home"),
           filters: [
-            { name: t("CreateDbDialog.filetypeName"), extensions: [ t("CreateDbDialog.filetypeExt") ] },
-            { name: t("CreateDbDialog.filetypeAll"), extensions: [ "*" ] }
+            { name: t("OpenDbDialog.filetypeName"), extensions: [ t("OpenDbDialog.filetypeExt") ] },
+            { name: t("OpenDbDialog.filetypeAll"), extensions: [ "*" ] }
           ]
         },
         (fileNames: string[]) => {
@@ -164,10 +188,10 @@ export class CreateDbDialog extends StatelessComponent<Props> {
       dialog.showSaveDialog(
         null,
         {
-          title: t("CreateDbDialog.saveDialogTitle"),
+          title: t("OpenDbDialog.saveDialogTitle"),
           defaultPath: electron.remote.app.getPath("home"),
           filters: [
-            { name: t("CreateDbDialog.filetypeName"), extensions: [ t("CreateDbDialog.filetypeExt") ] }
+            { name: t("OpenDbDialog.filetypeName"), extensions: [ t("OpenDbDialog.filetypeExt") ] }
           ]
         },
         (fileName: string) => {
@@ -180,17 +204,24 @@ export class CreateDbDialog extends StatelessComponent<Props> {
   }
 
   @autobind
-  onSave() {
-    const { fields, open, updraftCreateDb, updraftOpenDb, history } = this.props;
+  onSubmit() {
+    const { fields, open, updraftCreateDb, updraftOpenDb } = this.props;
     const opts = {
       path: valueOf(fields.path),
       password: valueOf(fields.password1)
     };
+    this.setState({ opening: true, errorMessage: undefined });
     const p = open ? updraftOpenDb(opts) : updraftCreateDb(opts);
-    p.then(() => {
-      this.onCancel();
-      history.replace("/");
-    });
+    p.then(
+      () => {
+        this.setState({ opening: false });
+        this.onCancel();
+        browserHistory.replace("/");
+      },
+      (err: Error) => {
+        this.setState({ opening: false, errorMessage: err.message });
+      }
+    );
   }
 
   @autobind

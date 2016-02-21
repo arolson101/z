@@ -25,7 +25,6 @@ export interface KnownDb {
 }
 
 export interface UpdraftState {
-  knownDbs?: KnownDb[];
   sdb?: sqlite3.Database;
   store?: Updraft.Store;
   accountTable?: AccountTable;
@@ -84,8 +83,7 @@ export function updraftOpened(state: UpdraftState): UpdraftOpenAction {
   };
 }
 
-export function updraftReducer(state: UpdraftState, action?: Action): UpdraftState {
-  state = state || { knownDbs: [] };
+export function updraftReducer(state: UpdraftState = {}, action?: Action): UpdraftState {
   switch (action.type) {
     case UPDRAFT_OPENED:
       return (action as UpdraftOpenAction).state;
@@ -168,6 +166,7 @@ function openDb(path: string, password: string, mode: number): ThunkPromise {
 function sqliteOpen(path: string, mode: number): Promise<sqlite3.Database> {
   return new Promise<sqlite3.Database>((resolve, reject) => {
     let sdb = new sqlite3.Database(path, /*mode,*/ (err: Error) => {
+      //sdb.on("trace", (sql: string) => console.log(sql));
       if (err) {
         reject(err);
       }
