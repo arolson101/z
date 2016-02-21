@@ -5,11 +5,16 @@ import { autobind } from "core-decorators";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Grid, Col, ListGroup, ListGroupItem } from "react-bootstrap";
+import { createSelector } from "reselect";
+import * as path from "path";
+import * as fs from "fs";
 
 import { Breadcrumbs } from "./breadcrumbs";
 import { AppState, UpdraftState, KnownDb, t } from "../state";
 import { OpenDbDialog } from "../dialogs/openDbDialog";
 import { formatFilesize, formatRelativeTime } from "../i18n";
+import { getRecentDbs } from "../actions";
+
 
 interface Props extends React.Props<any> {
   locale: string;
@@ -21,6 +26,25 @@ interface State {
   createDbDialogShown?: boolean;
   createDbDialogOpen?: boolean;
 }
+
+
+const calculateRecentDbs = createSelector(
+  (paths: string[]) => paths,
+  (paths: string[]) => {
+    return _(paths)
+    .uniq()
+    .map((p: string) => {
+      const stat = fs.statSync(p);
+      return {
+        name: path.basename(p),
+        path: p,
+        size: stat.size,
+        lastModified: stat.mtime
+      } as KnownDb;
+    })
+    .value();
+  }
+);
 
 
 @connect(
@@ -49,11 +73,12 @@ export class App extends React.Component<Props, State> {
   }
 
   renderNoStore() {
+    const recentDbs = calculateRecentDbs(getRecentDbs());
     return (
       <Grid>
         <Col>
           <ListGroup>
-            {/*this.props.updraft.knownDbs.map((db: KnownDb) =>
+            {recentDbs.map((db: KnownDb) =>
               <ListGroupItem
                 key={db.name}
                 header={db.name}
@@ -63,7 +88,7 @@ export class App extends React.Component<Props, State> {
                 <br/>
                 {t("App.LastModified", {lastModified: formatRelativeTime(db.lastModified)})}
               </ListGroupItem>
-            )*/}
+            )}
             <OpenDbDialog
               show={this.state.createDbDialogShown}
               open={this.state.createDbDialogOpen}

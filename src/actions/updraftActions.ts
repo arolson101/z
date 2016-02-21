@@ -13,7 +13,7 @@ import {
   BudgetTable,
   budgetSpec
 } from "../types";
-import { UpdraftCollection, defineUpdraftCollection } from "../util";
+import { UpdraftCollection, defineUpdraftCollection, setAppConfig, getAppConfig } from "../util";
 import sqlite3 = require("sqlite3");
 
 
@@ -36,6 +36,7 @@ interface UpdraftOpenAction extends Action {
   state: UpdraftState;
 }
 
+const RECENT_DBS = "recentDbs";
 
 export { Account };
 export type AccountCollection = UpdraftCollection<Account>;
@@ -155,6 +156,10 @@ function openDb(path: string, password: string, mode: number): ThunkPromise {
 
       return store.open()
       .then(() => {
+        let recentDbs = getAppConfig(RECENT_DBS) || [];
+        recentDbs.push(path);
+        setAppConfig(RECENT_DBS, recentDbs);
+
         dispatch(updraftOpened(state));
         dispatch(updraftLoadData(state));
       });
@@ -198,4 +203,16 @@ function sqliteKey(sdb: sqlite3.Database, key: string): Promise<sqlite3.Database
       }
     });
   });
+}
+
+
+export function getRecentDbs(): string[] {
+  return getAppConfig(RECENT_DBS) || [];
+}
+
+
+function addRecentDb(path: string) {
+  let recentDbs = getRecentDbs();
+  recentDbs.push(path);
+  setAppConfig(RECENT_DBS, recentDbs);
 }
