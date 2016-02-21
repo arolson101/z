@@ -93,6 +93,7 @@ function readConfig(initPath) {
 function writeConfig(initPath) {
   var data = Object.assign(
     {}, 
+    readConfig(initPath),
     mainWindow.getBounds()
   );
   fs.writeFileSync(initPath, JSON.stringify(data));

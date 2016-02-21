@@ -13,8 +13,10 @@ let appConfig: any;
 function readConfig() {
   try {
     appConfig = JSON.parse(fs.readFileSync(initPath, "utf8"));
+    console.log("read config from " + initPath);
   }
-  catch(e) {
+  catch (e) {
+    console.warn("error reading config from " + initPath + ": ", e);
   }
 }
 

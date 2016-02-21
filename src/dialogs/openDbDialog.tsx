@@ -30,6 +30,7 @@ interface Props extends ReduxForm.Props, React.Props<any> {
 
   show: boolean;
   open: boolean;
+  path: string;
   onCancel: Function;
 }
 
@@ -83,6 +84,13 @@ export class OpenDbDialog extends React.Component<Props, State> {
     opening: false,
     errorMessage: ""
   };
+
+  componentWillReceiveProps(nextProps: Props) {
+    const { fields } = nextProps;
+    if (this.props.path != nextProps.path) {
+      fields.path.onChange(nextProps.path);
+    }
+  }
 
   render() {
     const { fields, handleSubmit, open } = this.props;

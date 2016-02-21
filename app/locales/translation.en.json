@@ -17,6 +17,7 @@
     "CreateDbDescription": "Create a new data file",
     "OpenDbHeader": "Open",
     "OpenDbDescription": "Open an existing data file",
+    "FilePath": "Location: {{- path}}",
     "FileSize": "File size: {{fileSize}}",
     "LastModified": "Last modified: {{lastModified}}"
   },

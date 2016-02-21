@@ -156,9 +156,7 @@ function openDb(path: string, password: string, mode: number): ThunkPromise {
 
       return store.open()
       .then(() => {
-        let recentDbs = getAppConfig(RECENT_DBS) || [];
-        recentDbs.push(path);
-        setAppConfig(RECENT_DBS, recentDbs);
+        addRecentDb(path);
 
         dispatch(updraftOpened(state));
         dispatch(updraftLoadData(state));
