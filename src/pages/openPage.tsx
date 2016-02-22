@@ -7,6 +7,7 @@ import { Grid, Col, ListGroup, ListGroupItem } from "react-bootstrap";
 import { createSelector } from "reselect";
 import * as path from "path";
 import * as fs from "fs";
+import * as Icon from "react-fa";
 
 import { AppState, UpdraftState, KnownDb, t } from "../state";
 import { OpenDbDialog } from "../dialogs";
@@ -21,9 +22,9 @@ interface Props extends React.Props<any> {
 }
 
 interface State {
-  createDbDialogShown?: boolean;
-  createDbDialogOpen?: boolean;
-  createDbDialogPath?: string;
+  dialogIsVisible?: boolean;
+  dialogOpenMode?: boolean;
+  dialogDbPath?: string;
 }
 
 
@@ -33,70 +34,95 @@ const calculateRecentDbs = createSelector(
     return _(paths)
     .uniq()
     .map((p: string) => {
-      const stat = fs.statSync(p);
-      return {
-        name: path.basename(p),
-        path: p,
-        size: stat.size,
-        lastModified: stat.mtime
-      } as KnownDb;
+      try {
+        const stat = fs.statSync(p);
+        return {
+          name: path.basename(p),
+          path: p,
+          size: stat.size,
+          lastModified: stat.mtime
+        } as KnownDb;
+      }
+      catch (e) {}
     })
+    .filter(x => x)
+    .sortBy(x => x.lastModified)
+    .reverse()
     .value();
   }
 );
 
 
+
 @connect(
-  (state: AppState) => ({ updraft: state.updraft })
+  (state: AppState) => ({
+    locale: state.locale,
+    updraft: state.updraft
+  })
 )
 export class OpenPage extends React.Component<Props, State> {
   state: State = {
-    createDbDialogShown: false,
-    createDbDialogOpen: false
+    dialogIsVisible: false,
+    dialogOpenMode: false
   };
 
   render() {
+    if (!this.props.locale) {
+      return this.renderNoLocale();
+    }
     const recentDbs = calculateRecentDbs(getRecentDbs());
     return (
       <Grid>
         <Col>
           <ListGroup>
-            {recentDbs.map((db: KnownDb) =>
-              <ListGroupItem
-                key={db.name}
-                header={db.name}
-                onClick={() => this.onOpenDb(db.path)}
-              >
-                {t("App.FilePath", {path: db.path})}
-                <br/>
-                {t("App.FileSize", {fileSize: formatFilesize(db.size)})}
-                <br/>
-                {t("App.LastModified", {lastModified: formatRelativeTime(db.lastModified)})}
-              </ListGroupItem>
-            )}
             <OpenDbDialog
-              show={this.state.createDbDialogShown}
-              open={this.state.createDbDialogOpen}
-              path={this.state.createDbDialogPath}
+              show={this.state.dialogIsVisible}
+              open={this.state.dialogOpenMode}
+              path={this.state.dialogDbPath}
               onCancel={this.onCancelDb}
             />
-            <ListGroupItem onClick={() => this.onOpenDb()} header={t("App.OpenDbHeader")}>
-              {t("App.OpenDbDescription")}
+            <ListGroupItem
+              onClick={() => this.onShowCreate()}
+              header={[<Icon name="file-o" fixedWidth size="lg"/>, " ", t("App.CreateDbHeader")] }
+            >
+              <small className="text-muted">{t("App.CreateDbDescription")}</small>
             </ListGroupItem>
-            <ListGroupItem onClick={() => this.onShowCreate()} header={t("App.CreateDbHeader")}>
-              {t("App.CreateDbDescription")}
+            <ListGroupItem
+              onClick={() => this.onOpenDb()}
+              header={[<Icon name="folder-open-o" fixedWidth size="lg"/>, " ", t("App.OpenDbHeader")]}
+            >
+              <small className="text-muted">{t("App.OpenDbDescription")}</small>
             </ListGroupItem>
+            {recentDbs.map((db: KnownDb) =>
+              <ListGroupItem
+                key={db.path}
+                header={[<Icon name="file-text-o" fixedWidth size="lg"/>, " ", db.name]}
+                onClick={() => this.onOpenDb(db.path)}
+              >
+                <small className="text-muted">
+                  {t("App.FilePath", {path: db.path})}
+                  <br/>
+                  {t("App.FileSize", {fileSize: formatFilesize(db.size)})}
+                  <br/>
+                  {t("App.LastModified", {lastModified: formatRelativeTime(db.lastModified)})}
+                </small>
+              </ListGroupItem>
+            )}
           </ListGroup>
         </Col>
       </Grid>
     );
   }
 
+  renderNoLocale() {
+    return <div>...</div>;
+  }
+
   showCreateDb(path: string, show: boolean, open: boolean = false) {
     this.setState({
-      createDbDialogShown: show,
-      createDbDialogOpen: open,
-      createDbDialogPath: path
+      dialogIsVisible: show,
+      dialogOpenMode: open,
+      dialogDbPath: path
     });
   }
 

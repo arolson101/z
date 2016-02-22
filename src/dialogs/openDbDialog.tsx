@@ -12,6 +12,7 @@ import { t } from "../state";
 import { bindActionCreators, updraftCreateDb, updraftOpenDb } from "../actions";
 
 const dialog = electron.remote.dialog;
+const BrowserWindow = electron.remote.BrowserWindow;
 
 
 interface Props extends ReduxForm.Props, React.Props<any> {
@@ -175,7 +176,7 @@ export class OpenDbDialog extends React.Component<Props, State> {
   onBrowse() {
     if (this.props.open) {
       dialog.showOpenDialog(
-        null,
+        BrowserWindow.getFocusedWindow(),
         {
           title: t("OpenDbDialog.openDialogTitle"),
           defaultPath: electron.remote.app.getPath("home"),
@@ -193,7 +194,7 @@ export class OpenDbDialog extends React.Component<Props, State> {
     }
     else {
       dialog.showSaveDialog(
-        null,
+        BrowserWindow.getFocusedWindow(),
         {
           title: t("OpenDbDialog.saveDialogTitle"),
           defaultPath: electron.remote.app.getPath("home"),

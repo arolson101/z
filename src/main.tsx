@@ -97,20 +97,20 @@ export function main(root: HTMLElement) {
   // }
 
 
-  const requireOpened = (nextState: any, replace: any) => {
-    // if (!store.getState().updraft.store) {
-    //   replace({
-    //     pathname: "/open",
-    //     state: { nextPathname: nextState.location.pathname }
-    //   });
-    // }
+  const requireUpdraftStore = (nextState: any, replace: any) => {
+    if (!store.getState().updraft.store) {
+      replace({
+        pathname: "/open",
+        state: { nextPathname: nextState.location.pathname }
+      });
+    }
   };
 
   ReactDOM.render(
     <Provider store={store}>
       <div>
         <Router history={browserHistory}>
-          <Route path="/" component={App} onEnter={requireOpened}>
+          <Route path="/" component={App} onEnter={requireUpdraftStore}>
             <Route path="accounts" component={Pages.AccountsPage}/>
             <Route path="newAccount" component={Pages.NewAccountPage}/>
             <Route path="budgets" component={Pages.BudgetPage}/>
