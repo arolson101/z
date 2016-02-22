@@ -28,7 +28,7 @@ export class RootPage extends StatelessComponent<Props> {
           {href: "/", title: "Home"},
           {href: "/accounts", title: "accounts"},
           {href: "/newAccount", title: "new account"},
-          {href: "/budgets", title: "budgets"}
+          {href: "/schedule", title: "schedule"}
         ]}/>
         {this.props.children}
       </div>

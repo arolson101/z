@@ -8,8 +8,8 @@ import * as reduxForm from "redux-form";
 
 import { StatelessComponent, EnumSelect, CurrencyInput, AccountSelect, DatePicker } from "../components";
 import { ValidateHelper, valueOf } from "../util";
-import { Budget, BudgetChange, Frequency, RRule } from "../types";
-import { AppState, BudgetCollection, t } from "../state";
+import { Bill, BillChange, Frequency, RRule } from "../types";
+import { AppState, BillCollection, t } from "../state";
 
 enum Recurrance {
   Once,
@@ -32,14 +32,14 @@ interface Props extends ReduxForm.Props, React.Props<any> {
     [field: string]: ReduxForm.FieldOpt;
   };
 
-  budgets?: BudgetCollection;
+  bills?: BillCollection;
 
-  editing: number; // dbid of budget
-  show: boolean;
-  onCancel: Function;
-  onSave: (account: Budget) => any;
-  onEdit: (change: BudgetChange) => any;
-  onDelete: Function;
+  editing?: number; // dbid of bill
+  show?: boolean;
+  onCancel?: Function;
+  onSave?: (account: Bill) => any;
+  onEdit?: (change: BillChange) => any;
+  onDelete?: Function;
 }
 
 
@@ -64,7 +64,7 @@ function validate(values: any, props: Props): Object {
 
 @reduxForm.reduxForm(
   {
-    form: "addBudget",
+    form: "addSchedule",
     fields: [
       "name",
       "recurring",
@@ -82,14 +82,14 @@ function validate(values: any, props: Props): Object {
     },
     validate
   },
-  (state: AppState) => ({budgets: state.budgets})
+  (state: AppState) => ({bills: state.bills} as Props)
 )
-export class AddBudgetDialog extends StatelessComponent<Props> {
+export class AddScheduleDialog extends StatelessComponent<Props> {
   componentWillReceiveProps(nextProps: Props) {
     if (this.props.editing != nextProps.editing) {
       if (nextProps.editing != -1) {
-        verify(nextProps.editing in nextProps.budgets, "invalid dbid");
-        const src = nextProps.budgets[nextProps.editing];
+        verify(nextProps.editing in nextProps.bills, "invalid dbid");
+        const src = nextProps.bills[nextProps.editing];
         const { fields } = nextProps;
         if (src.name != valueOf(fields.name)) {
           fields.name.onChange(src.name);
@@ -149,20 +149,20 @@ export class AddBudgetDialog extends StatelessComponent<Props> {
       <Modal show={this.props.show} onHide={this.onCancel}>
         <form onSubmit={handleSubmit(this.onSave)}>
           <Modal.Header closeButton>
-            <Modal.Title>{adding ? t("AddBudgetDialog.addTitle") : t("AddBudgetDialog.editTitle")}</Modal.Title>
+            <Modal.Title>{adding ? t("AddBillDialog.addTitle") : t("AddBillDialog.editTitle")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Input
               type="text"
-              label={t("AddBudgetDialog.nameLabel")}
-              placeholder={t("AddBudgetDialog.namePlaceholder")}
+              label={t("AddBillDialog.nameLabel")}
+              placeholder={t("AddBillDialog.namePlaceholder")}
               {...wrapError(fields.name)}
             />
             <CurrencyInput
-              label={t("AddBudgetDialog.amountLabel")}
-              placeholder={t("AddBudgetDialog.amountPlaceholder") }
+              label={t("AddBillDialog.amountLabel")}
+              placeholder={t("AddBillDialog.amountPlaceholder") }
               {...wrapError(fields.amount) } />
-            <Input label={t("AddBudgetDialog.recurLabel")}>
+            <Input label={t("AddBillDialog.recurLabel")}>
               <Row>
                 <Col xs={4}>
                   <DatePicker
@@ -171,8 +171,8 @@ export class AddBudgetDialog extends StatelessComponent<Props> {
                 </Col>
                 <Col xs={3}>
                   <Input type="select" {...fields.recurring}>
-                    <option value="0">{t("AddBudgetDialog.once")}</option>
-                    <option value="1">{t("AddBudgetDialog.repeatEvery")}</option>
+                    <option value="0">{t("AddBillDialog.once")}</option>
+                    <option value="1">{t("AddBillDialog.repeatEvery")}</option>
                   </Input>
                 </Col>
                 {recurring &&
@@ -192,18 +192,18 @@ export class AddBudgetDialog extends StatelessComponent<Props> {
                 }
               </Row>
             </Input>
-            <AccountSelect label={t("AddBudgetDialog.accountLabel")} {...fields.account}/>
+            <AccountSelect label={t("AddBillDialog.accountLabel")} {...fields.account}/>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.onCancel}>{t("AddBudgetDialog.cancel")}</Button>
+            <Button onClick={this.onCancel}>{t("AddBillDialog.cancel")}</Button>
             {this.props.editing != -1 &&
-              <Button onClick={this.onDelete} bsStyle="danger">{t("AddBudgetDialog.delete")}</Button>
+              <Button onClick={this.onDelete} bsStyle="danger">{t("AddBillDialog.delete")}</Button>
             }
             <Button
               bsStyle="primary"
               type="submit"
             >
-              {adding ? t("AddBudgetDialog.add") : t("AddBudgetDialog.save")}
+              {adding ? t("AddBillDialog.add") : t("AddBillDialog.save")}
             </Button>
           </Modal.Footer>
         </form>
@@ -211,10 +211,10 @@ export class AddBudgetDialog extends StatelessComponent<Props> {
     );
   }
 
-  makeBudget(props: Props): Budget {
+  makeBill(props: Props): Bill {
     const { fields, editing } = props;
     const dbid = (editing == -1) ? Date.now() : editing;
-    let budget: Budget = {
+    let bill: Bill = {
       dbid,
       name: valueOf(fields.name),
       account: valueOf(fields.account),
@@ -222,35 +222,35 @@ export class AddBudgetDialog extends StatelessComponent<Props> {
     };
 
     if (valueOf(fields.recurring) == Recurrance.Repeat) {
-      budget.rruleString = new RRule({
+      bill.rruleString = new RRule({
         freq: Frequency.toRRuleFreq(valueOf(fields.frequency) * 1),
         dtstart: valueOf(fields.startingOn),
         interval: valueOf(fields.recurrenceMultiple)
       }).toString();
     }
     else {
-      budget.rruleString = new RRule({
+      bill.rruleString = new RRule({
         freq: RRule.MONTHLY,
         dtstart: valueOf(fields.startingOn),
         count: 1
       }).toString();
     }
 
-    return budget;
+    return bill;
   }
 
   @autobind
   onSave() {
     const { resetForm, onSave, onEdit, editing } = this.props;
-    const budget = this.makeBudget(this.props);
+    const bill = this.makeBill(this.props);
     if (editing == -1) {
-      onSave(budget);
+      onSave(bill);
     }
     else {
-      verify(editing in this.props.budgets, "invalid dbid");
-      const src = this.props.budgets[editing];
-      let change: BudgetChange = { dbid: src.dbid };
-      _.forEach(budget, (value: any, key: string) => {
+      verify(editing in this.props.bills, "invalid dbid");
+      const src = this.props.bills[editing];
+      let change: BillChange = { dbid: src.dbid };
+      _.forEach(bill, (value: any, key: string) => {
         if (value != (src as any)[key]) {
           (change as any)[key] = { $set: value } as Updraft.Mutate.setter<any>;
         }

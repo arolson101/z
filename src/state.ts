@@ -10,8 +10,8 @@ import {
   localeReducer,
   AccountCollection,
   accountCollectionReducer,
-  BudgetCollection,
-  budgetCollectionReducer,
+  BillCollection,
+  billCollectionReducer,
   InstitutionCollection,
   institutionCollectionReducer,
   FI,
@@ -26,7 +26,7 @@ export {
   FI,
   t,
   AccountCollection,
-  BudgetCollection,
+  BillCollection,
   InstitutionCollection,
   UpdraftState,
   KnownDb,
@@ -37,7 +37,7 @@ export interface AppState {
   locale: string;
   routing: ReactRouter.RouterState;
   accounts: AccountCollection;
-  budgets: BudgetCollection;
+  bills: BillCollection;
   institutions: InstitutionCollection;
   filist: FI[];
   form: any;
@@ -48,7 +48,7 @@ export const appState = combineReducers<AppState, Action>({
   locale: localeReducer,
   routing: routeReducer,
   accounts: accountCollectionReducer,
-  budgets: budgetCollectionReducer,
+  bills: billCollectionReducer,
   institutions: institutionCollectionReducer,
   filist: fiReducer,
   form: reduxForm.reducer,

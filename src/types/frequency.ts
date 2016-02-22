@@ -1,36 +1,9 @@
 ///<reference path="../project.d.ts"/>
-
-import { Column, Mutate as M, Query as Q, verify } from "updraft";
 import { RRule } from "rrule";
+import { verify } from "updraft";
 import { t } from "../i18n";
 
 export { RRule };
-
-export interface _Budget<key, id, str, date, num> {
-  dbid?: key;
-  account?: id;
-  name?: str;
-  rruleString?: str;
-  amount?: num;
-}
-
-export interface Budget extends _Budget<number, number, string, Date, number> {}
-export interface BudgetQuery extends _Budget<Q.num, Q.num, Q.str, Q.date, Q.num> {}
-export interface BudgetChange extends _Budget<number, M.num, M.str, M.date, M.num> {}
-export type BudgetTable = Updraft.Table<Budget, BudgetChange, BudgetQuery>;
-export type BudgetTableSpec = Updraft.TableSpec<Budget, BudgetChange, BudgetQuery>;
-
-export const budgetSpec: BudgetTableSpec = {
-  name: "budgets",
-  columns: {
-    dbid: Column.Int().Key(),
-    account: Column.Int(),
-    name: Column.Text(),
-    rruleString: Column.String(),
-    amount: Column.Real().Default(0),
-  }
-};
-
 
 export enum Frequency {
   YEAR,

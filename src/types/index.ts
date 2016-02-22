@@ -1,3 +1,4 @@
 export * from "./account";
-export * from "./budget";
+export * from "./bill";
+export * from "./frequency";
 export * from "./institution";

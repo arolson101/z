@@ -9,23 +9,23 @@ import * as reduxForm from "redux-form";
 import { createSelector } from "reselect";
 import { RRule } from "rrule";
 
-import { Budget, BudgetChange } from "../types";
+import { Bill, BillChange } from "../types";
 import { bindActionCreators, updraftAdd } from "../actions";
-import { AddBudgetDialog } from "../dialogs";
-import { AppState, UpdraftState, BudgetCollection, AccountCollection } from "../state";
+import { AddScheduleDialog } from "../dialogs";
+import { AppState, UpdraftState, BillCollection, AccountCollection } from "../state";
 import { formatCurrency, formatDate, t } from "../i18n";
 
 // TODO: refresh on day change
 
-interface Budget2 {
-  budget: Budget;
+interface NextBill {
+  bill: Bill;
   rrule: __RRule.RRule;
   next: Date;
   last: Date;
 }
 
 interface Props extends React.Props<any> {
-  budgets2: Budget2[];
+  nextBills: NextBill[];
   accounts: AccountCollection;
   updraft: UpdraftState;
   updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
@@ -37,21 +37,21 @@ interface State {
   editing?: number;
 }
 
-export const calculateBudget2s = createSelector(
-  (state: AppState) => state.budgets,
-  (budgets: BudgetCollection) => {
+export const calculateEntries = createSelector(
+  (state: AppState) => state.bills,
+  (bills: BillCollection) => {
     let now = currentDate();
-    return _.chain(budgets)
-    .map((budget: Budget) => {
-      let rrule = RRule.fromString(budget.rruleString);
+    return _.chain(bills)
+    .map((bill: Bill) => {
+      let rrule = RRule.fromString(bill.rruleString);
       return {
-        budget,
+        bill,
         rrule,
         next: rrule.after(now, true),
         last: rrule.before(now, false)
-      } as Budget2;
+      } as NextBill;
     })
-    .sortBy((budget: Budget2) => budget.next || budget.last)
+    .sortBy((bill: NextBill) => bill.next || bill.last)
     .value();
   }
 );
@@ -67,9 +67,9 @@ function currentDate(): Date {
 @connect(
   (state: AppState) => ({
     accounts: state.accounts,
-    budgets2: calculateBudget2s(state),
+    nextBills: calculateEntries(state),
     updraft: state.updraft
-  }),
+  } as Props),
   (dispatch: Redux.Dispatch<any>) => bindActionCreators(
     {
       updraftAdd,
@@ -77,41 +77,39 @@ function currentDate(): Date {
     },
     dispatch)
 )
-export class BudgetPage extends React.Component<Props, State> {
+export class SchedulePage extends React.Component<Props, State> {
   state = {
     add: false,
     editing: -1
   };
 
   render() {
-    const { budgets2 } = this.props;
-
     return <Grid>
-      <Row>budgets</Row>
+      <Row>bills</Row>
       <Table>
         <thead>
           <tr>
-            <th>{t("BudgetPage.nameHeader")}</th>
-            <th>{t("BudgetPage.amountHeader")}</th>
-            <th>{t("BudgetPage.nextOccurrenceHeader")}</th>
-            <th>{t("BudgetPage.accountHeader")}</th>
-            <th>{t("BudgetPage.editHeader")}</th>
+            <th>{t("SchedulePage.nameHeader")}</th>
+            <th>{t("SchedulePage.amountHeader")}</th>
+            <th>{t("SchedulePage.nextOccurrenceHeader")}</th>
+            <th>{t("SchedulePage.accountHeader")}</th>
+            <th>{t("SchedulePage.editHeader")}</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          {_.map(budgets2, (budget: Budget2, index: number) => {
-            const account = this.props.accounts[budget.budget.account];
-            return <tr key={budget.budget.dbid}>
-              <td>{budget.budget.name}</td>
-              <td>{formatCurrency(budget.budget.amount)}</td>
-              <td>{formatDate(budget.next || budget.last)}</td>
-              <td>{account ? account.name : t("BudgetPage.noAccount")}</td>
+          {_.map(this.props.nextBills, (bill: NextBill, index: number) => {
+            const account = this.props.accounts[bill.bill.account];
+            return <tr key={bill.bill.dbid}>
+              <td>{bill.bill.name}</td>
+              <td>{formatCurrency(bill.bill.amount)}</td>
+              <td>{formatDate(bill.next || bill.last)}</td>
+              <td>{account ? account.name : t("SchedulePage.noAccount")}</td>
               <td>
                 <Button
                   type="button"
                   bsStyle="link"
-                  onClick={() => this.onEditBudget(budget.budget.dbid)}
+                  onClick={() => this.onEditBill(bill.bill.dbid)}
                 >
                   <Icon name="edit"/>
                 </Button>
@@ -120,25 +118,25 @@ export class BudgetPage extends React.Component<Props, State> {
           })}
         </tbody>
       </Table>
-      <AddBudgetDialog
+      <AddScheduleDialog
         show={this.state.add || this.state.editing != -1}
         editing={this.state.editing}
-        onSave={this.onBudgetSave}
-        onEdit={this.onBudgetEdit}
+        onSave={this.onBillSave}
+        onEdit={this.onBillEdit}
         onCancel={this.onModalHide}
         onDelete={this.onDelete}
       />
-      <Button onClick={this.onAddBudget}>{t("BudgetPage.add")}</Button>
+      <Button onClick={this.onAddBill}>{t("SchedulePage.add")}</Button>
     </Grid>;
   }
 
   @autobind
-  onAddBudget() {
+  onAddBill() {
     this.setState({add: true});
   }
 
   @autobind
-  onEditBudget(dbid: number) {
+  onEditBill(dbid: number) {
     this.setState({ editing: dbid });
   }
 
@@ -148,23 +146,23 @@ export class BudgetPage extends React.Component<Props, State> {
   }
 
   @autobind
-  onBudgetSave(budget: Budget) {
+  onBillSave(bill: Bill) {
     const { updraft, updraftAdd } = this.props;
-    updraftAdd(updraft, Updraft.makeSave(updraft.budgetTable, Date.now())(budget));
+    updraftAdd(updraft, Updraft.makeSave(updraft.billTable, Date.now())(bill));
     this.onModalHide();
   }
 
   @autobind
-  onBudgetEdit(change: BudgetChange) {
+  onBillEdit(change: BillChange) {
     const { updraft, updraftAdd } = this.props;
-    updraftAdd(updraft, Updraft.makeChange(updraft.budgetTable, Date.now())(change));
+    updraftAdd(updraft, Updraft.makeChange(updraft.billTable, Date.now())(change));
     this.onModalHide();
   }
 
   @autobind
   onDelete(dbid: number) {
     const { updraft, updraftAdd } = this.props;
-    updraftAdd(updraft, Updraft.makeDelete(updraft.budgetTable, Date.now())(dbid));
+    updraftAdd(updraft, Updraft.makeDelete(updraft.billTable, Date.now())(dbid));
     this.onModalHide();
   }
 }

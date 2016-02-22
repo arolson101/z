@@ -20,7 +20,6 @@ import { Action, AccountCollection } from "./actions/index";
 import { appState, AppState } from "./state";
 import { i18nInit } from "./i18n";
 import { fiInit } from "./fi";
-import { updraftInit } from "./updraft";
 
 const DevTools = createDevTools(
   <DockMonitor toggleVisibilityKey="ctrl-h" changePositionKey="ctrl-q" defaultIsVisible={false}>
@@ -87,14 +86,6 @@ export function main(root: HTMLElement) {
 
   store.dispatch(i18nInit());
   store.dispatch(fiInit());
-  store.dispatch(updraftInit());
-
-  // if (module.hot) {
-  //  module.hot.accept("./state", () => {
-  //    store.replaceReducer(require("./state").appState);
-  //  });
-  // }
-
 
   const requireUpdraftStore = (nextState: any, replace: any) => {
     if (!store.getState().updraft.store) {
@@ -112,7 +103,7 @@ export function main(root: HTMLElement) {
           <Route path="/" component={Pages.RootPage} onEnter={requireUpdraftStore}>
             <Route path="accounts" component={Pages.AccountsPage}/>
             <Route path="newAccount" component={Pages.NewAccountPage}/>
-            <Route path="budgets" component={Pages.BudgetPage}/>
+            <Route path="schedule" component={Pages.SchedulePage}/>
           </Route>
           <Route path="/open" component={Pages.OpenPage}/>
         </Router>

@@ -8,9 +8,9 @@ import {
   Institution,
   InstitutionTable,
   institutionSpec,
-  Budget,
-  BudgetTable,
-  budgetSpec
+  Bill,
+  BillTable,
+  billSpec
 } from "../types";
 import { UpdraftCollection, defineUpdraftCollection, setAppConfig, getAppConfig } from "../util";
 import sqlite3 = require("sqlite3");
@@ -28,7 +28,7 @@ export interface UpdraftState {
   store?: Updraft.Store;
   accountTable?: AccountTable;
   institutionTable?: InstitutionTable;
-  budgetTable?: BudgetTable;
+  billTable?: BillTable;
 }
 
 interface UpdraftOpenAction extends Action {
@@ -47,14 +47,14 @@ export const {
 } = defineUpdraftCollection(accountSpec);
 
 
-export { Budget };
-export type BudgetCollection = UpdraftCollection<Budget>;
+export { Bill };
+export type BillCollection = UpdraftCollection<Bill>;
 
 export const {
-  load: loadBudgets,
-  add: addBudget,
-  reducer: budgetCollectionReducer
-} = defineUpdraftCollection(budgetSpec);
+  load: loadBills,
+  add: addBill,
+  reducer: billCollectionReducer
+} = defineUpdraftCollection(billSpec);
 
 
 export { Institution };
@@ -73,7 +73,7 @@ type loadAction = (table: Updraft.TableAny) => ThunkPromise;
 const tableLoadActionMap = new Map<Updraft.TableSpecAny, loadAction>([
   [accountSpec, loadAccounts],
   [institutionSpec, loadInstitutions],
-  [budgetSpec, loadBudgets]
+  [billSpec, loadBills]
 ]);
 
 export function updraftOpened(state: UpdraftState): UpdraftOpenAction {
@@ -151,7 +151,7 @@ function openDb(path: string, password: string, mode: number): ThunkPromise {
 
       state.accountTable = store.createTable(accountSpec);
       state.institutionTable = store.createTable(institutionSpec);
-      state.budgetTable = store.createTable(budgetSpec);
+      state.billTable = store.createTable(billSpec);
 
       return store.open()
       .then(() => {

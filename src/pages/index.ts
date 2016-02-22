@@ -1,5 +1,5 @@
 export * from "./accountsPage";
-export * from "./budgetPage";
+export * from "./schedulePage";
 export * from "./loginPage";
 export * from "./newAccountPage";
 export * from "./openPage";

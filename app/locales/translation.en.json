@@ -116,19 +116,19 @@
     "none": "None"
   },
 
-  "BudgetPage": {
+  "SchedulePage": {
     "nameHeader": "Name",
     "nextOccurrenceHeader": "Next",
     "accountHeader": "Account",
     "amountHeader": "Amount",
     "once": "once",
     "repeatEvery": "repeat every",
-    "add": "Add Budget Item",
+    "add": "Add Scheduled Item",
     "editHeader": "Edit",
     "noAccount": ""
   },
   
-  "AddBudgetDialog": {
+  "AddBillDialog": {
     "addTitle": "Add Budget Item",
     "editTitle": "Edit Budget Item",
     "nameLabel": "Name",
