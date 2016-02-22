@@ -311,7 +311,7 @@ declare module __RRule {
 }
 
 declare module "rrule" {
-  export = __RRule.RRule;
+  export = __RRule;
 }
 
 declare module "i18next-node-fs-backend" {

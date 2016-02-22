@@ -7,7 +7,7 @@ import { Button, Row, Grid, Table } from "react-bootstrap";
 import * as Icon from "react-fa";
 import * as reduxForm from "redux-form";
 import { createSelector } from "reselect";
-import RRule = require("rrule");
+import { RRule } from "rrule";
 
 import { Budget, BudgetChange } from "../types";
 import { bindActionCreators, updraftAdd } from "../actions";

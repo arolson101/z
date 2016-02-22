@@ -1,7 +1,7 @@
 ///<reference path="../project.d.ts"/>
 
 import { Column, Mutate as M, Query as Q, verify } from "updraft";
-import RRule = require("rrule");
+import { RRule } from "rrule";
 import { t } from "../i18n";
 
 export { RRule };

@@ -124,7 +124,8 @@
     "once": "once",
     "repeatEvery": "repeat every",
     "add": "Add Budget Item",
-    "editHeader": "Edit"
+    "editHeader": "Edit",
+    "noAccount": ""
   },
   
   "AddBudgetDialog": {
