@@ -13,6 +13,7 @@ import { AppState, UpdraftState, KnownDb, t } from "../state";
 import { OpenDbDialog } from "../dialogs";
 import { formatFilesize, formatRelativeTime } from "../i18n";
 import { getRecentDbs } from "../actions";
+import { StatelessComponent } from "../components";
 
 
 interface Props extends React.Props<any> {
@@ -53,6 +54,29 @@ const calculateRecentDbs = createSelector(
 );
 
 
+interface OpenItemProps extends React.Props<any> {
+  icon: string;
+  header: string;
+  onClick: Function;
+}
+
+class OpenItem extends StatelessComponent<OpenItemProps> {
+  render() {
+    return <ListGroupItem
+      onClick={this.props.onClick}
+      header={[
+        <Icon name={this.props.icon} fixedWidth size="lg" key="icon"/>,
+        " ",
+        this.props.header
+      ]}
+    >
+      <small className="text-muted">
+        {this.props.children}
+      </small>
+    </ListGroupItem>;
+  }
+}
+
 
 @connect(
   (state: AppState) => ({
@@ -81,32 +105,33 @@ export class OpenPage extends React.Component<Props, State> {
               path={this.state.dialogDbPath}
               onCancel={this.onCancelDb}
             />
-            <ListGroupItem
+            <OpenItem
               onClick={() => this.onShowCreate()}
-              header={[<Icon name="file-o" fixedWidth size="lg"/>, " ", t("App.CreateDbHeader")] }
+              icon="file-o"
+              header={t("App.CreateDbHeader")}
             >
-              <small className="text-muted">{t("App.CreateDbDescription")}</small>
-            </ListGroupItem>
-            <ListGroupItem
-              onClick={() => this.onOpenDb()}
-              header={[<Icon name="folder-open-o" fixedWidth size="lg"/>, " ", t("App.OpenDbHeader")]}
+              {t("App.CreateDbDescription")}
+            </OpenItem>
+            <OpenItem
+              onClick={() => this.onShowCreate()}
+              icon="folder-open-o"
+              header={t("App.OpenDbHeader")}
             >
-              <small className="text-muted">{t("App.OpenDbDescription")}</small>
-            </ListGroupItem>
+              {t("App.OpenDbDescription")}
+            </OpenItem>
             {recentDbs.map((db: KnownDb) =>
-              <ListGroupItem
+              <OpenItem
                 key={db.path}
-                header={[<Icon name="file-text-o" fixedWidth size="lg"/>, " ", db.name]}
+                icon="file-text-o"
+                header={db.name}
                 onClick={() => this.onOpenDb(db.path)}
               >
-                <small className="text-muted">
-                  {t("App.FilePath", {path: db.path})}
-                  <br/>
-                  {t("App.FileSize", {fileSize: formatFilesize(db.size)})}
-                  <br/>
-                  {t("App.LastModified", {lastModified: formatRelativeTime(db.lastModified)})}
-                </small>
-              </ListGroupItem>
+                {t("App.FilePath", {path: db.path})}
+                <br/>
+                {t("App.FileSize", {fileSize: formatFilesize(db.size)})}
+                <br/>
+                {t("App.LastModified", {lastModified: formatRelativeTime(db.lastModified)})}
+              </OpenItem>
             )}
           </ListGroup>
         </Col>

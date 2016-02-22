@@ -7,7 +7,7 @@
 
 declare module "react-fa" {
 	
-	interface IconAttributes extends __React.DOMAttributes {
+	interface IconAttributes extends __React.DOMAttributes, __React.Props<any> {
 		name: string;
 		/** one of: 'lg', '2x', '3x', '4x', '5x' */
 		size?: string;
