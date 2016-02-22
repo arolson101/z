@@ -1,16 +1,16 @@
 {
-	"appBrand": "Easy Money",
+  "appBrand": "Easy Money",
   
-	"RecentTransactions": "Recent Transactions",
-	"Budget": "Budget",
+  "RecentTransactions": "Recent Transactions",
+  "Budget": "Budget",
 
-	"AccountTypes": {
-		"CHECKING": "Checking",
-		"SAVINGS": "Savings",
-		"MONEYMRKT": "Money Market",
-		"CREDITLINE": "Credit Line",
-		"CREDITCARD": "Credit Card"
-	},
+  "AccountTypes": {
+    "CHECKING": "Checking",
+    "SAVINGS": "Savings",
+    "MONEYMRKT": "Money Market",
+    "CREDITLINE": "Credit Line",
+    "CREDITCARD": "Credit Card"
+  },
   
   "App": {
     "CreateDbHeader": "New",
@@ -22,127 +22,127 @@
     "LastModified": "Last modified: {{lastModified}}"
   },
 
-	"Frequency": {
-		"YEAR": "Year(s)",
-		"MONTH": "Month(s)",
-		"WEEK": "Week(s)",
-		"DAY": "Day(s)"
-	},
+  "Frequency": {
+    "YEAR": "Year(s)",
+    "MONTH": "Month(s)",
+    "WEEK": "Week(s)",
+    "DAY": "Day(s)"
+  },
 
-	"sidebar": {
-		"home": "Home",
-		"accounts": "Accounts",
-		"budget": "Budget",
-		"calendar": "Calendar",
-		"addAccountTooltip": "Add account"
-	},
+  "sidebar": {
+    "home": "Home",
+    "accounts": "Accounts",
+    "budget": "Budget",
+    "calendar": "Calendar",
+    "addAccountTooltip": "Add account"
+  },
 
-	"NewAccountPage": {
-		"addTitle": "Add Accounts",
-		"editTitle": "Edit Accounts",
-		"institutionLabel": "Institution",
-		"institutionPlaceholder": "",
-		"institutionHelp": "Select your institution from the list or enter the details below",
-		"nameLabel": "Name",
-		"namePlaceholder": "",
-		"nameHelp": "",
-		"webLabel": "URL",
-		"webPlaceholder": "",
-		"webHelp": "",
-		"addressLabel": "Address",
-		"addressPlaceholder": "",
-		"addressHelp": "",
-		"notesLabel": "Notes",
-		"notesPlaceholder": "",
-		"notesHelp": "Enter notes",
-		"enableOnline": "Download transactions",
-		"ofxInfo": "These values are unique to your financial institution, and are filled in automatically when you select from the list above.  They must be set to automatically download transactions.",
-		"fidLabel": "FID",
-		"fidPlaceholder": "",
-		"fidHelp": "",
-		"orgLabel": "ORG",
-		"orgPlaceholder": "",
-		"orgHelp": "",
-		"ofxLabel": "Server",
-		"ofxPlaceholder": "",
-		"ofxHelp": "",
-		"userpassInfo": "Your username and password will be securely stored in your data file.  This information is required to automatically download transactions.",
-		"usernameLabel": "Username",
-		"usernamePlaceholder": "",
-		"usernameHelp": "",
-		"passwordLabel": "Password",
-		"passwordPlaceholder": "",
-		"passwordHelp": "",
-		"getAccountList": "Get account list from server",
-		"errorGettingAccounts": "Error Getting Accounts",
-		"successGettingAccounts": "Success",
-		"successGettingAccountsMessage": "Found {{numAccounts}} accounts",
-		"toggleVisTooltip": "Show or hide account from sidebar",
-		"accounts": "Accounts",
-		"accountVisible": "Visible",
-		"accountType": "Type",
-		"accountName": "Name",
-		"accountNumber": "Number",
-		"addAccount": "Add",
-		"add": {
-			"typePlaceholder": "Type",
-			"idPlaceholder": "Number",
-			"namePlaceholder": "Name"
-		},
-		"errorTitle": "Error",
-		"canSaveReason": {
-			"noName": "'Name' cannot be blank",
-			"noAccounts": "You must add at least one account"
-		},
-		"save": "Save",
-		"close": "Cancel"
-	},
+  "NewAccountPage": {
+    "addTitle": "Add Accounts",
+    "editTitle": "Edit Accounts",
+    "institutionLabel": "Institution",
+    "institutionPlaceholder": "",
+    "institutionHelp": "Select your institution from the list or enter the details below",
+    "nameLabel": "Name",
+    "namePlaceholder": "",
+    "nameHelp": "",
+    "webLabel": "URL",
+    "webPlaceholder": "",
+    "webHelp": "",
+    "addressLabel": "Address",
+    "addressPlaceholder": "",
+    "addressHelp": "",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "",
+    "notesHelp": "Enter notes",
+    "enableOnline": "Download transactions",
+    "ofxInfo": "These values are unique to your financial institution, and are filled in automatically when you select from the list above.  They must be set to automatically download transactions.",
+    "fidLabel": "FID",
+    "fidPlaceholder": "",
+    "fidHelp": "",
+    "orgLabel": "ORG",
+    "orgPlaceholder": "",
+    "orgHelp": "",
+    "ofxLabel": "Server",
+    "ofxPlaceholder": "",
+    "ofxHelp": "",
+    "userpassInfo": "Your username and password will be securely stored in your data file.  This information is required to automatically download transactions.",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "",
+    "usernameHelp": "",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "",
+    "passwordHelp": "",
+    "getAccountList": "Get account list from server",
+    "errorGettingAccounts": "Error Getting Accounts",
+    "successGettingAccounts": "Success",
+    "successGettingAccountsMessage": "Found {{numAccounts}} accounts",
+    "toggleVisTooltip": "Show or hide account from sidebar",
+    "accounts": "Accounts",
+    "accountVisible": "Visible",
+    "accountType": "Type",
+    "accountName": "Name",
+    "accountNumber": "Number",
+    "addAccount": "Add",
+    "add": {
+      "typePlaceholder": "Type",
+      "idPlaceholder": "Number",
+      "namePlaceholder": "Name"
+    },
+    "errorTitle": "Error",
+    "canSaveReason": {
+      "noName": "'Name' cannot be blank",
+      "noAccounts": "You must add at least one account"
+    },
+    "save": "Save",
+    "close": "Cancel"
+  },
 
-	"AddAccountDialog": {
-		"addTitle": "Add Account",
-		"editTitle": "Edit Account",
-		"typeLabel": "Type",
-		"nameLabel": "Name",
-		"namePlaceholder": "Value Checking",
-		"numberLabel": "Number",
-		"numberPlaceholder": "123456",
-		"cancel": "Cancel",
-		"delete": "Delete Account",
-		"save": "Save",
-		"add": "Add"
-	},
+  "AddAccountDialog": {
+    "addTitle": "Add Account",
+    "editTitle": "Edit Account",
+    "typeLabel": "Type",
+    "nameLabel": "Name",
+    "namePlaceholder": "Value Checking",
+    "numberLabel": "Number",
+    "numberPlaceholder": "123456",
+    "cancel": "Cancel",
+    "delete": "Delete Account",
+    "save": "Save",
+    "add": "Add"
+  },
 
-	"AccountSelect": {
-		"none": "None"
-	},
+  "AccountSelect": {
+    "none": "None"
+  },
 
-	"BudgetPage": {
-		"nameHeader": "Name",
-		"nextOccurrenceHeader": "Next",
-		"accountHeader": "Account",
-		"amountHeader": "Amount",
-		"once": "once",
-		"repeatEvery": "repeat every",
-		"add": "Add Budget Item",
+  "BudgetPage": {
+    "nameHeader": "Name",
+    "nextOccurrenceHeader": "Next",
+    "accountHeader": "Account",
+    "amountHeader": "Amount",
+    "once": "once",
+    "repeatEvery": "repeat every",
+    "add": "Add Budget Item",
     "editHeader": "Edit"
-	},
-	
-	"AddBudgetDialog": {
-		"addTitle": "Add Budget Item",
-		"editTitle": "Edit Budget Item",
-		"nameLabel": "Name",
-		"namePlaceholder": "",
-		"amountLabel": "Amount",
-		"amountPlaceholder": "",
-		"recurLabel": "Repeating",
-		"once": "Once",
-		"repeatEvery": "Repeat Every",
-		"accountLabel": "Account",
-		"cancel": "Cancel",
-		"delete": "Delete Budget Item",
-		"add": "Add Budget Item",
-		"save": "Save Budget Item"
-	},
+  },
+  
+  "AddBudgetDialog": {
+    "addTitle": "Add Budget Item",
+    "editTitle": "Edit Budget Item",
+    "nameLabel": "Name",
+    "namePlaceholder": "",
+    "amountLabel": "Amount",
+    "amountPlaceholder": "",
+    "recurLabel": "Repeating",
+    "once": "Once",
+    "repeatEvery": "Repeat Every",
+    "accountLabel": "Account",
+    "cancel": "Cancel",
+    "delete": "Delete Budget Item",
+    "add": "Add Budget Item",
+    "save": "Save Budget Item"
+  },
   
   "OpenDbDialog": {
     "createTitle": "New Datastore",
@@ -166,12 +166,12 @@
     "create": "Create"
   },
 
-	"validate": {
-		"nonempty": "Required",
-		"unique": "Already used",
-		"noAccounts": "You must add at least one account",
-		"numeric": "Invalid number",
+  "validate": {
+    "nonempty": "Required",
+    "unique": "Already used",
+    "noAccounts": "You must add at least one account",
+    "numeric": "Invalid number",
     "filename": "Invalid character(s)",
     "passwordsMatch": "Passwords must match"
-	}
+  }
 }
