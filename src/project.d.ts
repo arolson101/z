@@ -25,7 +25,7 @@ declare module "redux-devtools-dock-monitor" {
 
 
 declare module "redux-simple-router" {
-  export function syncHistory(history: any, store: any): any;
+  export function syncHistory(history: any): any;
   export function routeReducer(state: any, action: any): any;
   export function updatePath(path: string): any;
 }
