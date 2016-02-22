@@ -1,5 +1,4 @@
 export * from "./accountSelect";
-export * from "./app";
 export * from "./breadcrumbs";
 export * from "./component";
 export * from "./currencyInput";

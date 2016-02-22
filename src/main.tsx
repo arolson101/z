@@ -15,7 +15,6 @@ import DockMonitor from "redux-devtools-dock-monitor";
 require("bootstrap/dist/css/bootstrap.min.css");
 
 
-import { App } from "./components/index";
 import * as Pages from "./pages/index";
 import { Action, AccountCollection } from "./actions/index";
 import { appState, AppState } from "./state";
@@ -110,7 +109,7 @@ export function main(root: HTMLElement) {
     <Provider store={store}>
       <div>
         <Router history={browserHistory}>
-          <Route path="/" component={App} onEnter={requireUpdraftStore}>
+          <Route path="/" component={Pages.RootPage} onEnter={requireUpdraftStore}>
             <Route path="accounts" component={Pages.AccountsPage}/>
             <Route path="newAccount" component={Pages.NewAccountPage}/>
             <Route path="budgets" component={Pages.BudgetPage}/>

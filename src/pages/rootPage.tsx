@@ -4,9 +4,8 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { verify } from "updraft";
 
-import { Breadcrumbs } from "./breadcrumbs";
+import { Breadcrumbs, StatelessComponent } from "../components";
 import { AppState, UpdraftState } from "../state";
-import { StatelessComponent } from "./component";
 
 
 interface Props extends React.Props<any> {
@@ -19,7 +18,7 @@ interface Props extends React.Props<any> {
 @connect(
   (state: AppState) => ({ locale: state.locale, updraft: state.updraft })
 )
-export class App extends StatelessComponent<Props> {
+export class RootPage extends StatelessComponent<Props> {
   render() {
     verify(this.props.locale, "locale data not loaded!");
     verify(this.props.updraft.store, "locale data not loaded!");
