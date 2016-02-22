@@ -8,9 +8,8 @@ import { createSelector } from "reselect";
 import * as path from "path";
 import * as fs from "fs";
 
-import { Breadcrumbs } from "./breadcrumbs";
 import { AppState, UpdraftState, KnownDb, t } from "../state";
-import { OpenDbDialog } from "../dialogs/openDbDialog";
+import { OpenDbDialog } from "../dialogs";
 import { formatFilesize, formatRelativeTime } from "../i18n";
 import { getRecentDbs } from "../actions";
 
@@ -48,31 +47,15 @@ const calculateRecentDbs = createSelector(
 
 
 @connect(
-  (state: AppState) => ({ locale: state.locale, updraft: state.updraft })
+  (state: AppState) => ({ updraft: state.updraft })
 )
-export class App extends React.Component<Props, State> {
+export class OpenPage extends React.Component<Props, State> {
   state: State = {
     createDbDialogShown: false,
     createDbDialogOpen: false
   };
 
   render() {
-    if (!this.props.locale) {
-      return this.renderNoLocale();
-    }
-    else if (!this.props.updraft.store || this.state.createDbDialogShown) {
-      return this.renderNoStore();
-    }
-    else {
-      return this.renderMain();
-    }
-  }
-
-  renderNoLocale() {
-    return <div>...</div>;
-  }
-
-  renderNoStore() {
     const recentDbs = calculateRecentDbs(getRecentDbs());
     return (
       <Grid>
@@ -130,20 +113,5 @@ export class App extends React.Component<Props, State> {
   @autobind
   onOpenDb(name: string = "") {
     this.showCreateDb(name, true, true);
-  }
-
-
-  renderMain() {
-    return (
-      <div>
-        <Breadcrumbs items={[
-          {href: "/", title: "Home"},
-          {href: "/accounts", title: "accounts"},
-          {href: "/newAccount", title: "new account"},
-          {href: "/budgets", title: "budgets"}
-        ]}/>
-        {this.props.children}
-      </div>
-    );
   }
 }

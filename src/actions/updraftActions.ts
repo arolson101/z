@@ -1,5 +1,4 @@
 ///<reference path="../project.d.ts"/>
-"use strict";
 
 import { Action, Dispatch, Thunk, ThunkPromise } from "./action";
 import {

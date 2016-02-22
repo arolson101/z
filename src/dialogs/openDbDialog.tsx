@@ -1,5 +1,4 @@
 ///<reference path="../project.d.ts"/>
-"use strict";
 
 import electron = require("electron");
 import { autobind } from "core-decorators";
@@ -62,7 +61,7 @@ function validate(values: any, props: Props): Object {
 
 @reduxForm.reduxForm(
   {
-    form: "CreateDbDialog",
+    form: "OpenDbDialog",
     fields: [
       "path",
       "password1",
