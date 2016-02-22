@@ -5,7 +5,7 @@ import { autobind } from "core-decorators";
 import * as React from "react";
 import { Alert, Button, Input, Modal } from "react-bootstrap";
 import * as reduxForm from "redux-form";
-import { browserHistory } from "react-router";
+import { hashHistory } from "react-router";
 
 import { ValidateHelper, valueOf } from "../util";
 import { t } from "../state";
@@ -224,7 +224,7 @@ export class OpenDbDialog extends React.Component<Props, State> {
       () => {
         this.setState({ opening: false });
         this.onCancel();
-        browserHistory.replace("/");
+        hashHistory.replace("/");
       },
       (err: Error) => {
         this.setState({ opening: false, errorMessage: err.message });

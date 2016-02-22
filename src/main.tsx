@@ -5,9 +5,8 @@ import * as ReactDOM from "react-dom";
 import { createStore, applyMiddleware, compose } from "redux";
 import { connect, Provider } from "react-redux";
 import { syncHistory } from "redux-simple-router";
-import { createHistory/*, createHashHistory*/ } from "history";
 import * as thunk from "redux-thunk";
-import { Router, Route, /*browserHistory, createMemoryHistory*/ browserHistory } from "react-router";
+import { Router, Route, hashHistory } from "react-router";
 import { createDevTools, persistState } from "redux-devtools";
 import LogMonitor from "redux-devtools-log-monitor";
 import DockMonitor from "redux-devtools-dock-monitor";
@@ -65,7 +64,9 @@ type createStoreFunction<State, Action> = (reducer: Redux.Reducer<State, Action>
 
 
 export function main(root: HTMLElement) {
-  const middleware: any[] = [thunk];
+  const reduxRouterMiddleware = syncHistory(hashHistory);
+
+  const middleware: any[] = [thunk, reduxRouterMiddleware];
 
   let finalCreateStore: createStoreFunction<AppState, Action>;
   if (__DEVELOPMENT__) {
@@ -80,9 +81,8 @@ export function main(root: HTMLElement) {
   }
 
   const store = finalCreateStore(appState);
-  const history = createHistory();
 
-  syncHistory(history, store);
+  reduxRouterMiddleware.listenForReplays(store);
 
   store.dispatch(i18nInit());
   store.dispatch(fiInit());
@@ -99,7 +99,7 @@ export function main(root: HTMLElement) {
   ReactDOM.render(
     <Provider store={store}>
       <div>
-        <Router history={browserHistory}>
+        <Router history={hashHistory}>
           <Route path="/" component={Pages.RootPage} onEnter={requireUpdraftStore}>
             <Route path="accounts" component={Pages.AccountsPage}/>
             <Route path="newAccount" component={Pages.NewAccountPage}/>
