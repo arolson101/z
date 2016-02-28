@@ -9,10 +9,9 @@ import * as path from "path";
 import * as fs from "fs";
 import * as Icon from "react-fa";
 
-import { AppState, UpdraftState, KnownDb, t } from "../state";
+import { AppState, Config, UpdraftState, KnownDb, t } from "../state";
 import { OpenDbDialog } from "../dialogs";
 import { formatFilesize, formatRelativeTime } from "../i18n";
-import { getRecentDbs } from "../actions";
 import { StatelessComponent } from "../components";
 
 
@@ -20,6 +19,7 @@ interface Props extends React.Props<any> {
   locale: string;
   updraft: UpdraftState;
   history: ReactRouter.History;
+  recentDbs: KnownDb[];
 }
 
 interface State {
@@ -30,9 +30,10 @@ interface State {
 
 
 const calculateRecentDbs = createSelector(
-  (paths: string[]) => paths,
-  (paths: string[]) => {
-    return _(paths)
+  (config: Config) => config.recentDbs,
+  (recentDbs: Set<string>) => {
+    return _(recentDbs)
+    .keys()
     .uniq()
     .map((p: string) => {
       try {
@@ -81,8 +82,9 @@ class OpenItem extends StatelessComponent<OpenItemProps> {
 @connect(
   (state: AppState) => ({
     locale: state.locale,
-    updraft: state.updraft
-  })
+    updraft: state.updraft,
+    recentDbs: calculateRecentDbs(state.config)
+  } as Props)
 )
 export class OpenPage extends React.Component<Props, State> {
   state: State = {
@@ -91,10 +93,10 @@ export class OpenPage extends React.Component<Props, State> {
   };
 
   render() {
+    const { recentDbs } = this.props;
     if (!this.props.locale) {
       return this.renderNoLocale();
     }
-    const recentDbs = calculateRecentDbs(getRecentDbs());
     return (
       <Grid>
         <Col>
@@ -113,7 +115,7 @@ export class OpenPage extends React.Component<Props, State> {
               {t("App.CreateDbDescription")}
             </OpenItem>
             <OpenItem
-              onClick={() => this.onShowCreate()}
+              onClick={() => this.onOpenDb()}
               icon="folder-open-o"
               header={t("App.OpenDbHeader")}
             >

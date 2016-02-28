@@ -1,5 +1,7 @@
 ///<reference path="../project.d.ts"/>
 
+import sqlite3 = require("sqlite3");
+
 import { Action, Dispatch, Thunk, ThunkPromise } from "./action";
 import {
   Account,
@@ -12,8 +14,8 @@ import {
   BillTable,
   billSpec
 } from "../types";
-import { UpdraftCollection, defineUpdraftCollection, setAppConfig, getAppConfig } from "../util";
-import sqlite3 = require("sqlite3");
+import { changeConfig } from "./configActions";
+import { UpdraftCollection, defineUpdraftCollection } from "../util";
 
 
 export interface KnownDb {
@@ -34,8 +36,6 @@ export interface UpdraftState {
 interface UpdraftOpenAction extends Action {
   state: UpdraftState;
 }
-
-const RECENT_DBS = "recentDbs";
 
 export { Account };
 export type AccountCollection = UpdraftCollection<Account>;
@@ -155,8 +155,7 @@ function openDb(path: string, password: string, mode: number): ThunkPromise {
 
       return store.open()
       .then(() => {
-        addRecentDb(path);
-
+        dispatch(addRecentDb(path));
         dispatch(updraftOpened(state));
         dispatch(updraftLoadData(state));
       });
@@ -203,13 +202,9 @@ function sqliteKey(sdb: sqlite3.Database, key: string): Promise<sqlite3.Database
 }
 
 
-export function getRecentDbs(): string[] {
-  return getAppConfig(RECENT_DBS) || [];
-}
-
-
-function addRecentDb(path: string) {
-  let recentDbs = getRecentDbs();
-  recentDbs.push(path);
-  setAppConfig(RECENT_DBS, recentDbs);
+function addRecentDb(path: string): Thunk {
+  return (dispatch: Dispatch) => {
+    const change = changeConfig( { recentDbs: { $set: { [path]: 1 } } } );
+    dispatch(change);
+  };
 }

@@ -7,6 +7,8 @@ import { routeReducer } from "redux-simple-router";
 
 import {
   Action,
+  Config,
+  configReducer,
   localeReducer,
   AccountCollection,
   accountCollectionReducer,
@@ -27,6 +29,7 @@ export {
   t,
   AccountCollection,
   BillCollection,
+  Config,
   InstitutionCollection,
   UpdraftState,
   KnownDb,
@@ -35,6 +38,7 @@ export {
 
 export interface AppState {
   locale: string;
+  config: Config;
   routing: ReactRouter.RouterState;
   accounts: AccountCollection;
   bills: BillCollection;
@@ -46,6 +50,7 @@ export interface AppState {
 
 export const appState = combineReducers<AppState, Action>({
   locale: localeReducer,
+  config: configReducer,
   routing: routeReducer,
   accounts: accountCollectionReducer,
   bills: billCollectionReducer,

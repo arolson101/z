@@ -15,7 +15,7 @@ require("bootstrap/dist/css/bootstrap.min.css");
 
 
 import * as Pages from "./pages/index";
-import { Action, AccountCollection } from "./actions/index";
+import { Action, AccountCollection, configInit } from "./actions";
 import { appState, AppState } from "./state";
 import { i18nInit } from "./i18n";
 import { fiInit } from "./fi";
@@ -84,6 +84,7 @@ export function main(root: HTMLElement) {
 
   reduxRouterMiddleware.listenForReplays(store);
 
+  store.dispatch(configInit());
   store.dispatch(i18nInit());
   store.dispatch(fiInit());
 
