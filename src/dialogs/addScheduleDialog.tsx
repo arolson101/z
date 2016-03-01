@@ -27,6 +27,7 @@ interface Props extends ReduxForm.Props, React.Props<any> {
     recurrenceMultiple: ReduxForm.Field<number>;
     rrule: ReduxForm.Field<string>;
     amount: ReduxForm.Field<number>;
+    notes: ReduxForm.Field<string>;
 
     // index signature to make typescript happy
     [field: string]: ReduxForm.FieldOpt;
@@ -72,7 +73,8 @@ function validate(values: any, props: Props): Object {
       "recurrenceMultiple",
       "startingOn",
       "account",
-      "amount"
+      "amount",
+      "notes"
     ],
     initialValues: {
       startingOn: currentDate(),
@@ -93,6 +95,9 @@ export class AddScheduleDialog extends StatelessComponent<Props> {
         const { fields } = nextProps;
         if (src.name != valueOf(fields.name)) {
           fields.name.onChange(src.name);
+        }
+        if (src.notes != valueOf(fields.notes)) {
+          fields.notes.onChange(src.notes);
         }
         const rrule = RRule.fromString(src.rruleString);
         const recurring = (rrule.options.count != 1);
@@ -193,6 +198,13 @@ export class AddScheduleDialog extends StatelessComponent<Props> {
               </Row>
             </Input>
             <AccountSelect label={t("AddBillDialog.accountLabel")} {...fields.account}/>
+            <Input
+              type="textarea"
+              label={t("AddBillDialog.notesLabel")}
+              placeholder={t("AddBillDialog.notesPlaceholder")}
+              rows={4}
+              {...wrapError(fields.notes)}
+            />
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.onCancel}>{t("AddBillDialog.cancel")}</Button>
@@ -218,7 +230,8 @@ export class AddScheduleDialog extends StatelessComponent<Props> {
       dbid,
       name: valueOf(fields.name),
       account: valueOf(fields.account),
-      amount: valueOf(fields.amount)
+      amount: valueOf(fields.amount),
+      notes: valueOf(fields.notes)
     };
 
     if (valueOf(fields.recurring) == Recurrance.Repeat) {

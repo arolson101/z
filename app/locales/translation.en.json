@@ -139,6 +139,8 @@
     "once": "Once",
     "repeatEvery": "Repeat Every",
     "accountLabel": "Account",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "",
     "cancel": "Cancel",
     "delete": "Delete Budget Item",
     "add": "Add Budget Item",

@@ -3,7 +3,7 @@
 import { autobind } from "core-decorators";
 import * as React from "react";
 import { connect } from "react-redux";
-import { Button, Row, Col, ListGroup, ListGroupItem, Panel } from "react-bootstrap";
+import { Button, Row, Col, ListGroup, ListGroupItem } from "react-bootstrap";
 import * as Icon from "react-fa";
 import * as reduxForm from "redux-form";
 import { createSelector } from "reselect";
@@ -14,7 +14,7 @@ import { bindActionCreators, updraftAdd } from "../actions";
 import { AddScheduleDialog } from "../dialogs";
 import { AppState, UpdraftState, BillCollection, AccountCollection } from "../state";
 import { formatCurrency, formatDate, t } from "../i18n";
-import { DateIcon } from "../components";
+//import { DateIcon } from "../components";
 
 // TODO: refresh on day change
 
@@ -65,6 +65,15 @@ function currentDate(): Date {
 }
 
 
+function insertNewlines(str: string): any {
+  if (!str) {
+    return str;
+  }
+  
+  return str.split("\n").map((x: string, index: number) => <span key={index}>{x}<br/></span>);
+}
+
+
 
 @connect(
   (state: AppState) => ({
@@ -86,26 +95,36 @@ export class SchedulePage extends React.Component<Props, State> {
   };
 
   render() {
-    return <div> 
+    return <div>
       <ListGroup>
         {_.map(this.props.nextBills, (next: NextBill, index: number) => {
           const account = this.props.accounts[next.bill.account];
           const income: boolean = next.bill.amount > 0;
           const date = next.next || next.last;
           return <ListGroupItem key={next.bill.dbid}>
-            <Row >
-              <Col xs={1}><span style={{color: income ? "darkgreen": "darkred"}}>{formatDate(date)}</span></Col>
-              <Col xs={2}>{formatCurrency(next.bill.amount)}</Col>
-              <Col xs={1}>{next.bill.name}</Col>
-              <Col xs={1}>{account ? account.name : t("SchedulePage.noAccount")}</Col>
-              <Col xs={1}>
+            <Row>
+              <Col xs={3} className="text-right">
+                {formatDate(date)}
+                <br/>
+                <small className="text-muted">{next.rrule.toText()}</small>
+              </Col>
+              <Col xs={3}>
+                <span style={{color: income ? "darkgreen" : "darkred"}}>{formatCurrency(next.bill.amount)}</span>
+                <br/>
+                <div className="text-muted">{account ? account.name : t("SchedulePage.noAccount")}</div>
+              </Col>
+              <Col xs={6}>
                 <Button
+                  className="pull-right"
                   type="button"
                   bsStyle="link"
                   onClick={() => this.onEditBill(next.bill.dbid)}
                 >
                   <Icon name="edit"/>
                 </Button>
+
+                <div>{next.bill.name}</div>
+                <small className="text-muted">{insertNewlines(next.bill.notes)}</small>
               </Col>
             </Row>
           </ListGroupItem>;

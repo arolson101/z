@@ -20,7 +20,7 @@ export class DateIcon extends StatelessComponent<Props> {
       <strong>{month}</strong>
       <span>{date}</span>
     </time>;
-    
+
     // return <div className="fa-2x dateIcon-stack" {...this.props}>
     //   <i className="fa fa-calendar-o"/>
     //   <span className="dateIcon-day">

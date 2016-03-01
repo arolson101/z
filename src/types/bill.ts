@@ -9,6 +9,7 @@ export interface _Bill<key, id, str, date, num> {
   name?: str;
   rruleString?: str;
   amount?: num;
+  notes?: str;
 }
 
 export interface Bill extends _Bill<number, number, string, Date, number> {}
@@ -25,5 +26,6 @@ export const billSpec: BillTableSpec = {
     name: Column.Text(),
     rruleString: Column.String(),
     amount: Column.Real().Default(0),
+    notes: Column.Text()
   }
 };
