@@ -11,7 +11,7 @@ import { Account, AccountType, _Account, defaultAccount } from "../types";
 import { StatelessComponent, EnumSelect } from "../components";
 
 
-export interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field<number>, ReduxForm.Field<number>, ReduxForm.Field<string>, ReduxForm.Field<AccountType>, ReduxForm.Field<boolean>> {}
+export interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field<number>, ReduxForm.Field<number>, ReduxForm.Field<string>, ReduxForm.Field<AccountType>, ReduxForm.Field<boolean>, any> {}
 export interface AccountFieldArray extends ReduxForm.FieldArray<AccountField> {}
 
 interface Props extends ReduxForm.Props, React.Props<any> {
@@ -171,7 +171,8 @@ export class AddAccountDialog extends StatelessComponent<Props> {
       name: valueOf(fields.name),
       number: valueOf(fields.number),
       type: valueOf(fields.type),
-      visible: valueOf(fields.visible)
+      visible: valueOf(fields.visible),
+      balance: 0
     };
     onSave(account);
     resetForm();

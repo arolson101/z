@@ -3,7 +3,7 @@
 import { autobind } from "core-decorators";
 import * as React from "react";
 import { connect } from "react-redux";
-import { Button, Row, Grid, Table } from "react-bootstrap";
+import { Button, Row, Col, ListGroup, ListGroupItem, Panel } from "react-bootstrap";
 import * as Icon from "react-fa";
 import * as reduxForm from "redux-form";
 import { createSelector } from "reselect";
@@ -14,6 +14,7 @@ import { bindActionCreators, updraftAdd } from "../actions";
 import { AddScheduleDialog } from "../dialogs";
 import { AppState, UpdraftState, BillCollection, AccountCollection } from "../state";
 import { formatCurrency, formatDate, t } from "../i18n";
+import { DateIcon } from "../components";
 
 // TODO: refresh on day change
 
@@ -64,6 +65,7 @@ function currentDate(): Date {
 }
 
 
+
 @connect(
   (state: AppState) => ({
     accounts: state.accounts,
@@ -84,40 +86,31 @@ export class SchedulePage extends React.Component<Props, State> {
   };
 
   render() {
-    return <Grid>
-      <Row>bills</Row>
-      <Table>
-        <thead>
-          <tr>
-            <th>{t("SchedulePage.nameHeader")}</th>
-            <th>{t("SchedulePage.amountHeader")}</th>
-            <th>{t("SchedulePage.nextOccurrenceHeader")}</th>
-            <th>{t("SchedulePage.accountHeader")}</th>
-            <th>{t("SchedulePage.editHeader")}</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {_.map(this.props.nextBills, (bill: NextBill, index: number) => {
-            const account = this.props.accounts[bill.bill.account];
-            return <tr key={bill.bill.dbid}>
-              <td>{bill.bill.name}</td>
-              <td>{formatCurrency(bill.bill.amount)}</td>
-              <td>{formatDate(bill.next || bill.last)}</td>
-              <td>{account ? account.name : t("SchedulePage.noAccount")}</td>
-              <td>
+    return <div> 
+      <ListGroup>
+        {_.map(this.props.nextBills, (next: NextBill, index: number) => {
+          const account = this.props.accounts[next.bill.account];
+          const income: boolean = next.bill.amount > 0;
+          const date = next.next || next.last;
+          return <ListGroupItem key={next.bill.dbid}>
+            <Row >
+              <Col xs={1}><span style={{color: income ? "darkgreen": "darkred"}}>{formatDate(date)}</span></Col>
+              <Col xs={2}>{formatCurrency(next.bill.amount)}</Col>
+              <Col xs={1}>{next.bill.name}</Col>
+              <Col xs={1}>{account ? account.name : t("SchedulePage.noAccount")}</Col>
+              <Col xs={1}>
                 <Button
                   type="button"
                   bsStyle="link"
-                  onClick={() => this.onEditBill(bill.bill.dbid)}
+                  onClick={() => this.onEditBill(next.bill.dbid)}
                 >
                   <Icon name="edit"/>
                 </Button>
-              </td>
-            </tr>;
-          })}
-        </tbody>
-      </Table>
+              </Col>
+            </Row>
+          </ListGroupItem>;
+        })}
+      </ListGroup>
       <AddScheduleDialog
         show={this.state.add || this.state.editing != -1}
         editing={this.state.editing}
@@ -126,8 +119,12 @@ export class SchedulePage extends React.Component<Props, State> {
         onCancel={this.onModalHide}
         onDelete={this.onDelete}
       />
-      <Button onClick={this.onAddBill}>{t("SchedulePage.add")}</Button>
-    </Grid>;
+      <Button onClick={this.onAddBill}>
+        <Icon name="calendar-plus-o"/>
+        {t(" ")}
+        {t("SchedulePage.add")}
+      </Button>
+    </div>;
   }
 
   @autobind

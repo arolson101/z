@@ -3,6 +3,7 @@ export * from "./breadcrumbs";
 export * from "./component";
 export * from "./currencyInput";
 export * from "./datePicker";
+export * from "./dateIcon";
 export * from "./enumSelect";
 export * from "./imageCheckbox";
 export * from "./fadeTransitionGroup";
