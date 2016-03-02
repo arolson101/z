@@ -235,11 +235,15 @@ export class AddScheduleDialog extends StatelessComponent<Props> {
     };
 
     if (valueOf(fields.recurring) == Recurrance.Repeat) {
-      bill.rruleString = new RRule({
+      let opts: __RRule.Options = {
         freq: Frequency.toRRuleFreq(valueOf(fields.frequency) * 1),
         dtstart: valueOf(fields.startingOn),
         interval: valueOf(fields.recurrenceMultiple)
-      }).toString();
+      };
+      if (opts.freq == RRule.MONTHLY) {
+        opts.bymonthday = opts.dtstart.getDate();
+      }
+      bill.rruleString = new RRule(opts).toString();
     }
     else {
       bill.rruleString = new RRule({

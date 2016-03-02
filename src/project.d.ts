@@ -323,3 +323,25 @@ declare module "i18next-node-fs-backend" {
   let filesystemBackend: i18nextFilesystemBackendProcessor;
   export default filesystemBackend;
 }
+
+
+declare module "react-chartjs" {
+  import * as React from "react";
+  
+  interface LinearChartProps extends React.HTMLProps<HTMLCanvasElement> {
+    data: LinearChartData | any; // conflicts with react's HTMLAttributes
+    options: ChartOptions;
+  }
+
+  export class Bar extends React.Component<LinearChartProps, any> {}
+  export class Line extends React.Component<LinearChartProps, any> {}
+
+  interface CircularChartProps extends React.HTMLProps<HTMLCanvasElement> {
+    data: CircularChartData | any; // conflicts with react's HTMLAttributes
+    options: ChartOptions;
+  }
+  export class Doughnut extends React.Component<CircularChartProps, any> {}
+  export class Pie extends React.Component<CircularChartProps, any> {}
+  export class PolarArea extends React.Component<CircularChartProps, any> {}
+  export class Radar extends React.Component<CircularChartProps, any> {}
+}

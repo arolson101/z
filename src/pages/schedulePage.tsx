@@ -1,6 +1,8 @@
 ///<reference path="../project.d.ts"/>
 
 import { autobind } from "core-decorators";
+import * as moment from "moment";
+require("moment-range");
 import * as React from "react";
 import { connect } from "react-redux";
 import { Button, Row, Col, ListGroup, ListGroupItem } from "react-bootstrap";
@@ -8,8 +10,9 @@ import * as Icon from "react-fa";
 import * as reduxForm from "redux-form";
 import { createSelector } from "reselect";
 import { RRule } from "rrule";
+import { Line as LineChart } from "react-chartjs";
 
-import { Bill, BillChange } from "../types";
+import { Account, Bill, BillChange } from "../types";
 import { bindActionCreators, updraftAdd } from "../actions";
 import { AddScheduleDialog } from "../dialogs";
 import { AppState, UpdraftState, BillCollection, AccountCollection } from "../state";
@@ -17,6 +20,13 @@ import { formatCurrency, formatDate, t } from "../i18n";
 //import { DateIcon } from "../components";
 
 // TODO: refresh on day change
+
+interface DataPoint {
+  date: Date;
+  change: number;
+  value: number;
+  description: string;
+}
 
 interface NextBill {
   bill: Bill;
@@ -31,6 +41,7 @@ interface Props extends React.Props<any> {
   updraft: UpdraftState;
   updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
   change?: (form: string, field: string, value: any) => any;
+  chartData?: LinearChartData;
 }
 
 interface State {
@@ -38,11 +49,11 @@ interface State {
   editing?: number;
 }
 
-export const calculateEntries = createSelector(
+const calculateEntries = createSelector(
   (state: AppState) => state.bills,
   (bills: BillCollection) => {
     let now = currentDate();
-    return _.chain(bills)
+    return _(bills)
     .map((bill: Bill) => {
       let rrule = RRule.fromString(bill.rruleString);
       return {
@@ -54,6 +65,92 @@ export const calculateEntries = createSelector(
     })
     .sortBy((bill: NextBill) => bill.next || bill.last)
     .value();
+  }
+);
+
+interface BillOccurance {
+  amount: number;
+  date: Date;
+}
+
+const calculateDataset = createSelector(
+  (state: AppState) => state.accounts,
+  (state: AppState) => state.bills,
+  (accounts: AccountCollection, bills: BillCollection): LinearChartData => {
+    let start = currentDate();
+    let end = moment(start).add(1, "Y").subtract(1, "d").toDate();
+    //let end = moment(start).add(2, "M").subtract(1, "d").toDate();
+
+    let nextOccurrances = _.mapValues(accounts, acct => 0);
+    let accountData = _.mapValues(accounts, acct => [] as number[]);
+    let accountBalances = _.mapValues(accounts, acct => acct.balance);
+    let occurrancesByAccount = _(accounts)
+    .mapValues((account: Account, accountId: any): BillOccurance[] => {
+      return _(bills)
+      .filter((bill: Bill) => bill.account == accountId)
+      .map((bill: Bill): BillOccurance[] => {
+        let rrule = RRule.fromString(bill.rruleString);
+        let occurrances = rrule.between(start, end, true);
+        return _.map(occurrances, (date: Date): BillOccurance => ({
+          amount: bill.amount,
+          date
+        }));
+      })
+      .flatten<BillOccurance>()
+      .sortBy((occurrance: BillOccurance) => occurrance.date)
+      .value();
+    })
+    .value();
+
+    let labels: string[] = [];
+    let lastMonth = -1;
+    moment
+    .range(start, end)
+    .by(
+      "days",
+      (currentDate: moment.Moment) => {
+        if (lastMonth != currentDate.month()) {
+          lastMonth = currentDate.month();
+          labels.push(currentDate.format("MMMM"));
+        }
+        else {
+          labels.push("");
+        }
+
+        _.forEach(accounts, (account: Account, accountId: any) => {
+          let occurrences = occurrancesByAccount[accountId];
+          let accountBalance = accountBalances[accountId];
+          let occurrence: BillOccurance;
+          while (
+            (occurrence = occurrences[nextOccurrances[accountId]])
+            && currentDate.isSame(occurrence.date, "day")
+          ) {
+            accountBalance += occurrence.amount;
+            nextOccurrances[accountId]++;
+          }
+          accountData[accountId].push(accountBalance);
+          accountBalances[accountId] = accountBalance;
+        });
+      },
+      false
+    );
+
+    let chartData: LinearChartData = {
+      labels,
+      datasets: _(accounts)
+      .map((account: Account, accountId: number): ChartDataSet => {
+        let dataSet: ChartDataSet = {
+          label: account.name,
+          fillColor: "pink",
+          strokeColor: "red",
+          data: accountData[accountId]
+        };
+        return dataSet;
+      })
+      .value()
+    };
+
+    return chartData;
   }
 );
 
@@ -69,7 +166,7 @@ function insertNewlines(str: string): any {
   if (!str) {
     return str;
   }
-  
+
   return str.split("\n").map((x: string, index: number) => <span key={index}>{x}<br/></span>);
 }
 
@@ -78,8 +175,9 @@ function insertNewlines(str: string): any {
 @connect(
   (state: AppState) => ({
     accounts: state.accounts,
+    updraft: state.updraft,
     nextBills: calculateEntries(state),
-    updraft: state.updraft
+    chartData: calculateDataset(state)
   } as Props),
   (dispatch: Redux.Dispatch<any>) => bindActionCreators(
     {
@@ -143,6 +241,7 @@ export class SchedulePage extends React.Component<Props, State> {
         {t(" ")}
         {t("SchedulePage.add")}
       </Button>
+      <LineChart width={500} height={500} data={this.props.chartData} options={{legendTemplate: "legend"}}/>
     </div>;
   }
 

@@ -37,3 +37,6 @@
 /// <reference path="sqlite3/sqlite3.d.ts" />
 /// <reference path="sanitize-filename/sanitize-filename.d.ts" />
 /// <reference path="github-electron/github-electron.d.ts" />
+/// <reference path="chartjs/chart.d.ts" />
+/// <reference path="moment-range/moment-range.d.ts" />
+/// <reference path="moment/moment.d.ts" />

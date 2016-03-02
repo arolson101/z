@@ -100,6 +100,15 @@
     },
     "react/react-global.d.ts": {
       "commit": "95433230a9913054c57c715e6b91a9ae738d0b97"
+    },
+    "chartjs/chart.d.ts": {
+      "commit": "4ba57e605bd71bf7248de65aac0b4f50e3eb1c9e"
+    },
+    "moment-range/moment-range.d.ts": {
+      "commit": "4ba57e605bd71bf7248de65aac0b4f50e3eb1c9e"
+    },
+    "moment/moment.d.ts": {
+      "commit": "4ba57e605bd71bf7248de65aac0b4f50e3eb1c9e"
     }
   }
 }
