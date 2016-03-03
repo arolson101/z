@@ -104,16 +104,23 @@ const calculateDataset = createSelector(
 
     let accountData = _.mapValues(occurrencesByAccount, (occurrences: BillOccurrence[], accountId: any) => {
       let balance = accounts[accountId].balance;
-      let data = _.map(occurrences, (occurrence: BillOccurrence): ScatterPoint => {
+      let data: ScatterPoint[] = [{
+        x: start,
+        y: balance
+      }];
+      let lastDate = start;
+      let lastIndex = 0;
+      _.forEach(occurrences, (occurrence: BillOccurrence) => {
         balance += occurrence.amount;
-        return {
-          x: occurrence.date,
-          y: balance
-        };
-      });
-      data.unshift({
-        x: currentDate(),
-        y: accounts[accountId].balance
+        if (occurrence.date.getTime() != lastDate.getTime()) {
+          lastDate = occurrence.date;
+          lastIndex = data.length;
+          data.push({
+            x: occurrence.date,
+            y: 0
+          });
+        }
+        data[lastIndex].y = balance;
       });
       return data;
     });
