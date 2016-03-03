@@ -112,10 +112,10 @@ const calculateDataset = createSelector(
       let lastIndex = 0;
       _.forEach(occurrences, (occurrence: BillOccurrence) => {
         if (occurrence.date.getTime() != lastDate.getTime()) {
-          data.push({
-            x: occurrence.date,
-            y: balance
-          });
+          // data.push({
+          //   x: occurrence.date,
+          //   y: balance
+          // });
           lastDate = occurrence.date;
           lastIndex = data.length;
           data.push({
