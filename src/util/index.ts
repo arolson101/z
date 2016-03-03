@@ -1,3 +1,4 @@
+export * from "./color";
 export * from "./enumEx";
 export * from "./mixin";
 export * from "./rrule";

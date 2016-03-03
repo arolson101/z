@@ -12,7 +12,7 @@ import { createSelector } from "reselect";
 import { RRule } from "rrule";
 
 import { Account, Bill, BillChange } from "../types";
-import { rruleFixText } from "../util";
+import { rruleFixText, colorHash } from "../util";
 import { bindActionCreators, updraftAdd } from "../actions";
 import { AddScheduleDialog } from "../dialogs";
 import { AppState, UpdraftState, BillCollection, AccountCollection } from "../state";
@@ -111,15 +111,19 @@ const calculateDataset = createSelector(
       let lastDate = start;
       let lastIndex = 0;
       _.forEach(occurrences, (occurrence: BillOccurrence) => {
-        balance += occurrence.amount;
         if (occurrence.date.getTime() != lastDate.getTime()) {
+          data.push({
+            x: occurrence.date,
+            y: balance
+          });
           lastDate = occurrence.date;
           lastIndex = data.length;
           data.push({
             x: occurrence.date,
-            y: 0
+            y: balance
           });
         }
+        balance += occurrence.amount;
         data[lastIndex].y = balance;
       });
       return data;
@@ -131,8 +135,7 @@ const calculateDataset = createSelector(
       .map((account: Account, accountId: number): ScatterChartDataSet => {
         let dataSet: ScatterChartDataSet = {
           label: account.name,
-          fillColor: "pink",
-          strokeColor: "red",
+          strokeColor: colorHash(account.dbid.toString()),
           data: accountData[accountId]
         };
         return dataSet;
