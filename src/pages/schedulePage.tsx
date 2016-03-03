@@ -30,6 +30,7 @@ interface DataPoint {
 
 interface NextBill {
   bill: Bill;
+  rruleFixedText: string;
   rrule: __RRule.RRule;
   next: Date;
   last: Date;
@@ -49,6 +50,21 @@ interface State {
   editing?: number;
 }
 
+
+function rruleFixText(rrule: RRule): string {
+  // leave recurrence text as empty
+  if (rrule.origOptions.count == 1) {
+    return "";
+  }
+
+  // fix text string by removing the hack to get closest date so it appears 
+  // "monthly" instead of "every month on the 28th, 29th, 30th and 31st" 
+  const fixedOpts = _.extend({}, rrule.origOptions) as __RRule.Options;
+  delete fixedOpts.bymonthday;
+  delete fixedOpts.bysetpos;
+  return (new RRule(fixedOpts)).toText();
+}
+
 const calculateEntries = createSelector(
   (state: AppState) => state.bills,
   (bills: BillCollection) => {
@@ -60,7 +76,8 @@ const calculateEntries = createSelector(
         bill,
         rrule,
         next: rrule.after(now, true),
-        last: rrule.before(now, false)
+        last: rrule.before(now, false),
+        rruleFixedText: rruleFixText(rrule)
       } as NextBill;
     })
     .sortBy((bill: NextBill) => bill.next || bill.last)
@@ -68,7 +85,7 @@ const calculateEntries = createSelector(
   }
 );
 
-interface BillOccurance {
+interface BillOccurrence {
   amount: number;
   date: Date;
 }
@@ -80,27 +97,27 @@ const calculateDataset = createSelector(
     let start = currentDate();
     let end = moment(start).add(1, "Y").toDate();
 
-    let occurrancesByAccount = _(accounts)
-    .mapValues((account: Account, accountId: any): BillOccurance[] => {
+    let occurrencesByAccount = _(accounts)
+    .mapValues((account: Account, accountId: any): BillOccurrence[] => {
       return _(bills)
       .filter((bill: Bill) => bill.account == accountId)
-      .map((bill: Bill): BillOccurance[] => {
+      .map((bill: Bill): BillOccurrence[] => {
         let rrule = RRule.fromString(bill.rruleString);
-        let occurrances = rrule.between(start, end, true);
-        return _.map(occurrances, (date: Date): BillOccurance => ({
+        let occurrences = rrule.between(start, end, true);
+        return _.map(occurrences, (date: Date): BillOccurrence => ({
           amount: bill.amount,
           date
         }));
       })
-      .flatten<BillOccurance>()
-      .sortBy((occurrance: BillOccurance) => occurrance.date)
+      .flatten<BillOccurrence>()
+      .sortBy((occurrence: BillOccurrence) => occurrence.date)
       .value();
     })
     .value();
 
-    let accountData = _.mapValues(occurrancesByAccount, (occurrances: BillOccurance[], accountId: any) => {
+    let accountData = _.mapValues(occurrencesByAccount, (occurrences: BillOccurrence[], accountId: any) => {
       let balance = accounts[accountId].balance;
-      let data = _.map(occurrances, (occurrence: BillOccurance): ScatterPoint => {
+      let data = _.map(occurrences, (occurrence: BillOccurrence): ScatterPoint => {
         balance += occurrence.amount;
         return {
           x: occurrence.date,
@@ -184,7 +201,7 @@ export class SchedulePage extends React.Component<Props, State> {
               <Col xs={3} className="text-right">
                 {formatDate(date)}
                 <br/>
-                <small className="text-muted">{next.rrule.toText()}</small>
+                <small className="text-muted">{next.rruleFixedText}</small>
               </Col>
               <Col xs={3}>
                 <span style={{color: income ? "darkgreen" : "darkred"}}>{formatCurrency(next.bill.amount)}</span>

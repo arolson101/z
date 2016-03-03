@@ -240,9 +240,14 @@ export class AddScheduleDialog extends StatelessComponent<Props> {
         dtstart: valueOf(fields.startingOn),
         interval: valueOf(fields.recurrenceMultiple)
       };
-      // if (opts.freq == RRule.MONTHLY) {
-      //   opts.bymonthday = opts.dtstart.getDate();
-      // }
+      if (opts.freq == RRule.MONTHLY) {
+        const date = opts.dtstart.getDate();
+        if (date > 28) {
+          // make closest date for months with insufficent days
+          opts.bymonthday = _.range(28, date + 1);
+          opts.bysetpos = -1;
+        }
+      }
       bill.rruleString = new RRule(opts).toString();
     }
     else {
