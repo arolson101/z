@@ -148,10 +148,10 @@ export class AddAccountDialog extends StatelessComponent<Props> {
             />
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.onCancel}>{t("AddAccountDialog.cancel")}</Button>
             {this.props.editing != -1 &&
-              <Button onClick={this.onDelete} bsStyle="danger">{t("AddAccountDialog.delete")}</Button>
+              <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("AddAccountDialog.delete")}</Button>
             }
+            <Button onClick={this.onCancel}>{t("AddAccountDialog.cancel")}</Button>
             <Button
               bsStyle="primary"
               type="submit"

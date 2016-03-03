@@ -207,10 +207,10 @@ export class AddScheduleDialog extends StatelessComponent<Props> {
             />
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.onCancel}>{t("AddBillDialog.cancel")}</Button>
             {this.props.editing != -1 &&
-              <Button onClick={this.onDelete} bsStyle="danger">{t("AddBillDialog.delete")}</Button>
+              <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("AddBillDialog.delete")}</Button>
             }
+            <Button onClick={this.onCancel}>{t("AddBillDialog.cancel")}</Button>
             <Button
               bsStyle="primary"
               type="submit"
