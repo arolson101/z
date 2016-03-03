@@ -12,6 +12,7 @@ import { createSelector } from "reselect";
 import { RRule } from "rrule";
 
 import { Account, Bill, BillChange } from "../types";
+import { rruleFixText } from "../util";
 import { bindActionCreators, updraftAdd } from "../actions";
 import { AddScheduleDialog } from "../dialogs";
 import { AppState, UpdraftState, BillCollection, AccountCollection } from "../state";
@@ -50,20 +51,6 @@ interface State {
   editing?: number;
 }
 
-
-function rruleFixText(rrule: RRule): string {
-  // leave recurrence text as empty
-  if (rrule.origOptions.count == 1) {
-    return "";
-  }
-
-  // fix text string by removing the hack to get closest date so it appears 
-  // "monthly" instead of "every month on the 28th, 29th, 30th and 31st" 
-  const fixedOpts = _.extend({}, rrule.origOptions) as __RRule.Options;
-  delete fixedOpts.bymonthday;
-  delete fixedOpts.bysetpos;
-  return (new RRule(fixedOpts)).toText();
-}
 
 const calculateEntries = createSelector(
   (state: AppState) => state.bills,

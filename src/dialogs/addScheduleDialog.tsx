@@ -7,7 +7,7 @@ import { verify } from "updraft";
 import * as reduxForm from "redux-form";
 
 import { StatelessComponent, EnumSelect, CurrencyInput, AccountSelect, DatePicker } from "../components";
-import { ValidateHelper, valueOf } from "../util";
+import { ValidateHelper, valueOf, rruleFixEndOfMonth } from "../util";
 import { Bill, BillChange, Frequency, RRule } from "../types";
 import { AppState, BillCollection, t } from "../state";
 
@@ -240,14 +240,7 @@ export class AddScheduleDialog extends StatelessComponent<Props> {
         dtstart: valueOf(fields.startingOn),
         interval: valueOf(fields.recurrenceMultiple)
       };
-      if (opts.freq == RRule.MONTHLY) {
-        const date = opts.dtstart.getDate();
-        if (date > 28) {
-          // make closest date for months with insufficent days
-          opts.bymonthday = _.range(28, date + 1);
-          opts.bysetpos = -1;
-        }
-      }
+      rruleFixEndOfMonth(opts);
       bill.rruleString = new RRule(opts).toString();
     }
     else {
