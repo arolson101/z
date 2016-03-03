@@ -7,5 +7,6 @@ export * from "./dateIcon";
 export * from "./enumSelect";
 export * from "./imageCheckbox";
 export * from "./fadeTransitionGroup";
+export * from "./scatterChart";
 export * from "./select2";
 export * from "./xeditable";

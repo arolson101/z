@@ -10,13 +10,13 @@ import * as Icon from "react-fa";
 import * as reduxForm from "redux-form";
 import { createSelector } from "reselect";
 import { RRule } from "rrule";
-import { Line as LineChart } from "react-chartjs";
 
 import { Account, Bill, BillChange } from "../types";
 import { bindActionCreators, updraftAdd } from "../actions";
 import { AddScheduleDialog } from "../dialogs";
 import { AppState, UpdraftState, BillCollection, AccountCollection } from "../state";
 import { formatCurrency, formatDate, t } from "../i18n";
+import { ScatterChart, ScatterChartData, ScatterChartDataSet, ScatterPoint } from "../components";
 //import { DateIcon } from "../components";
 
 // TODO: refresh on day change
@@ -41,7 +41,7 @@ interface Props extends React.Props<any> {
   updraft: UpdraftState;
   updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
   change?: (form: string, field: string, value: any) => any;
-  chartData?: LinearChartData;
+  chartData?: ScatterChartData;
 }
 
 interface State {
@@ -76,14 +76,10 @@ interface BillOccurance {
 const calculateDataset = createSelector(
   (state: AppState) => state.accounts,
   (state: AppState) => state.bills,
-  (accounts: AccountCollection, bills: BillCollection): LinearChartData => {
+  (accounts: AccountCollection, bills: BillCollection): ScatterChartData => {
     let start = currentDate();
-    let end = moment(start).add(1, "Y").subtract(1, "d").toDate();
-    //let end = moment(start).add(2, "M").subtract(1, "d").toDate();
+    let end = moment(start).add(1, "Y").toDate();
 
-    let nextOccurrances = _.mapValues(accounts, acct => 0);
-    let accountData = _.mapValues(accounts, acct => [] as number[]);
-    let accountBalances = _.mapValues(accounts, acct => acct.balance);
     let occurrancesByAccount = _(accounts)
     .mapValues((account: Account, accountId: any): BillOccurance[] => {
       return _(bills)
@@ -102,44 +98,27 @@ const calculateDataset = createSelector(
     })
     .value();
 
-    let labels: string[] = [];
-    let lastMonth = -1;
-    moment
-    .range(start, end)
-    .by(
-      "days",
-      (currentDate: moment.Moment) => {
-        if (lastMonth != currentDate.month()) {
-          lastMonth = currentDate.month();
-          labels.push(currentDate.format("MMMM"));
-        }
-        else {
-          labels.push("");
-        }
+    let accountData = _.mapValues(occurrancesByAccount, (occurrances: BillOccurance[], accountId: any) => {
+      let balance = accounts[accountId].balance;
+      let data = _.map(occurrances, (occurrence: BillOccurance): ScatterPoint => {
+        balance += occurrence.amount;
+        return {
+          x: occurrence.date,
+          y: balance
+        };
+      });
+      data.unshift({
+        x: currentDate(),
+        y: accounts[accountId].balance
+      });
+      return data;
+    });
 
-        _.forEach(accounts, (account: Account, accountId: any) => {
-          let occurrences = occurrancesByAccount[accountId];
-          let accountBalance = accountBalances[accountId];
-          let occurrence: BillOccurance;
-          while (
-            (occurrence = occurrences[nextOccurrances[accountId]])
-            && currentDate.isSame(occurrence.date, "day")
-          ) {
-            accountBalance += occurrence.amount;
-            nextOccurrances[accountId]++;
-          }
-          accountData[accountId].push(accountBalance);
-          accountBalances[accountId] = accountBalance;
-        });
-      },
-      false
-    );
-
-    let chartData: LinearChartData = {
-      labels,
+    let chartData: ScatterChartData = {
+      labels: [],
       datasets: _(accounts)
-      .map((account: Account, accountId: number): ChartDataSet => {
-        let dataSet: ChartDataSet = {
+      .map((account: Account, accountId: number): ScatterChartDataSet => {
+        let dataSet: ScatterChartDataSet = {
           label: account.name,
           fillColor: "pink",
           strokeColor: "red",
@@ -153,6 +132,7 @@ const calculateDataset = createSelector(
     return chartData;
   }
 );
+
 
 
 function currentDate(): Date {
@@ -241,7 +221,25 @@ export class SchedulePage extends React.Component<Props, State> {
         {t(" ")}
         {t("SchedulePage.add")}
       </Button>
-      <LineChart width={500} height={500} data={this.props.chartData} options={{legendTemplate: "legend"}}/>
+      <ScatterChart
+        data={this.props.chartData}
+        options={{
+          animation: false,
+          // xScaleOverride: true,
+          // xScaleSteps: 5,
+          // xScaleStartValue: currentDate(),
+          legendTemplate: "legend",
+          scaleType: "date",
+          scaleLabel: "$<%=value%>",
+          scaleDateFormat: "mmm d",
+          scaleDateTimeFormat: "mmm d",
+          tooltipTemplate: "<%if (datasetLabel){%><%=datasetLabel%>: <%}%><%=argLabel%> <%=valueLabel%>",
+          pointDot: false,
+          bezierCurve: false,
+          responsive: true
+        }}
+        redraw
+      />
     </div>;
   }
 

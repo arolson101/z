@@ -8,8 +8,8 @@ var ForkCheckerPlugin = require('awesome-typescript-loader').ForkCheckerPlugin;
 var production = 0;
 
 var nodeModules = {};
-fs.readdirSync('node_modules')
-//["sqlite3", "filist"]
+//fs.readdirSync('node_modules')
+["sqlite3", "filist", "i18next", "rrule"]
 	.concat(["electron", "fs", "path"])
   .filter(function(x) {
     return ['.bin', 'react-fa'].indexOf(x) === -1;
@@ -35,6 +35,9 @@ module.exports = {
 
 	resolve: {
 		extensions: ['', '.js', '.jsx', '.ts', '.tsx'],
+    alias: {
+      "Chart": "chart.js"
+    }
 	},
 
 	module: {
@@ -76,6 +79,7 @@ module.exports = {
 			"ReactBootstrap": "react-bootstrap",
 			"Updraft": "updraft",
 			"ofx4js": "ofx4js",
+      "Chart": "chart.js"
 		}),
 	],
 

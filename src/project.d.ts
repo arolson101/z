@@ -328,20 +328,21 @@ declare module "i18next-node-fs-backend" {
 declare module "react-chartjs" {
   import * as React from "react";
   
-  interface LinearChartProps extends React.HTMLProps<HTMLCanvasElement> {
-    data: LinearChartData | any; // conflicts with react's HTMLAttributes
+  export interface ChartProps<T> extends React.HTMLProps<HTMLCanvasElement> {
+    data: T | any; // conflicts with react's HTMLAttributes
     options: ChartOptions;
+    redraw?: boolean;
   }
-
+  
+  export type LinearChartProps = ChartProps<LinearChartData>;
   export class Bar extends React.Component<LinearChartProps, any> {}
   export class Line extends React.Component<LinearChartProps, any> {}
 
-  interface CircularChartProps extends React.HTMLProps<HTMLCanvasElement> {
-    data: CircularChartData | any; // conflicts with react's HTMLAttributes
-    options: ChartOptions;
-  }
+  export type CircularChartProps = ChartProps<CircularChartData>;
   export class Doughnut extends React.Component<CircularChartProps, any> {}
   export class Pie extends React.Component<CircularChartProps, any> {}
   export class PolarArea extends React.Component<CircularChartProps, any> {}
   export class Radar extends React.Component<CircularChartProps, any> {}
+  
+  export function createClass<T>(chartType: string, methodNames: string[], dataKey: string): new() => React.Component<T, any>;
 }
