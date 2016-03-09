@@ -9,8 +9,9 @@ import * as reduxForm from "redux-form";
 import access = require("safe-access");
 import hash = require("string-hash");
 import { browserHistory } from "react-router";
+import { verify } from "updraft";
 
-import { AppState, FI, UpdraftState, t } from "../state";
+import { AppState, FI, UpdraftState, t, InstitutionCollection } from "../state";
 import {
   Account, AccountType,
   Institution } from "../types";
@@ -24,15 +25,18 @@ import {
   AccountFieldArray,
   AddAccountDialog
  } from "../dialogs";
-import { ValidateHelper } from "../util";
+import { ValidateHelper, applyFormValues } from "../util";
 import { bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { readAccountProfiles } from "../online";
 
 interface Props extends ReduxForm.Props {
-  isNew?: boolean;
+  params?: {
+    institutionId?: number;
+  };
   updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
   updatePath?: (path: string) => any;
   filist: FI[];
+  institutions: InstitutionCollection;
   updraft: UpdraftState;
   fields: {
     name: ReduxForm.Field<string>;
@@ -40,7 +44,7 @@ interface Props extends ReduxForm.Props {
     address: ReduxForm.Field<string>;
     notes: ReduxForm.Field<string>;
     institution: ReduxForm.Field<string>;
-    id: ReduxForm.Field<string>;
+    //id: ReduxForm.Field<string>;
 
     online: ReduxForm.Field<boolean>;
 
@@ -104,6 +108,10 @@ function validate(values: any, props: Props): Object {
   return errors;
 }
 
+function isNew(institutionId: number): boolean {
+  return (institutionId as any) == "new";
+}
+
 
 @reduxForm.reduxForm(
   {
@@ -118,7 +126,11 @@ function validate(values: any, props: Props): Object {
     },
     validate
   },
-  (state: AppState) => ({filist: state.filist, updraft: state.updraft}),
+  (state: AppState) => ({
+    filist: state.filist,
+    updraft: state.updraft,
+    institutions: state.institutions
+  } as Props),
   (dispatch: Redux.Dispatch<any>) => bindActionCreators(
     {
       updraftAdd,
@@ -136,6 +148,29 @@ export class NewAccountPage extends React.Component<Props, State> {
       gettingAccountsSuccess: null,
       gettingAccountsError: null
     };
+  }
+
+  componentWillMount() {
+    NewAccountPage.applyFormValues(this.props);
+  }
+
+  componentWillReceiveProps(nextProps: Props) {
+    if (this.props.params.institutionId != nextProps.params.institutionId) {
+      NewAccountPage.applyFormValues(nextProps);
+    }
+  }
+
+  static applyFormValues(props: Props) {
+    const institutionId = props.params.institutionId;
+    if (isNew(institutionId)) {
+      props.resetForm();
+    }
+    else {
+      verify(institutionId in props.institutions, "invalid institutionId");
+      const src = props.institutions[institutionId];
+      const values = _.assign({}, src, {institution: ""});
+      applyFormValues(props.fields, values);
+    }
   }
 
   render() {
@@ -165,9 +200,11 @@ export class NewAccountPage extends React.Component<Props, State> {
       return props;
     };
 
+    const editing = (this.props.params.institutionId as any) != "new";
+
     return (
       <Grid>
-
+        <h1>Editing: {editing ? "true" : "false"} ({this.props.params.institutionId})</h1>
         <Row>
           <Col xs={12}>
             <Select2
@@ -417,6 +454,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 
   @autobind
   onInstitutionChange(e: Event) {
+    console.log("onInstitutionChange", e);
     const { fields } = this.props;
     fields.institution.onChange(e);
 

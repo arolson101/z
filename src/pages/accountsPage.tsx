@@ -3,6 +3,7 @@
 import { connect } from "react-redux";
 import { Row, Grid, Panel } from "react-bootstrap";
 import * as Icon from "react-fa";
+import { Link } from "react-router";
 
 import { AccountGroup, accountGroups, StatelessComponent } from "../components";
 import { AppState } from "../state";
@@ -23,7 +24,13 @@ export class AccountsPage extends StatelessComponent<Props> {
           <Panel
             key={group.institution.dbid}
             header={
-              <h3><Icon name="university" /> {group.institution.name}</h3>
+              <h3>
+                <Icon name="university" />
+                {group.institution.name}
+                <Link to={`/accounts/${group.institution.dbid}`} className="pull-right">
+                  <Icon name="edit"/>
+                </Link>
+              </h3>
             }
           >
             <ul>

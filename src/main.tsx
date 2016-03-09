@@ -103,7 +103,8 @@ export function main(root: HTMLElement) {
         <Router history={hashHistory}>
           <Route path="/" component={Pages.RootPage} onEnter={requireUpdraftStore}>
             <Route path="accounts" component={Pages.AccountsPage}/>
-            <Route path="newAccount" component={Pages.NewAccountPage}/>
+            <Route path="accounts/:institutionId" component={Pages.NewAccountPage}/>
+            <Route path="accounts/new" component={Pages.NewAccountPage}/>
             <Route path="schedule" component={Pages.SchedulePage}/>
           </Route>
           <Route path="/open" component={Pages.OpenPage}/>

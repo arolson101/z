@@ -7,7 +7,7 @@ import { verify } from "updraft";
 import * as reduxForm from "redux-form";
 
 import { StatelessComponent, EnumSelect, CurrencyInput, AccountSelect, DatePicker } from "../components";
-import { ValidateHelper, valueOf, rruleFixEndOfMonth } from "../util";
+import { ValidateHelper, valueOf, applyFormValues, rruleFixEndOfMonth } from "../util";
 import { Bill, BillChange, Frequency, RRule } from "../types";
 import { AppState, BillCollection, t } from "../state";
 
@@ -88,40 +88,17 @@ function validate(values: any, props: Props): Object {
 )
 export class AddScheduleDialog extends StatelessComponent<Props> {
   componentWillReceiveProps(nextProps: Props) {
-    if (this.props.editing != nextProps.editing) {
-      if (nextProps.editing != -1) {
-        verify(nextProps.editing in nextProps.bills, "invalid dbid");
-        const src = nextProps.bills[nextProps.editing];
-        const { fields } = nextProps;
-        if (src.name != valueOf(fields.name)) {
-          fields.name.onChange(src.name);
-        }
-        if (src.notes != valueOf(fields.notes)) {
-          fields.notes.onChange(src.notes);
-        }
-        const rrule = RRule.fromString(src.rruleString);
-        const recurring = (rrule.options.count != 1);
-        if (recurring != (valueOf(fields.recurring) == Recurrance.Repeat)) {
-          fields.recurring.onChange(recurring ? Recurrance.Repeat : Recurrance.Once);
-        }
-        if (rrule.options.interval != valueOf(fields.recurrenceMultiple)) {
-          fields.recurrenceMultiple.onChange(rrule.options.interval);
-        }
-        const frequency = Frequency.fromRRuleFreq(rrule.options.freq);
-        if (frequency != valueOf(fields.frequency)) {
-          fields.frequency.onChange(frequency);
-        }
-        const startingOn = rrule.options.dtstart;
-        if (startingOn != valueOf(fields.startingOn)) {
-          fields.startingOn.onChange(startingOn);
-        }
-        if (src.amount != valueOf(fields.amount)) {
-          fields.amount.onChange(src.amount);
-        }
-        if (src.account != valueOf(fields.account)) {
-          fields.account.onChange(src.account);
-        }
-      }
+    if (this.props.editing != nextProps.editing && nextProps.editing != -1) {
+      verify(nextProps.editing in nextProps.bills, "invalid dbid");
+      const src = nextProps.bills[nextProps.editing];
+      const rrule = RRule.fromString(src.rruleString);
+      const values = _.assign({}, src, {
+        recurring: (rrule.options.count != 1) ? Recurrance.Repeat : Recurrance.Once,
+        recurrenceMultiple: rrule.options.interval,
+        frequency: Frequency.fromRRuleFreq(rrule.options.freq),
+        startingOn: rrule.options.dtstart,
+      });
+      applyFormValues(nextProps.fields, values);
     }
   }
 

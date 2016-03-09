@@ -27,7 +27,7 @@ export class RootPage extends StatelessComponent<Props> {
         <Breadcrumbs items={[
           {href: "/", title: "Home"},
           {href: "/accounts", title: "accounts"},
-          {href: "/newAccount", title: "new account"},
+          {href: "/accounts/new", title: "new account"},
           {href: "/schedule", title: "schedule"}
         ]}/>
         {this.props.children}
