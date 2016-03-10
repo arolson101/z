@@ -13,7 +13,7 @@ export class EnumEx {
   static getNames(e: any): Array<string> {
     let a: Array<string> = [];
     for (let val in e) {
-      if (isNaN(val)) {
+      if (isNaN(val as any)) {
         a.push(val);
       }
     }
@@ -23,7 +23,7 @@ export class EnumEx {
   static getValues<T>(e: any): Array<T> {
     let a: Array<T> = [];
     for (let val in e) {
-      if (!isNaN(val)) {
+      if (!isNaN(val as any)) {
         a.push(<T><any>parseInt(val, 10));
       }
     }
@@ -33,7 +33,7 @@ export class EnumEx {
   static map<T, X>(e: any, cb: (name: string, value: T) => X): Array<X> {
     let a: Array<X> = [];
     for (let val in e) {
-      if (!isNaN(val)) {
+      if (!isNaN(val as any)) {
         let value: T = <T><any>parseInt(val, 10);
         let name = e[val];
         a.push( cb(name, value) );
@@ -44,7 +44,7 @@ export class EnumEx {
 
   static each<T>(e: any, cb: (name: string, value: T) => any): void {
     for (let val in e) {
-      if (!isNaN(val)) {
+      if (!isNaN(val as any)) {
         let value: T = <T><any>parseInt(val, 10);
         let name = e[val];
         cb(name, value);

@@ -39,7 +39,7 @@
       "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "react/react-dom.d.ts": {
-      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
     },
     "react-mixin/react-mixin.d.ts": {
       "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
@@ -54,7 +54,7 @@
       "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "react-bootstrap/react-bootstrap.d.ts": {
-      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
     },
     "select2/select2.d.ts": {
       "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
@@ -63,10 +63,10 @@
       "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
     },
     "react/react-addons-transition-group.d.ts": {
-      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
     },
     "react/react-addons-css-transition-group.d.ts": {
-      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
     },
     "moment/moment-node.d.ts": {
       "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
@@ -99,7 +99,7 @@
       "commit": "85af69c91599a6c904618545f0613970e1ff3f64"
     },
     "react/react-global.d.ts": {
-      "commit": "95433230a9913054c57c715e6b91a9ae738d0b97"
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
     },
     "chartjs/chart.d.ts": {
       "commit": "4ba57e605bd71bf7248de65aac0b4f50e3eb1c9e"
@@ -109,6 +109,30 @@
     },
     "moment/moment.d.ts": {
       "commit": "4ba57e605bd71bf7248de65aac0b4f50e3eb1c9e"
+    },
+    "react/react-addons-perf.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react-addons-linked-state-mixin.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react-addons-create-fragment.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react-addons-shallow-compare.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react-addons-update.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react-addons-test-utils.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react-addons-pure-render-mixin.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
     }
   }
 }

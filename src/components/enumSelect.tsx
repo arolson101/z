@@ -13,7 +13,7 @@ interface Props extends InputProps {
 
 export class EnumSelect extends StatelessComponent<Props> {
   render() {
-    return <Input type="select" {...this.props}>
+    return <Input type="select" {...this.props as any}>
       {EnumEx.map(this.props.enum, (name: string, value: number) =>
         <option key={value} value={value as any}>{this.props.enum.tr(name)}</option>
       )}
