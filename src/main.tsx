@@ -5,7 +5,7 @@ import * as ReactDOM from "react-dom";
 import { createStore, applyMiddleware, compose } from "redux";
 import { connect, Provider } from "react-redux";
 import { syncHistory } from "redux-simple-router";
-import * as thunk from "redux-thunk";
+import thunk from "redux-thunk";
 import { Router, Route, hashHistory } from "react-router";
 import { createDevTools, persistState } from "redux-devtools";
 import LogMonitor from "redux-devtools-log-monitor";
