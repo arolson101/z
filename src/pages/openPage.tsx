@@ -13,7 +13,7 @@ import { AppState, Config, UpdraftState, KnownDb, t } from "../state";
 import { OpenDbDialog } from "../dialogs";
 import { formatFilesize, formatRelativeTime } from "../i18n";
 import { StatelessComponent } from "../components";
-import { ReForm } from "../util/reform";
+import { ReForm } from "../util";
 
 
 interface TestReFormState extends ReForm.State {

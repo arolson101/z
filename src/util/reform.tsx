@@ -119,10 +119,12 @@ export namespace ReForm {
                 }
               };
               const nextState = mutate(this.state, stateChange);
-              const nextValues = valuesForState(nextState);
-              const validate = getValidator(this);
-              runValidate(validate, nextValues, nextState);
-              this.setState(nextState);
+              if (nextState !== this.state) {
+                const nextValues = valuesForState(nextState);
+                const validate = getValidator(this);
+                runValidate(validate, nextValues, nextState);
+                this.setState(nextState);
+              }
             },
             onUpdate: (e: Event | string) => {
               this.onChange(e);
@@ -152,8 +154,8 @@ export namespace ReForm {
                 };
               }
             }
-            if (Object.keys(stateChange.fields).length != 0) {
-              const nextState = mutate(this.state, stateChange);
+            const nextState = mutate(this.state, stateChange);
+            if (nextState !== this.state) {
               const nextValues = valuesForState(nextState);
               const validate = getValidator(this);
               runValidate(validate, nextValues, nextState);
