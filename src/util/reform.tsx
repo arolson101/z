@@ -4,11 +4,16 @@ import * as reactMixin from "react-mixin";
 import { mutate } from "updraft";
 
 
-export function ReForm(defaultValues: ReForm.Values) {
-  return reactMixin.decorate(ReForm.mixin(defaultValues));
+export function ReForm(options: ReForm.Options) {
+  return reactMixin.decorate(ReForm.mixin(options));
 }
 
 export namespace ReForm {
+  export interface Options {
+    defaultValues: Values;
+    validate?: Validator | string;
+  }
+
   export interface Values {
     [fieldName: string]: any;
   }
@@ -26,12 +31,14 @@ export namespace ReForm {
     onUpdate(e: Event | type): any;
   }
 
-  export type State = {
-    submitFailed: boolean;
-  } & {
-    [fieldName: string]: Field<any>;
-  };
+  export interface State {
+    submitFailed?: boolean;
+    fields?: {
+      [fieldName: string]: Field<any>;
+    };
+  }
 
+  export type Validator = (values: Values) => Errors;
   export type Submitter = (values?: Values) => any;
 
   export interface Interface {
@@ -44,37 +51,54 @@ export namespace ReForm {
 
   export interface Component {
     reForm: Interface;
-    validate?(values: Values): Errors;
+    validate?: Validator;
   }
 
-  export function mixin(defaultValues: ReForm.Values) {
-    const fieldNames = Object.keys(defaultValues);
+  export function mixin(options: ReForm.Options) {
+    const fieldNames = Object.keys(options.defaultValues);
     const valuesForState = (state: State) => {
       let v: Values = {};
       for (let fieldName of fieldNames) {
-        v[fieldName] = (state[fieldName] as Field<string>).value;
+        v[fieldName] = state.fields[fieldName].value;
       }
       return v;
     };
 
-    const runValidate = (validate: (values: Values) => Errors, values: ReForm.Values, nextState: ReForm.State) => {
+    const runValidate = (validate: Validator, values: ReForm.Values, nextState: ReForm.State) => {
       if (typeof validate === "function") {
         const errors = validate(values);
         for (let fieldName of fieldNames) {
-          const error = errors[fieldName] as string;
-          if (error !== nextState[fieldName].error) {
-            nextState[fieldName].error = error;
+          const error = errors[fieldName] as string || "";
+          if (error !== nextState.fields[fieldName].error) {
+            nextState.fields[fieldName].error = error;
           }
         }
       }
     };
 
+    const getValidator = (self: any): Validator => {
+      if (typeof options.validate === "function") {
+        return options.validate as Validator;
+      }
+      let validateProp = "validate";
+      if (typeof options.validate === "string") {
+        validateProp = options.validate as string;
+      }
+      if (typeof self[validateProp] === "function") {
+        return self[validateProp].bind(self) as Validator;
+      }
+      return null;
+    };
+
     return ({
       getInitialState: function() {
-        let state: State = { submitFailed: false };
+        let state: State = {
+          submitFailed: false,
+          fields: {}
+        };
         for (let fieldName of fieldNames) {
-          const defaultValue = defaultValues[fieldName];
-          state[fieldName] = {
+          const defaultValue = options.defaultValues[fieldName];
+          state.fields[fieldName] = {
             defaultValue,
             value: defaultValue,
             checked: defaultValue,
@@ -87,14 +111,17 @@ export namespace ReForm {
               }
 
               const stateChange = {
-                [fieldName]: {
-                  value: { $set: value },
-                  checked: { $set: !!value }
+                fields: {
+                  [fieldName]: {
+                    value: { $set: value },
+                    checked: { $set: !!value }
+                  }
                 }
               };
               const nextState = mutate(this.state, stateChange);
               const nextValues = valuesForState(nextState);
-              runValidate(this.validate, nextValues, nextState);
+              const validate = getValidator(this);
+              runValidate(validate, nextValues, nextState);
               this.setState(nextState);
             },
             onUpdate: (e: Event | string) => {
@@ -103,7 +130,8 @@ export namespace ReForm {
           };
         }
 
-        runValidate(this.validate, defaultValues, state);
+        const validate = getValidator(this);
+        runValidate(validate, options.defaultValues, state);
 
         return state;
       },
@@ -112,29 +140,32 @@ export namespace ReForm {
         this.reForm = {
           values: () => valuesForState(this.state),
           setValues: (values: Values) => {
-            let stateChange = {} as any;
+            let stateChange = {
+              submitFailed: { $set: false },
+              fields: {} as any
+            };
             for (let fieldName of fieldNames) {
               if ((values as Object).hasOwnProperty(fieldName)) {
-                stateChange[fieldName] = {
+                stateChange.fields[fieldName] = {
                   value: { $set: values[fieldName] },
                   error: { $set: "" }
                 };
               }
             }
-            if (Object.keys(stateChange).length != 0) {
+            if (Object.keys(stateChange.fields).length != 0) {
               const nextState = mutate(this.state, stateChange);
               const nextValues = valuesForState(nextState);
-              runValidate(this.validate, nextValues, nextState);
+              const validate = getValidator(this);
+              runValidate(validate, nextValues, nextState);
               this.setState(nextState);
             }
           },
           reset: () => {
-            this.reForm.submitFailed = false;
-            this.reForm.setValues(defaultValues);
+            this.reForm.setValues(options.defaultValues);
           },
           isValid: (): boolean => {
             for (let fieldName of fieldNames) {
-              if ((this.state[fieldName] as Field<any>).error) {
+              if (this.state.fields[fieldName].error) {
                 return false;
               }
             }

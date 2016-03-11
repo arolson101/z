@@ -16,35 +16,39 @@ import { StatelessComponent } from "../components";
 import { ReForm } from "../util/reform";
 
 
-interface TestReFormState {
-  name: ReForm.Field<string>;
-  value: ReForm.Field<Boolean>;
+interface TestReFormState extends ReForm.State {
+  fields: {
+    name: ReForm.Field<string>;
+    value: ReForm.Field<Boolean>;
+    [key: string]: ReForm.Field<any>;
+  };
 }
 
-@ReForm({name: "foo", value: true})
+@ReForm({defaultValues: {name: "foo", value: true}})
 class TestReForm extends React.Component<any, TestReFormState> implements ReForm.Component {
   reForm: ReForm.Interface;
   render() {
-    const submitFailed = this.reForm.submitFailed;
+    const { submitFailed, fields } = this.state;
     const wrapError = (field: ReForm.Field<any>) => {
       return _.extend(
         {},
         field,
         { help: submitFailed && field.error ? field.error : null },
-        { bsStyle: submitFailed && field.error ? "error" : null })
+        { bsStyle: submitFailed && field.error ? "error" : null }
+      );
     };
     const submit = this.reForm.handleSubmit(() => alert("submitted"));
     return <div>TestReForm:
       <form>
-        <Input type="text" {...wrapError(this.state.name)} label="name" />
-        <Input type="text" {...wrapError(this.state.value)} label="value"/>
+        <Input type="text" {...wrapError(fields.name)} label="name" />
+        <Input type="text" {...wrapError(fields.value)} label="value"/>
         <Button onClick={() => this.reForm.setValues({name: "bar", value: ""})}>set</Button>
         <Button onClick={() => this.reForm.reset()}>reset</Button>
         <Button onClick={submit}>submit</Button>
       </form>
     </div>;
   }
-  
+
   validate(values: ReForm.Values | any) {
     let errors = {} as ReForm.Errors;
     if (values.name != "foo") {
