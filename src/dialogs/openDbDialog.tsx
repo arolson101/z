@@ -4,10 +4,10 @@ import electron = require("electron");
 import { autobind } from "core-decorators";
 import * as React from "react";
 import { Alert, Button, Input, Modal } from "react-bootstrap";
-import * as reduxForm from "redux-form";
 import { hashHistory } from "react-router";
+import { connect } from "react-redux";
 
-import { ValidateHelper, valueOf } from "../util";
+import { ValidateHelper, ReForm } from "../util";
 import { t } from "../state";
 import { bindActionCreators, updraftCreateDb, updraftOpenDb } from "../actions";
 
@@ -15,18 +15,9 @@ const dialog = electron.remote.dialog;
 const BrowserWindow = electron.remote.BrowserWindow;
 
 
-interface Props extends ReduxForm.Props, React.Props<any> {
+interface Props extends React.Props<any> {
   updraftCreateDb?(info: any): Promise<any>;
   updraftOpenDb?(info: any): Promise<any>;
-
-  fields?: {
-    path: ReduxForm.Field<string>;
-    password1: ReduxForm.Field<string>;
-    password2: ReduxForm.Field<string>;
-
-    // index signature to make typescript happy
-    [field: string]: ReduxForm.FieldOpt;
-  };
 
   show: boolean;
   open: boolean;
@@ -35,41 +26,23 @@ interface Props extends ReduxForm.Props, React.Props<any> {
 }
 
 
-interface State {
+interface State extends ReForm.State {
   opening?: boolean;
   errorMessage?: string;
+
+  fields?: {
+    path: ReForm.Field<string>;
+    password1: ReForm.Field<string>;
+    password2: ReForm.Field<string>;
+
+    // index signature to make typescript happy
+    [field: string]: ReForm.Field<any>;
+  };
 }
 
 
-function validate(values: any, props: Props): Object {
-  const errors: any = { accounts: [] as any[] };
-  let v = new ValidateHelper(values, errors);
 
-  v.checkNonempty("path");
-  v.checkNonempty("password1");
-
-  if (!props.open) {
-    v.checkNonempty("password2");
-
-    if (!errors["password1"] && values["password1"] != values["password2"]) {
-      errors["password2"] = t("validate.passwordsMatch");
-    }
-  }
-
-  return errors;
-}
-
-
-@reduxForm.reduxForm(
-  {
-    form: "OpenDbDialog",
-    fields: [
-      "path",
-      "password1",
-      "password2"
-    ],
-    validate
-  },
+@connect(
   null,
   (dispatch: Redux.Dispatch<any>) => bindActionCreators(
     {
@@ -79,21 +52,56 @@ function validate(values: any, props: Props): Object {
     dispatch
   )
 )
-export class OpenDbDialog extends React.Component<Props, State> {
+@ReForm({
+  defaultValues: {
+    path: "",
+    password1: "",
+    password2: ""
+  }
+})
+export class OpenDbDialog extends React.Component<Props, State> implements ReForm.Component {
+  reForm: ReForm.Interface;
+
   state = {
     opening: false,
     errorMessage: ""
-  };
+  } as State;
+
+  validate(values: any): ReForm.Errors {
+    const errors: ReForm.Errors = {};
+    let v = new ValidateHelper(values, errors);
+
+    v.checkNonempty("path");
+    v.checkNonempty("password1");
+
+    if (!this.props.open) {
+      v.checkNonempty("password2");
+
+      if (!errors["password1"] && values["password1"] != values["password2"]) {
+        errors["password2"] = t("validate.passwordsMatch");
+      }
+    }
+
+    return errors;
+  }
 
   componentWillReceiveProps(nextProps: Props) {
-    const { fields } = nextProps;
-    if (this.props.path != nextProps.path) {
-      fields.path.onChange(nextProps.path);
-    }
+    console.log("componentWillReceiveProps");
+    // this.reForm.setValues({
+    //   path: nextProps.path,
+    //   password1: "",
+    //   password2: ""
+    // });
+  }
+
+  componentWillUnmount() {
+    console.log("unmount");
   }
 
   render() {
-    const { fields, handleSubmit, open } = this.props;
+    const { fields, submitFailed } = this.state;
+    const { open } = this.props;
+    const { handleSubmit } = this.reForm;
 
     const wrapErrorHelper = (props: any, error: string) => {
       if (error) {
@@ -103,11 +111,11 @@ export class OpenDbDialog extends React.Component<Props, State> {
       props.hasFeedback = true;
     };
 
-    const wrapError = (field: ReduxForm.Field<any>, supressEmptyError?: boolean) => {
+    const wrapError = (field: ReForm.Field<any>, supressEmptyError?: boolean) => {
       let props: any = _.extend({}, field);
       let error: string = null;
       const isEmpty = (field.value === undefined || field.value == "");
-      if (field.error && field.touched && (!supressEmptyError || !isEmpty)) {
+      if (field.error && submitFailed && (!supressEmptyError || !isEmpty)) {
         error = field.error;
       }
       wrapErrorHelper(props, error);
@@ -125,7 +133,8 @@ export class OpenDbDialog extends React.Component<Props, State> {
               type="text"
               label={t("OpenDbDialog.pathLabel")}
               placeholder={t("OpenDbDialog.pathPlaceholder")}
-              value={valueOf(fields.path)}
+              value={fields.path.value}
+              onChange={() => {}}
               buttonAfter={<Button onClick={this.onBrowse}>{t("OpenDbDialog.browseButton")}</Button>}
             />
             <Input
@@ -174,6 +183,7 @@ export class OpenDbDialog extends React.Component<Props, State> {
 
   @autobind
   onBrowse() {
+    const { fields } = this.state;
     if (this.props.open) {
       dialog.showOpenDialog(
         BrowserWindow.getFocusedWindow(),
@@ -187,7 +197,7 @@ export class OpenDbDialog extends React.Component<Props, State> {
         },
         (fileNames: string[]) => {
           if (fileNames) {
-            this.props.fields.path.onChange(fileNames[0]);
+            fields.path.onChange(fileNames[0]);
           }
         }
       );
@@ -204,7 +214,7 @@ export class OpenDbDialog extends React.Component<Props, State> {
         },
         (fileName: string) => {
           if (fileName) {
-            this.props.fields.path.onChange(fileName);
+            fields.path.onChange(fileName);
           }
         }
       );
@@ -213,10 +223,11 @@ export class OpenDbDialog extends React.Component<Props, State> {
 
   @autobind
   onSubmit() {
-    const { fields, open, updraftCreateDb, updraftOpenDb } = this.props;
+    const { open, updraftCreateDb, updraftOpenDb } = this.props;
+    const { fields } = this.state;
     const opts = {
-      path: valueOf(fields.path),
-      password: valueOf(fields.password1)
+      path: fields.path.value,
+      password: fields.password1.value
     };
     this.setState({ opening: true, errorMessage: undefined });
     const p = open ? updraftOpenDb(opts) : updraftCreateDb(opts);
@@ -224,6 +235,7 @@ export class OpenDbDialog extends React.Component<Props, State> {
       () => {
         this.setState({ opening: false });
         this.onCancel();
+        console.log("redirecting to /");
         hashHistory.replace("/");
       },
       (err: Error) => {
@@ -234,8 +246,7 @@ export class OpenDbDialog extends React.Component<Props, State> {
 
   @autobind
   onCancel() {
-    const { resetForm, onCancel } = this.props;
-    resetForm();
+    const { onCancel } = this.props;
     onCancel();
   }
 }
