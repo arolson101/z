@@ -2,7 +2,6 @@
 
 import { connect } from "react-redux";
 import { combineReducers } from "redux";
-import * as reduxForm from "redux-form";
 import { routeReducer } from "redux-simple-router";
 
 import {
@@ -56,6 +55,5 @@ export const appState = combineReducers<AppState, Action>({
   bills: billCollectionReducer,
   institutions: institutionCollectionReducer,
   filist: fiReducer,
-  form: reduxForm.reducer,
   updraft: updraftReducer
 });

@@ -3,28 +3,6 @@
 import { t } from "../i18n";
 import * as sanitize from "sanitize-filename";
 
-export function valueOf<T>(x: ReduxForm.Field<T>): T {
-  if (typeof x.value != "undefined") {
-    return x.value;
-  }
-  else {
-    return x.defaultValue;
-  }
-}
-
-export function applyFormValues(fields: {[fieldName: string]: ReduxForm.FieldOpt}, values: {[fieldName: string]: any}) {
-  for (let fieldName in values) {
-    if ((values as Object).hasOwnProperty(fieldName)) {
-      let value = values[fieldName];
-      if (fieldName in fields) {
-        let field = fields[fieldName] as ReduxForm.Field<any>;
-        if (valueOf(field) != value) {
-          field.onChange(value);
-        }
-      }
-    }
-  }
-}
 
 export interface ValidateErrorSet {
   [name: string]: string;

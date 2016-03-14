@@ -3,107 +3,96 @@
 import { autobind } from "core-decorators";
 import * as React from "react";
 import { Button, Input, Modal } from "react-bootstrap";
-import * as reduxForm from "redux-form";
 
 import { t } from "../state";
-import { ValidateHelper, valueOf } from "../util";
-import { Account, AccountType, _Account, defaultAccount } from "../types";
-import { StatelessComponent, EnumSelect } from "../components";
+import { ValidateHelper, ReForm } from "../util";
+import { Account, AccountType } from "../types";
+import { EnumSelect } from "../components";
 
 
-export interface AccountField extends ReduxForm.FieldSet, _Account<ReduxForm.Field<number>, ReduxForm.Field<number>, ReduxForm.Field<string>, ReduxForm.Field<AccountType>, ReduxForm.Field<boolean>, any> {}
-export interface AccountFieldArray extends ReduxForm.FieldArray<AccountField> {}
-
-interface Props extends ReduxForm.Props, React.Props<any> {
-  fields?: {
-    visible: ReduxForm.Field<boolean>;
-    type: ReduxForm.Field<number>;
-    number: ReduxForm.Field<string>;
-    name: ReduxForm.Field<string>;
-
-    // index signature to make typescript happy
-    [field: string]: ReduxForm.FieldOpt;
-  };
-
+interface Props extends React.Props<any> {
   editing: number;
   show: boolean;
   onCancel: Function;
   onSave: (account: Account) => any;
   onDelete: Function;
-  accounts: AccountFieldArray;
+  accounts: Account[];
 }
 
-type AnyField = ReduxForm.Field<any>;
+interface State extends ReForm.State, React.Props<any> {
+  fields?: {
+    visible: ReForm.Field<boolean>;
+    type: ReForm.Field<number>;
+    number: ReForm.Field<string>;
+    name: ReForm.Field<string>;
 
-const accountKeys = [
-  "name",
-  "type",
-  "number",
-  "visible"
-];
-
-
-function validate(values: any, props: Props): Object {
-  const errors: any = { accounts: [] as any[] };
-  let v = new ValidateHelper(values, errors);
-
-  v.checkNonempty("name");
-  v.checkNonempty("number");
-
-  const names = _.reduce(
-    props.accounts,
-    (set: any, account: AccountField, i: number) => {
-      if (i != props.editing) {
-       set[valueOf(account.name)] = true;
-      }
-      return set;
-    },
-    {}
-  );
-  v.checkUnique("name", names);
-
-  const numbers = _.reduce(
-    props.accounts,
-    (set: any, account: AccountField, i: number) => {
-      if (i != props.editing) {
-        set[valueOf(account.number)] = true;
-      }
-      return set;
-    },
-    {}
-  );
-  v.checkUnique("number", numbers);
-
-  return errors;
+    // index signature to make typescript happy
+    [field: string]: ReForm.Field<any>;
+  };
 }
 
 
-@reduxForm.reduxForm(
-  {
-    form: "addAccount",
-    fields: accountKeys,
-    initialValues: defaultAccount,
-    validate
+@ReForm({
+  defaultValues: {
+    name: "",
+    type: AccountType.CHECKING,
+    number: "",
+    visible: true
   }
-)
-export class AddAccountDialog extends StatelessComponent<Props> {
+})
+export class AddAccountDialog extends React.Component<Props, State> implements ReForm.Component {
+  reForm: ReForm.Interface;
+
   componentWillReceiveProps(nextProps: Props) {
     if (this.props.editing != nextProps.editing) {
       if (nextProps.editing != -1) {
         const src = nextProps.accounts[nextProps.editing];
-        accountKeys.forEach(key => {
-          const nextField = nextProps.fields[key] as AnyField;
-          const srcValue = (src[key] as AnyField).value;
-          if (nextField.value != srcValue) {
-            nextField.onChange(srcValue);
-          }
-        });
+        this.reForm.setValues(src);
+      }
+      else {
+        this.reForm.reset();
       }
     }
   }
 
+  validate(values: ReForm.Values): ReForm.Values {
+    const errors: any = { accounts: [] as any[] };
+    let v = new ValidateHelper(values, errors);
+    const { accounts, editing } = this.props;
+
+    v.checkNonempty("name");
+    v.checkNonempty("number");
+
+    const names = _.reduce(
+      accounts,
+      (set: any, account: Account, i: number) => {
+        if (i != editing) {
+          set[account.name] = true;
+        }
+        return set;
+      },
+      {}
+    );
+    v.checkUnique("name", names);
+
+    const numbers = _.reduce(
+      accounts,
+      (set: any, account: Account, i: number) => {
+        if (i != editing) {
+          set[account.number] = true;
+        }
+        return set;
+      },
+      {}
+    );
+    v.checkUnique("number", numbers);
+
+    return errors;
+  }
+
   render() {
-    const { fields, handleSubmit } = this.props;
+    const { fields, submitFailed } = this.state;
+    const { handleSubmit } = this.reForm;
 
     const wrapErrorHelper = (props: any, error: string) => {
       if (error) {
@@ -113,11 +102,11 @@ export class AddAccountDialog extends StatelessComponent<Props> {
       props.hasFeedback = true;
     };
 
-    const wrapError = (field: ReduxForm.Field<string>, supressEmptyError?: boolean) => {
+    const wrapError = (field: ReForm.Field<string>, supressEmptyError?: boolean) => {
       let props: any = _.extend({}, field);
       let error: string = null;
       const isEmpty = (field.value === undefined || field.value === "");
-      if (field.error && field.touched && (!supressEmptyError || !isEmpty)) {
+      if (field.error && submitFailed && (!supressEmptyError || !isEmpty)) {
         error = field.error;
       }
       wrapErrorHelper(props, error);
@@ -166,29 +155,24 @@ export class AddAccountDialog extends StatelessComponent<Props> {
 
   @autobind
   onSave() {
-    const { fields, resetForm, onSave } = this.props;
+    const { fields } = this.state;
     const account: Account = {
-      name: valueOf(fields.name),
-      number: valueOf(fields.number),
-      type: valueOf(fields.type),
-      visible: valueOf(fields.visible),
+      name: fields.name.value,
+      number: fields.number.value,
+      type: fields.type.value,
+      visible: fields.visible.value,
       balance: 0
     };
-    onSave(account);
-    resetForm();
+    this.props.onSave(account);
   }
 
   @autobind
   onDelete() {
-    const { onDelete, resetForm } = this.props;
-    resetForm();
-    onDelete(this.props.editing);
+    this.props.onDelete(this.props.editing);
   }
 
   @autobind
   onCancel() {
-    const { resetForm, onCancel } = this.props;
-    resetForm();
-    onCancel();
+    this.props.onCancel();
   }
 }

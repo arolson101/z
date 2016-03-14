@@ -62,30 +62,10 @@ export class XSelect extends StatelessComponent<XSelectProps> {
 }
 
 
-interface XSelectFormProps extends ReduxForm.Field<number>, React.Props<any> {
-  source: {
-    value: number;
-    text: string;
-  }[];
-}
-
-export class XSelectForm extends StatelessComponent<XSelectFormProps> {
-  render() {
-    return <XSelect {...this.props as any}>{this.props.children}</XSelect>;
-  }
-}
-
-
 interface XTextProps extends Props, XEditable.TextOptions {}
 
 export class XText extends StatelessComponent<XTextProps> {
   render() {
     return <XEditable {...this.props} type="text">{this.props.children}</XEditable>;
-  }
-}
-
-export class XTextForm extends StatelessComponent<ReduxForm.Field<string>> {
-  render() {
-    return <XText mode="inline" onChange={this.props.onChange} {...this.props as any}>{this.props.value}</XText>;
   }
 }

@@ -47,8 +47,3 @@ export const accountSpec: AccountTableSpec = {
     balance: Column.Real().Default(0),
   }
 };
-
-export const defaultAccount: Account = {
-  type: AccountType.CHECKING,
-  visible: true
-};

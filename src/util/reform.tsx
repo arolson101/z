@@ -31,11 +31,13 @@ export namespace ReForm {
     onUpdate(e: Event | type): any;
   }
 
+  export interface FieldObject {
+    [fieldName: string]: Field<any>;
+  }
+
   export interface State {
     submitFailed?: boolean;
-    fields?: {
-      [fieldName: string]: Field<any>;
-    };
+    fields?: FieldObject;
   }
 
   export type Validator = (values: Values) => Errors;
@@ -45,6 +47,7 @@ export namespace ReForm {
     values(): Values;
     setValues(values: Values): void;
     reset(): void;
+    runValidate(): void;
     isValid(): boolean;
     handleSubmit(submit: Submitter): Function;
   }
@@ -64,16 +67,16 @@ export namespace ReForm {
       return v;
     };
 
-    const runValidate = (validate: Validator, values: ReForm.Values, nextState: ReForm.State) => {
+    const runValidate = (validate: Validator, values: ReForm.Values, nextState: ReForm.State): State => {
+      const errorState = { fields: {} as any };
       if (typeof validate === "function") {
         const errors = validate(values);
         for (let fieldName of fieldNames) {
           const error = errors[fieldName] as string || "";
-          if (error !== nextState.fields[fieldName].error) {
-            nextState.fields[fieldName].error = error;
-          }
+          errorState.fields[fieldName] = { error: { $set: error } };
         }
       }
+      return errorState;
     };
 
     const getValidator = (self: any): Validator => {
@@ -122,8 +125,9 @@ export namespace ReForm {
               if (nextState !== this.state) {
                 const nextValues = valuesForState(nextState);
                 const validate = getValidator(this);
-                runValidate(validate, nextValues, nextState);
-                this.setState(nextState);
+                const errors = runValidate(validate, nextValues, nextState);
+                const finalState = mutate(nextState, errors);
+                this.setState(finalState);
               }
             },
             onUpdate: (e: Event | string) => {
@@ -133,7 +137,8 @@ export namespace ReForm {
         }
 
         const validate = getValidator(this);
-        runValidate(validate, options.defaultValues, state);
+        const errors = runValidate(validate, options.defaultValues, state);
+        state = mutate(state, errors);
 
         return state;
       },
@@ -158,12 +163,20 @@ export namespace ReForm {
             if (nextState !== this.state) {
               const nextValues = valuesForState(nextState);
               const validate = getValidator(this);
-              runValidate(validate, nextValues, nextState);
-              this.setState(nextState);
+              const errors = runValidate(validate, nextValues, nextState);
+              const finalState = mutate(nextState, errors);
+              this.setState(finalState);
             }
           },
           reset: () => {
             this.reForm.setValues(options.defaultValues);
+          },
+          runValidate: () => {
+            const nextValues = valuesForState(this.state);
+            const validate = getValidator(this);
+            const errors = runValidate(validate, nextValues, this.state);
+            const nextState = mutate(this.state, errors);
+            this.setState(nextState);
           },
           isValid: (): boolean => {
             for (let fieldName of fieldNames) {
@@ -179,11 +192,17 @@ export namespace ReForm {
                 e.preventDefault();
               }
               let isValid = this.reForm.isValid();
-              this.setState({submitFailed: !isValid});
-              if (isValid) {
-                const values = this.reForm.values();
-                submit(values);
-              }
+              this.setState(
+                {
+                  submitFailed: !isValid
+                },
+                () => {
+                  if (isValid) {
+                    const values = this.reForm.values();
+                    submit(values);
+                  }
+                }
+              );
             };
           }
         } as Interface;

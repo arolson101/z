@@ -7,7 +7,6 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Button, Row, Col, ListGroup, ListGroupItem } from "react-bootstrap";
 import * as Icon from "react-fa";
-import * as reduxForm from "redux-form";
 import { createSelector } from "reselect";
 import { RRule } from "rrule";
 
@@ -42,7 +41,6 @@ interface Props extends React.Props<any> {
   accounts: AccountCollection;
   updraft: UpdraftState;
   updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
-  change?: (form: string, field: string, value: any) => any;
   chartData?: ScatterChartData;
 }
 
@@ -175,8 +173,7 @@ function insertNewlines(str: string): any {
   } as Props),
   (dispatch: Redux.Dispatch<any>) => bindActionCreators(
     {
-      updraftAdd,
-      change: reduxForm.change
+      updraftAdd
     },
     dispatch)
 )

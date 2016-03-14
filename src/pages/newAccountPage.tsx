@@ -5,11 +5,11 @@ import * as React from "react";
 import { Alert, Panel, Button, Collapse, Grid, Input, Row, Col, Table } from "react-bootstrap";
 import * as Icon from "react-fa";
 //import * as LaddaButton from "react-ladda";
-import * as reduxForm from "redux-form";
 import access = require("safe-access");
-import hash = require("string-hash");
 import { browserHistory } from "react-router";
-import { verify } from "updraft";
+import { connect } from "react-redux";
+import hash = require("string-hash");
+import { mutate, verify } from "updraft";
 
 import { AppState, FI, UpdraftState, t, InstitutionCollection } from "../state";
 import {
@@ -21,15 +21,15 @@ import {
   ImageCheckbox,
  } from "../components";
 import {
-  AccountField,
-  AccountFieldArray,
+  /*AccountField,
+  AccountFieldArray,*/
   AddAccountDialog
  } from "../dialogs";
-import { ValidateHelper, applyFormValues } from "../util";
+import { ValidateHelper, ReForm } from "../util";
 import { bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { readAccountProfiles } from "../online";
 
-interface Props extends ReduxForm.Props {
+interface Props {
   params?: {
     institutionId?: number;
   };
@@ -38,31 +38,34 @@ interface Props extends ReduxForm.Props {
   filist: FI[];
   institutions: InstitutionCollection;
   updraft: UpdraftState;
-  fields: {
-    name: ReduxForm.Field<string>;
-    web: ReduxForm.Field<string>;
-    address: ReduxForm.Field<string>;
-    notes: ReduxForm.Field<string>;
-    institution: ReduxForm.Field<string>;
-    //id: ReduxForm.Field<string>;
-
-    online: ReduxForm.Field<boolean>;
-
-    fid: ReduxForm.Field<string>;
-    org: ReduxForm.Field<string>;
-    ofx: ReduxForm.Field<string>;
-
-    username: ReduxForm.Field<string>;
-    password: ReduxForm.Field<string>;
-
-    accounts: AccountFieldArray;
-
-    // index signature to make typescript happy
-    [field: string]: ReduxForm.FieldOpt;
-  };
 }
 
-interface State {
+interface State extends ReForm.State {
+  fields?: {
+    name: ReForm.Field<string>;
+    web: ReForm.Field<string>;
+    address: ReForm.Field<string>;
+    notes: ReForm.Field<string>;
+    institution: ReForm.Field<string>;
+    //id: ReForm.Field<string>;
+
+    online: ReForm.Field<boolean>;
+
+    fid: ReForm.Field<string>;
+    org: ReForm.Field<string>;
+    ofx: ReForm.Field<string>;
+
+    username: ReForm.Field<string>;
+    password: ReForm.Field<string>;
+
+    accountsValid: ReForm.Field<any>;
+
+    // index signature to make typescript happy
+    [field: string]: ReForm.Field<any>;
+  };
+
+  accounts?: Account[];
+
   adding?: boolean;
   editing?: number;
   gettingAccounts?: boolean;
@@ -70,62 +73,13 @@ interface State {
   gettingAccountsError?: string;
 }
 
-const institutionKeys = [
-  "name",
-  "web",
-  "address",
-  "notes",
-  "institution",
-  "id",
-
-  "online",
-
-  "fid",
-  "org",
-  "ofx",
-
-  "username",
-  "password",
-];
-
-const accountKeys = [
-  "name",
-  "type",
-  "number",
-  "visible"
-];
-
-function validate(values: any, props: Props): Object {
-  const errors: any = { accounts: [] as any[] };
-  let v = new ValidateHelper(values, errors);
-
-  v.checkNonempty("name");
-
-  if (!values.accounts.length) {
-    errors["accounts"] = t("validate.noAccounts");
-  }
-
-  return errors;
-}
 
 function isNew(institutionId: number): boolean {
   return (institutionId as any) == "new";
 }
 
 
-@reduxForm.reduxForm(
-  {
-    form: "newAccount",
-    fields: [
-      ...institutionKeys,
-      ...accountKeys.map(x => "accounts[]." + x)
-    ],
-    initialValues: {
-      online: true,
-      accounts: [],
-    },
-    validate
-  },
+@connect(
   (state: AppState) => ({
     filist: state.filist,
     updraft: state.updraft,
@@ -138,43 +92,79 @@ function isNew(institutionId: number): boolean {
     },
     dispatch)
 )
-export class NewAccountPage extends React.Component<Props, State> {
-  constructor() {
-    super();
-    this.state = {
-      adding: false,
-      editing: -1,
-      gettingAccounts: false,
-      gettingAccountsSuccess: null,
-      gettingAccountsError: null
-    };
-  }
+@ReForm({
+  defaultValues: {
+    name: "",
+    web: "",
+    address: "",
+    notes: "",
+    institution: "",
+    id: "",
+
+    online: true,
+
+    fid: "",
+    org: "",
+    ofx: "",
+
+    username: "",
+    password: "",
+
+    accountsValid: ""
+  },
+})
+export class NewAccountPage extends React.Component<Props, State> implements ReForm.Component {
+  reForm: ReForm.Interface;
+
+  state = {
+    accounts: [] as ReForm.Field<any>[],
+    adding: false,
+    editing: -1,
+    gettingAccounts: false,
+    gettingAccountsSuccess: null,
+    gettingAccountsError: null
+  } as State;
 
   componentWillMount() {
-    NewAccountPage.applyFormValues(this.props);
+    this.applyFormValues(this.props, true);
   }
 
   componentWillReceiveProps(nextProps: Props) {
     if (this.props.params.institutionId != nextProps.params.institutionId) {
-      NewAccountPage.applyFormValues(nextProps);
+      this.applyFormValues(nextProps, false);
     }
   }
 
-  static applyFormValues(props: Props) {
+  applyFormValues(props: Props, isMounting: boolean) {
     const institutionId = props.params.institutionId;
     if (isNew(institutionId)) {
-      props.resetForm();
+      if (!isMounting) {
+        this.reForm.reset();
+      }
     }
     else {
       verify(institutionId in props.institutions, "invalid institutionId");
       const src = props.institutions[institutionId];
-      const values = _.assign({}, src, {institution: ""});
-      applyFormValues(props.fields, values);
+      this.reForm.setValues(src);
     }
   }
 
+  validate(values: ReForm.Values): ReForm.Errors {
+    const errors: any = { accounts: [] as any[] };
+    let v = new ValidateHelper(values, errors);
+
+    v.checkNonempty("name");
+
+    if (!this.state.accounts.length) {
+      errors["accountsValid"] = t("validate.noAccounts");
+    }
+
+    return errors;
+  }
+
   render() {
-    const { fields, filist, handleSubmit } = this.props;
+    const { fields, submitFailed, accounts } = this.state;
+    const { filist } = this.props;
     const canGetAccounts: boolean = (
       !!fields.ofx.value &&
       !!fields.username.value &&
@@ -189,11 +179,11 @@ export class NewAccountPage extends React.Component<Props, State> {
       props.hasFeedback = true;
     };
 
-    const wrapError = (field: ReduxForm.Field<string>, supressEmptyError?: boolean) => {
+    const wrapError = (field: ReForm.Field<string>, supressEmptyError?: boolean) => {
       let props: any = _.extend({}, field);
       let error: string = null;
       const isEmpty = (field.value === undefined || field.value === "");
-      if (field.error && field.touched && (!supressEmptyError || !isEmpty)) {
+      if (field.error && submitFailed && (!supressEmptyError || !isEmpty)) {
         error = field.error;
       }
       wrapErrorHelper(props, error);
@@ -346,20 +336,20 @@ export class NewAccountPage extends React.Component<Props, State> {
               </tr>
             </thead>
             <FadeTransitionGroup component="tbody">
-              {fields.accounts.map((account: AccountField, index: number) => {
+              {accounts.map((account: Account, index: number) => {
                 const tdStyle = {style: {verticalAlign: "middle"}};
                 return <tr key={index}>
                   <td {...tdStyle}>
-                    <ImageCheckbox on="eye" off="eye-slash" {...account.visible}/>
+                    <ImageCheckbox on="eye" off="eye-slash" value={account.visible} onChange={() => {/* TODO */}}/>
                   </td>
                   <td {...tdStyle}>
-                    {AccountType.tr(AccountType[account.type.value])}
+                    {AccountType.tr(AccountType[account.type])}
                   </td>
                   <td {...tdStyle}>
-                    {account.name.value}
+                    {account.name}
                   </td>
                   <td {...tdStyle}>
-                    {account.number.value}
+                    {account.number}
                   </td>
                   <td {...tdStyle}>
                     <Button type="button" bsStyle="link" onClick={() => this.onEditAccount(index)}><Icon name="edit"/></Button>
@@ -372,10 +362,10 @@ export class NewAccountPage extends React.Component<Props, State> {
           <AddAccountDialog
             show={this.state.adding || this.state.editing != -1}
             editing={this.state.editing}
-            accounts={fields.accounts}
+            accounts={this.state.accounts}
             onCancel={this.onModalHide}
             onSave={this.onAccountSave}
-            onDelete={this.onDeleteAccount}
+            onDelete={this.onAccountDelete}
             ref="addAccountDialog"
           />
 
@@ -398,8 +388,8 @@ export class NewAccountPage extends React.Component<Props, State> {
               <p>{this.state.gettingAccountsError}</p>
             </Alert>
           }
-          {this.props.submitFailed && fields.accounts.length == 0 &&
-            <Alert bsStyle="danger">{t("NewAccountPage.validate.noAccounts")}</Alert>
+          {this.state.submitFailed && fields.accountsValid.error &&
+            <Alert bsStyle="danger">{fields.accountsValid.error}</Alert>
           }
 
           <Row>
@@ -429,7 +419,7 @@ export class NewAccountPage extends React.Component<Props, State> {
           <Button onClick={this.onClose}>{t("NewAccountPage.close")}</Button>
           <Button
             bsStyle="primary"
-            onClick={handleSubmit(this.onSave)}
+            onClick={this.reForm.handleSubmit(this.onSave)}
           >
             {t("NewAccountPage.save")}
           </Button>
@@ -454,8 +444,7 @@ export class NewAccountPage extends React.Component<Props, State> {
 
   @autobind
   onInstitutionChange(e: Event) {
-    console.log("onInstitutionChange", e);
-    const { fields } = this.props;
+    const { fields } = this.state;
     fields.institution.onChange(e);
 
     type FiFunction = (fi: FI) => string;
@@ -467,7 +456,7 @@ export class NewAccountPage extends React.Component<Props, State> {
       if (typeof fiProp !== "function") {
         getValue = (fi: FI) => access(fi, fiProp as string);
       }
-      let field = fields[stateKey] as ReduxForm.Field<string>;
+      let field = fields[stateKey] as ReForm.Field<string>;
       if (!field.value || field.value == getValue(oldFi)) {
         let value = getValue(newFi);
         field.onChange(value);
@@ -511,29 +500,36 @@ export class NewAccountPage extends React.Component<Props, State> {
 
   @autobind
   onAccountSave(account: Account) {
-    const { fields } = this.props;
+    let change: any = {};
     if (this.state.adding) {
-      fields.accounts.addField(account);
+      change = { $push: [account] };
     }
     else {
-      const dest = fields.accounts[this.state.editing];
-      accountKeys.forEach(name => {
-        (dest[name] as ReduxForm.Field<string>).onChange(account[name]);
-      });
+      change = { [this.state.editing]: { $set: account } };
     }
-
-    this.onModalHide();
+    this.mutateAccounts(change);
   }
 
   @autobind
-  onDeleteAccount(index: number) {
-    this.props.fields.accounts.removeField(index);
-    this.onModalHide();
+  onAccountDelete(index: number) {
+    this.mutateAccounts({ $splice: [[index, 1]] });
+  }
+
+  mutateAccounts(change: any) {
+    this.setState(
+      {
+        accounts: mutate(this.state.accounts, change)
+      },
+      () => {
+        this.reForm.runValidate();
+        this.onModalHide();
+      }
+    );
   }
 
   @autobind
   onGetAccountList() {
-    const { fields } = this.props;
+    const { fields } = this.state;
 
     this.setState({
       gettingAccounts: true,
@@ -552,8 +548,8 @@ export class NewAccountPage extends React.Component<Props, State> {
     .then(
       (accounts: Account[]) => {
         accounts.forEach((account: Account) => {
-          if (!_.some(fields.accounts, (a) => a.number.value == account.number)) {
-            fields.accounts.addField(account);
+          if (!_.some(this.state.accounts, (a) => a.number == account.number)) {
+            this.onAccountSave(account);
           }
         });
 
@@ -577,34 +573,32 @@ export class NewAccountPage extends React.Component<Props, State> {
   }
 
   makeInstitution(dbid: number): Institution {
-    const institution: Institution = {
-      dbid
-    };
+    return _.assign(
+      {},
+      this.reForm.values(),
+      { dbid }
+    );
 
-    institutionKeys.forEach((key: string) => {
-      const field = this.props.fields[key] as ReduxForm.Field<string>;
-      (institution as any)[key] = field.value || field.initialValue || "";
-    });
+    // institutionKeys.forEach((key: string) => {
+    //   (institution as any)[key] = this.state.fields[key].value;
+    // });
 
-    return institution;
+    // return institution;
   }
 
   makeAccounts(institutionId: number): Account[] {
-    const makeAccount = (fields: AccountField) => {
-      const account: Account = {
-        dbid: hash(institutionId + "" + fields.number.value),
-        institution: institutionId
-      };
-
-      accountKeys.forEach((key: string) => {
-        const field = fields[key] as ReduxForm.Field<any>;
-        account[key] = field.value;
-      });
-
-      return account;
+    const makeAccount = (src: Account) => {
+      return _.assign(
+        {},
+        src,
+        {
+          dbid: hash(institutionId + "" + src.number),
+          institution: institutionId
+        }
+      );
     };
 
-    return this.props.fields.accounts.map(makeAccount);
+    return this.state.accounts.map(makeAccount);
   }
 
   @autobind

@@ -96,7 +96,6 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
   render() {
     const { fields, submitFailed } = this.state;
     const { open } = this.props;
-    const { handleSubmit } = this.reForm;
 
     const wrapErrorHelper = (props: any, error: string) => {
       if (error) {
@@ -119,7 +118,7 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
 
     return (
       <Modal show={this.props.show} onHide={this.onCancel}>
-        <form onSubmit={handleSubmit(this.onSubmit)}>
+        <form onSubmit={this.reForm.handleSubmit(this.onSubmit)}>
           <Modal.Header closeButton>
             <Modal.Title>{open ? t("OpenDbDialog.openTitle") : t("OpenDbDialog.createTitle")}</Modal.Title>
           </Modal.Header>
