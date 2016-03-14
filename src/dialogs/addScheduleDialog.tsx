@@ -3,11 +3,11 @@
 import { autobind } from "core-decorators";
 import * as React from "react";
 import { Button, Input, Modal, Row, Col } from "react-bootstrap";
+import { connect } from "react-redux";
 import { verify } from "updraft";
-import * as reduxForm from "redux-form";
 
-import { StatelessComponent, EnumSelect, CurrencyInput, AccountSelect, DatePicker } from "../components";
-import { ValidateHelper, valueOf, applyFormValues, rruleFixEndOfMonth } from "../util";
+import { EnumSelect, CurrencyInput, AccountSelect, DatePicker } from "../components";
+import { ValidateHelper, ReForm, rruleFixEndOfMonth } from "../util";
 import { Bill, BillChange, Frequency, RRule } from "../types";
 import { AppState, BillCollection, t } from "../state";
 
@@ -17,22 +17,7 @@ enum Recurrance {
 }
 
 
-interface Props extends ReduxForm.Props, React.Props<any> {
-  fields?: {
-    account: ReduxForm.Field<number>;
-    name: ReduxForm.Field<string>;
-    recurring: ReduxForm.Field<Recurrance>;
-    startingOn: ReduxForm.Field<Date>;
-    frequency: ReduxForm.Field<Frequency>;
-    recurrenceMultiple: ReduxForm.Field<number>;
-    rrule: ReduxForm.Field<string>;
-    amount: ReduxForm.Field<number>;
-    notes: ReduxForm.Field<string>;
-
-    // index signature to make typescript happy
-    [field: string]: ReduxForm.FieldOpt;
-  };
-
+interface Props extends React.Props<any> {
   bills?: BillCollection;
 
   editing?: number; // dbid of bill
@@ -44,6 +29,24 @@ interface Props extends ReduxForm.Props, React.Props<any> {
 }
 
 
+interface State extends ReForm.State {
+  fields?: {
+    account: ReForm.Field<number>;
+    name: ReForm.Field<string>;
+    recurring: ReForm.Field<Recurrance>;
+    startingOn: ReForm.Field<Date>;
+    frequency: ReForm.Field<Frequency>;
+    recurrenceMultiple: ReForm.Field<number>;
+    rrule: ReForm.Field<string>;
+    amount: ReForm.Field<number>;
+    notes: ReForm.Field<string>;
+
+    // index signature to make typescript happy
+    [field: string]: ReForm.Field<any>;
+  };
+}
+
+
 function currentDate(): Date {
   let date = new Date();
   date.setHours(0, 0, 0, 0);
@@ -51,59 +54,58 @@ function currentDate(): Date {
 }
 
 
-function validate(values: any, props: Props): Object {
-  const errors: any = { accounts: [] as any[] };
-  let v = new ValidateHelper(values, errors);
-
-  v.checkNonempty("name");
-  v.checkNonempty("recurrenceMultiple");
-  v.checkNumber("amount");
-
-  return errors;
-}
-
-
-@reduxForm.reduxForm(
-  {
-    form: "addSchedule",
-    fields: [
-      "name",
-      "recurring",
-      "frequency",
-      "recurrenceMultiple",
-      "startingOn",
-      "account",
-      "amount",
-      "notes"
-    ],
-    initialValues: {
-      startingOn: currentDate(),
-      recurring: Recurrance.Repeat,
-      frequency: Frequency.MONTH,
-      recurrenceMultiple: 1
-    },
-    validate
-  },
+@connect(
   (state: AppState) => ({bills: state.bills} as Props)
 )
-export class AddScheduleDialog extends StatelessComponent<Props> {
+@ReForm({
+  defaultValues: {
+    name: "",
+    recurring: Recurrance.Repeat,
+    frequency: Frequency.MONTH,
+    recurrenceMultiple: 1,
+    startingOn: currentDate(),
+    account: "",
+    amount: "",
+    notes: ""
+  },
+})
+export class AddScheduleDialog extends React.Component<Props, State> implements ReForm.Component {
+  reForm: ReForm.Interface;
+
   componentWillReceiveProps(nextProps: Props) {
-    if (this.props.editing != nextProps.editing && nextProps.editing != -1) {
-      verify(nextProps.editing in nextProps.bills, "invalid dbid");
-      const src = nextProps.bills[nextProps.editing];
-      const rrule = RRule.fromString(src.rruleString);
-      const values = _.assign({}, src, {
-        recurring: (rrule.options.count != 1) ? Recurrance.Repeat : Recurrance.Once,
-        recurrenceMultiple: rrule.options.interval,
-        frequency: Frequency.fromRRuleFreq(rrule.options.freq),
-        startingOn: rrule.options.dtstart,
-      });
-      applyFormValues(nextProps.fields, values);
+    if (this.props.editing != nextProps.editing) {
+      if (nextProps.editing != -1) {
+        verify(nextProps.editing in nextProps.bills, "invalid dbid");
+        const src = nextProps.bills[nextProps.editing];
+        const rrule = RRule.fromString(src.rruleString);
+        const values = _.assign({}, src, {
+          recurring: (rrule.options.count != 1) ? Recurrance.Repeat : Recurrance.Once,
+          recurrenceMultiple: rrule.options.interval,
+          frequency: Frequency.fromRRuleFreq(rrule.options.freq),
+          startingOn: rrule.options.dtstart,
+        });
+        this.reForm.setValues(values);
+      }
+      else {
+        this.reForm.reset();
+      }
     }
   }
 
+  validate(values: ReForm.Values): ReForm.Errors {
+    const errors: any = { accounts: [] as any[] };
+    let v = new ValidateHelper(values, errors);
+
+    v.checkNonempty("name");
+    v.checkNonempty("recurrenceMultiple");
+    v.checkNumber("amount");
+
+    return errors;
+  }
+
   render() {
-    const { fields, handleSubmit } = this.props;
+    const { fields, submitFailed } = this.state;
+    const { handleSubmit } = this.reForm;
 
     const wrapErrorHelper = (props: any, error: string) => {
       if (error) {
@@ -113,11 +115,11 @@ export class AddScheduleDialog extends StatelessComponent<Props> {
       props.hasFeedback = true;
     };
 
-    const wrapError = (field: ReduxForm.Field<any>, supressEmptyError?: boolean) => {
+    const wrapError = (field: ReForm.Field<any>, supressEmptyError?: boolean) => {
       let props: any = _.extend({}, field);
       let error: string = null;
       const isEmpty = (field.value === undefined || field.value == "");
-      if (field.error && field.touched && (!supressEmptyError || !isEmpty)) {
+      if (field.error && submitFailed && (!supressEmptyError || !isEmpty)) {
         error = field.error;
       }
       wrapErrorHelper(props, error);
@@ -125,7 +127,7 @@ export class AddScheduleDialog extends StatelessComponent<Props> {
     };
 
     const adding = this.props.editing == -1;
-    const recurring = valueOf(fields.recurring) == Recurrance.Repeat;
+    const recurring = fields.recurring.value == Recurrance.Repeat;
 
     return (
       <Modal show={this.props.show} onHide={this.onCancel}>
@@ -200,22 +202,23 @@ export class AddScheduleDialog extends StatelessComponent<Props> {
     );
   }
 
-  makeBill(props: Props): Bill {
-    const { fields, editing } = props;
+  makeBill(props: Props, state: State): Bill {
+    const { fields } = state;
+    const { editing } = props;
     const dbid = (editing == -1) ? Date.now() : editing;
     let bill: Bill = {
       dbid,
-      name: valueOf(fields.name),
-      account: valueOf(fields.account),
-      amount: valueOf(fields.amount),
-      notes: valueOf(fields.notes)
+      name: fields.name.value,
+      account: fields.account.value,
+      amount: fields.amount.value,
+      notes: fields.notes.value
     };
 
-    if (valueOf(fields.recurring) == Recurrance.Repeat) {
+    if (fields.recurring.value == Recurrance.Repeat) {
       let opts: __RRule.Options = {
-        freq: Frequency.toRRuleFreq(valueOf(fields.frequency) * 1),
-        dtstart: valueOf(fields.startingOn),
-        interval: valueOf(fields.recurrenceMultiple)
+        freq: Frequency.toRRuleFreq(fields.frequency.value * 1),
+        dtstart: fields.startingOn.value,
+        interval: fields.recurrenceMultiple.value
       };
       rruleFixEndOfMonth(opts);
       bill.rruleString = new RRule(opts).toString();
@@ -223,7 +226,7 @@ export class AddScheduleDialog extends StatelessComponent<Props> {
     else {
       bill.rruleString = new RRule({
         freq: RRule.MONTHLY,
-        dtstart: valueOf(fields.startingOn),
+        dtstart: fields.startingOn.value,
         count: 1
       }).toString();
     }
@@ -233,8 +236,8 @@ export class AddScheduleDialog extends StatelessComponent<Props> {
 
   @autobind
   onSave() {
-    const { resetForm, onSave, onEdit, editing } = this.props;
-    const bill = this.makeBill(this.props);
+    const { onSave, onEdit, editing } = this.props;
+    const bill = this.makeBill(this.props, this.state);
     if (editing == -1) {
       onSave(bill);
     }
@@ -249,20 +252,15 @@ export class AddScheduleDialog extends StatelessComponent<Props> {
       });
       onEdit(change);
     }
-    resetForm();
   }
 
   @autobind
   onDelete() {
-    const { onDelete, resetForm } = this.props;
-    resetForm();
-    onDelete(this.props.editing);
+    this.props.onDelete(this.props.editing);
   }
 
   @autobind
   onCancel() {
-    const { resetForm, onCancel } = this.props;
-    resetForm();
-    onCancel();
+    this.props.onCancel();
   }
 }
