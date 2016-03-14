@@ -86,16 +86,11 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
   }
 
   componentWillReceiveProps(nextProps: Props) {
-    console.log("componentWillReceiveProps");
-    // this.reForm.setValues({
-    //   path: nextProps.path,
-    //   password1: "",
-    //   password2: ""
-    // });
-  }
-
-  componentWillUnmount() {
-    console.log("unmount");
+    this.reForm.setValues({
+      path: nextProps.path,
+      password1: "",
+      password2: ""
+    });
   }
 
   render() {
@@ -235,7 +230,6 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
       () => {
         this.setState({ opening: false });
         this.onCancel();
-        console.log("redirecting to /");
         hashHistory.replace("/");
       },
       (err: Error) => {

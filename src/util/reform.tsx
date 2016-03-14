@@ -174,7 +174,10 @@ export namespace ReForm {
             return true;
           },
           handleSubmit: (submit: Submitter) => {
-            return () => {
+            return (e: Event) => {
+              if (typeof e.preventDefault === "function") {
+                e.preventDefault();
+              }
               let isValid = this.reForm.isValid();
               this.setState({submitFailed: !isValid});
               if (isValid) {
