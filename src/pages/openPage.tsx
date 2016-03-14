@@ -3,7 +3,7 @@
 import { autobind } from "core-decorators";
 import * as React from "react";
 import { connect } from "react-redux";
-import { Grid, Col, Input, Button, ListGroup, ListGroupItem } from "react-bootstrap";
+import { Grid, Col, ListGroup, ListGroupItem } from "react-bootstrap";
 import { createSelector } from "reselect";
 import * as path from "path";
 import * as fs from "fs";
@@ -13,60 +13,11 @@ import { AppState, Config, UpdraftState, KnownDb, t } from "../state";
 import { OpenDbDialog } from "../dialogs";
 import { formatFilesize, formatRelativeTime } from "../i18n";
 import { StatelessComponent } from "../components";
-import { ReForm } from "../util";
-
-
-interface TestReFormState extends ReForm.State {
-  fields: {
-    name: ReForm.Field<string>;
-    value: ReForm.Field<Boolean>;
-    [key: string]: ReForm.Field<any>;
-  };
-}
-
-@ReForm({defaultValues: {name: "foo", value: true}})
-class TestReForm extends React.Component<any, TestReFormState> implements ReForm.Component {
-  reForm: ReForm.Interface;
-  render() {
-    const { submitFailed, fields } = this.state;
-    const wrapError = (field: ReForm.Field<any>) => {
-      return _.extend(
-        {},
-        field,
-        { help: submitFailed && field.error ? field.error : null },
-        { bsStyle: submitFailed && field.error ? "error" : null }
-      );
-    };
-    const submit = this.reForm.handleSubmit(() => alert("submitted"));
-    return <div>TestReForm:
-      <form>
-        <Input type="text" {...wrapError(fields.name)} label="name" />
-        <Input type="text" {...wrapError(fields.value)} label="value"/>
-        <Button onClick={() => this.reForm.setValues({name: "bar", value: ""})}>set</Button>
-        <Button onClick={() => this.reForm.reset()}>reset</Button>
-        <Button onClick={submit}>submit</Button>
-      </form>
-    </div>;
-  }
-
-  validate(values: ReForm.Values | any) {
-    let errors = {} as ReForm.Errors;
-    if (values.name != "foo") {
-      errors["name"] = "name must be 'foo'";
-    }
-    if (!values.value) {
-      errors["value"] = "value is unset";
-    }
-    return errors;
-  }
-}
-
 
 
 interface Props extends React.Props<any> {
   locale: string;
   updraft: UpdraftState;
-  history: ReactRouter.History;
   recentDbs: KnownDb[];
 }
 
@@ -148,7 +99,6 @@ export class OpenPage extends React.Component<Props, State> {
     return (
       <Grid>
         <Col>
-          <TestReForm/>
           <ListGroup>
             <OpenDbDialog
               show={this.state.dialogIsVisible}

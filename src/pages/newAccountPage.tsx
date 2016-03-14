@@ -6,25 +6,19 @@ import { Alert, Panel, Button, Collapse, Grid, Input, Row, Col, Table } from "re
 import * as Icon from "react-fa";
 //import * as LaddaButton from "react-ladda";
 import access = require("safe-access");
-import { browserHistory } from "react-router";
+import { hashHistory } from "react-router";
 import { connect } from "react-redux";
 import hash = require("string-hash");
 import { mutate, verify } from "updraft";
 
-import { AppState, FI, UpdraftState, t, InstitutionCollection } from "../state";
-import {
-  Account, AccountType,
-  Institution } from "../types";
+import { AppState, FI, UpdraftState, t, InstitutionCollection, AccountCollection } from "../state";
+import { Account, AccountType, Institution } from "../types";
 import {
   Select2,
   FadeTransitionGroup,
   ImageCheckbox,
  } from "../components";
-import {
-  /*AccountField,
-  AccountFieldArray,*/
-  AddAccountDialog
- } from "../dialogs";
+import { AddAccountDialog } from "../dialogs";
 import { ValidateHelper, ReForm } from "../util";
 import { bindActionCreators, updraftAdd, updatePath } from "../actions";
 import { readAccountProfiles } from "../online";
@@ -37,6 +31,7 @@ interface Props {
   updatePath?: (path: string) => any;
   filist: FI[];
   institutions: InstitutionCollection;
+  accounts: AccountCollection;
   updraft: UpdraftState;
 }
 
@@ -47,7 +42,6 @@ interface State extends ReForm.State {
     address: ReForm.Field<string>;
     notes: ReForm.Field<string>;
     institution: ReForm.Field<string>;
-    //id: ReForm.Field<string>;
 
     online: ReForm.Field<boolean>;
 
@@ -83,7 +77,8 @@ function isNew(institutionId: number): boolean {
   (state: AppState) => ({
     filist: state.filist,
     updraft: state.updraft,
-    institutions: state.institutions
+    institutions: state.institutions,
+    accounts: state.accounts
   } as Props),
   (dispatch: Redux.Dispatch<any>) => bindActionCreators(
     {
@@ -117,7 +112,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
   reForm: ReForm.Interface;
 
   state = {
-    accounts: [] as ReForm.Field<any>[],
+    accounts: [],
     adding: false,
     editing: -1,
     gettingAccounts: false,
@@ -140,12 +135,18 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
     if (isNew(institutionId)) {
       if (!isMounting) {
         this.reForm.reset();
+        this.setState({ accounts: [] });
       }
     }
     else {
       verify(institutionId in props.institutions, "invalid institutionId");
       const src = props.institutions[institutionId];
       this.reForm.setValues(src);
+      const accounts = _(props.accounts)
+        .filter((acct: Account) => acct.institution == institutionId)
+        .sortBy((acct: Account) => acct.name)
+        .value();
+      this.setState({ accounts });
     }
   }
 
@@ -194,7 +195,6 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
 
     return (
       <Grid>
-        <h1>Editing: {editing ? "true" : "false"} ({this.props.params.institutionId})</h1>
         <Row>
           <Col xs={12}>
             <Select2
@@ -388,7 +388,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
               <p>{this.state.gettingAccountsError}</p>
             </Alert>
           }
-          {this.state.submitFailed && fields.accountsValid.error &&
+          {submitFailed && fields.accountsValid.error &&
             <Alert bsStyle="danger">{fields.accountsValid.error}</Alert>
           }
 
@@ -416,6 +416,9 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
         </Panel>
 
         <div className="modal-footer">
+          {editing &&
+            <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("NewAccountPage.delete")}</Button>
+          }
           <Button onClick={this.onClose}>{t("NewAccountPage.close")}</Button>
           <Button
             bsStyle="primary"
@@ -569,7 +572,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
 
   @autobind
   onClose() {
-    browserHistory.replace("/");
+    hashHistory.goBack();
   }
 
   makeInstitution(dbid: number): Institution {
@@ -578,12 +581,6 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
       this.reForm.values(),
       { dbid }
     );
-
-    // institutionKeys.forEach((key: string) => {
-    //   (institution as any)[key] = this.state.fields[key].value;
-    // });
-
-    // return institution;
   }
 
   makeAccounts(institutionId: number): Account[] {
@@ -616,7 +613,24 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
       ...accounts.map(Updraft.makeSave(updraft.accountTable, time))
     )
     .then(() => {
-      browserHistory.replace("/accounts");
+      hashHistory.replace("/accounts");
+    });
+  }
+
+  @autobind
+  onDelete() {
+    const { updraft, params: { institutionId } } = this.props;
+    const { accounts } = this.state;
+    const time = Date.now();
+    const accountIds = accounts.map(acct => acct.dbid);
+
+    this.props.updraftAdd(
+      updraft,
+      Updraft.makeDelete(updraft.institutionTable, time)(institutionId),
+      ...accountIds.map(Updraft.makeDelete(updraft.accountTable, time))
+    )
+    .then(() => {
+      hashHistory.replace("/accounts");
     });
   }
 }

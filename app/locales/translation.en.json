@@ -95,7 +95,8 @@
       "noAccounts": "You must add at least one account"
     },
     "save": "Save",
-    "close": "Cancel"
+    "close": "Cancel",
+    "delete": "Delete Accounts"
   },
 
   "AddAccountDialog": {
