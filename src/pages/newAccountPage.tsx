@@ -5,7 +5,6 @@ import * as React from "react";
 import { Alert, Panel, Button, Collapse, Grid, Input, Row, Col, Table } from "react-bootstrap";
 import * as Icon from "react-fa";
 //import * as LaddaButton from "react-ladda";
-import access = require("safe-access");
 import { hashHistory } from "react-router";
 import { connect } from "react-redux";
 import hash = require("string-hash");
@@ -14,7 +13,7 @@ import { mutate, verify } from "updraft";
 import { AppState, FI, UpdraftState, t, InstitutionCollection, AccountCollection } from "../state";
 import { Account, AccountType, Institution } from "../types";
 import {
-  Select2,
+  ReactSelect,
   FadeTransitionGroup,
   ImageCheckbox,
  } from "../components";
@@ -140,8 +139,13 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
     }
     else {
       verify(institutionId in props.institutions, "invalid institutionId");
-      const src = props.institutions[institutionId];
+      const src: any = _.assign({}, props.institutions[institutionId]);
+      const fi = _.find(this.props.filist, (fi: FI) => fi.name == src.name);
+      if (fi) {
+        src.institution = this.optionValueForFi(fi);
+      }
       this.reForm.setValues(src);
+
       const accounts = _(props.accounts)
         .filter((acct: Account) => acct.institution == institutionId)
         .sortBy((acct: Account) => acct.name)
@@ -197,19 +201,21 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
       <Grid>
         <Row>
           <Col xs={12}>
-            <Select2
+            <Input
               label={t("NewAccountPage.institutionLabel")}
               help={t("NewAccountPage.institutionHelp")}
-              placeholder={t("NewAccountPage.institutionPlaceholder")}
-              opts={{allowClear:true}}
-              {...fields.institution}
-              onChange={this.onInstitutionChange}
             >
-              <option value="0"/>
-              {_.map(filist, fi =>
-                <option value={this.optionValueForFi(fi)} key={fi.id}>{fi.name}</option>
-              )}
-            </Select2>
+              <ReactSelect
+                placeholder={t("NewAccountPage.institutionPlaceholder")}
+                {...fields.institution}
+                onChange={this.onInstitutionChange}
+                options={_.map(filist, fi => ({
+                  value: this.optionValueForFi(fi),
+                  label: fi.name
+                }))}
+              >
+              </ReactSelect>
+            </Input>
           </Col>
         </Row>
 
@@ -446,23 +452,25 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
   }
 
   @autobind
-  onInstitutionChange(e: Event) {
+  onInstitutionChange(newValue: __ReactSelect.Option) {
     const { fields } = this.state;
-    fields.institution.onChange(e);
+    const value = newValue ? newValue.value : null;
+    const values: any = {
+      institution: value
+    };
 
     type FiFunction = (fi: FI) => string;
     const oldFi = this.fiForOptionValue(fields.institution.value);
-    const newFi = this.fiForOptionValue((e.target as any).value);
+    const newFi = this.fiForOptionValue(value);
     const initField = (stateKey: string, fiProp?: string | FiFunction) => {
       fiProp = fiProp || stateKey;
       let getValue: FiFunction = fiProp as FiFunction;
       if (typeof fiProp !== "function") {
-        getValue = (fi: FI) => access(fi, fiProp as string);
+        getValue = (fi: FI) => _.get(fi, fiProp, "");
       }
       let field = fields[stateKey] as ReForm.Field<string>;
       if (!field.value || field.value == getValue(oldFi)) {
-        let value = getValue(newFi);
-        field.onChange(value);
+        values[stateKey] = getValue(newFi);
       }
     };
 
@@ -471,8 +479,8 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
     initField("address", function(fi: FI): string {
       let address = "";
       if (fi && fi.profile) {
-        if (fi.profile.address2) { address += fi.profile.address2 + "\n"; }
         if (fi.profile.address1) { address += fi.profile.address1 + "\n"; }
+        if (fi.profile.address2) { address += fi.profile.address2 + "\n"; }
         if (fi.profile.address3) { address += fi.profile.address3 + "\n"; }
         if (fi.profile.city)     { address += fi.profile.city + ", "; }
         if (fi.profile.state)    { address += fi.profile.state + " "; }
@@ -484,6 +492,8 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
     initField("fid");
     initField("org");
     initField("ofx");
+
+    this.reForm.setValues(values);
   }
 
   @autobind

@@ -12,7 +12,7 @@
     "update": "ncu && tsd update --save --overwrite",
     "fix_sqlite3_windows": "npm run fix_sqlite3_windows:1 && npm run fix_sqlite3_windows:2",
     "fix_sqlite3_windows:1": "pushd node_modules\\sqlite3 && node-gyp configure --module_name=node_sqlite3 --module_path=../lib/binding/node-46-win32-x64 && popd",
-    "fix_sqlite3_windows:2": "pushd node_modules\\sqlite3 && node-gyp rebuild --target=0.35.4 --arch=x64 --target_platform=win32 --dist-url=https://atom.io/download/atom-shell --module_name=node_sqlite3 --module_path=../lib/binding/node-v46-win32-x64 && popd"
+    "fix_sqlite3_windows:2": "pushd node_modules\\sqlite3 && node-gyp rebuild --target=0.36.10 --arch=x64 --target_platform=win32 --dist-url=https://atom.io/download/atom-shell --module_name=node_sqlite3 --module_path=../lib/binding/node-v46-win32-x64 && popd"
   },
   "author": "",
   "license": "ISC",
@@ -49,6 +49,7 @@
     "react-mixin": "^3.0.3",
     "react-redux": "^4.0.6",
     "react-router": "^2.0.1",
+    "react-select": "^1.0.0-beta11",
     "redux": "^3.0.5",
     "redux-devtools": "^3.0.1",
     "redux-devtools-dock-monitor": "^1.1.0",
@@ -57,9 +58,7 @@
     "redux-thunk": "^2.0.1",
     "reselect": "^2.1.0",
     "rrule": "^2.1.0",
-    "safe-access": "^0.1.0",
     "sanitize-filename": "^1.5.3",
-    "select2": "^4.0.2",
     "sortablejs": "^1.4.2",
     "sqlite3": "^3.1.1",
     "string-hash": "^1.1.0",

@@ -108,7 +108,7 @@ export namespace ReForm {
             error: "",
             onChange: (e: Event | string) => {
               let value: string | boolean = e as string;
-              const target = (e as Event).target as HTMLInputElement;
+              const target = e ? (e as Event).target as HTMLInputElement : null;
               if (target) {
                 value = (target.type == "checkbox") ? target.checked : target.value;
               }
