@@ -154,15 +154,10 @@ export class AddAccountDialog extends React.Component<Props, State> implements R
   }
 
   @autobind
-  onSave() {
-    const { fields } = this.state;
-    const account: Account = {
-      name: fields.name.value,
-      number: fields.number.value,
-      type: fields.type.value,
-      visible: fields.visible.value,
-      balance: 0
-    };
+  onSave(values: ReForm.Values) {
+    const adding = this.props.editing == -1;
+    const src = adding ? { balance: 0 } : this.props.accounts[this.props.editing];
+    const account: Account = _.assign({}, src, values);
     this.props.onSave(account);
   }
 

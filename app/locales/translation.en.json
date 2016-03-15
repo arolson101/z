@@ -56,6 +56,7 @@
     "notesPlaceholder": "",
     "notesHelp": "Enter notes",
     "enableOnline": "Download transactions",
+    "differentWarning": "Expected \"{{expectedValue}}\"",
     "ofxInfo": "These values are unique to your financial institution, and are filled in automatically when you select from the list above.  They must be set to automatically download transactions.",
     "fidLabel": "FID",
     "fidPlaceholder": "",
@@ -94,6 +95,7 @@
       "noName": "'Name' cannot be blank",
       "noAccounts": "You must add at least one account"
     },
+    "create": "Create",
     "save": "Save",
     "close": "Cancel",
     "delete": "Delete Accounts"

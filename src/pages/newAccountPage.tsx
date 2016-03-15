@@ -11,7 +11,7 @@ import hash = require("string-hash");
 import { mutate, verify } from "updraft";
 
 import { AppState, FI, UpdraftState, t, InstitutionCollection, AccountCollection } from "../state";
-import { Account, AccountType, Institution } from "../types";
+import { Account, accountSpec, AccountType, Institution, institutionSpec } from "../types";
 import {
   ReactSelect,
   FadeTransitionGroup,
@@ -146,11 +146,8 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
       }
       this.reForm.setValues(src);
 
-      const accounts = _(props.accounts)
-        .filter((acct: Account) => acct.institution == institutionId)
-        .sortBy((acct: Account) => acct.name)
-        .value();
-      this.setState({ accounts });
+      const accounts = accountsForInstitution(props.accounts, institutionId);
+      this.setState({ accounts }, () => this.reForm.runValidate());
     }
   }
 
@@ -195,7 +192,19 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
       return props;
     };
 
-    const editing = (this.props.params.institutionId as any) != "new";
+    const expectedFi = this.fiForOptionValue(this.state.fields.institution.value);
+    const wrapWarning = (field: ReForm.Field<string>) => {
+      let props: any = _.extend({}, field);
+      let expectedValue = (expectedFi ? (expectedFi as any)[field.name] : null);
+      if (expectedValue && expectedValue != field.value) {
+        props.bsStyle = "warning";
+        props.help = t("NewAccountPage.differentWarning", {expectedValue});
+        props.hasFeedback = true;
+      }
+      return props;
+    };
+
+    const editing = !isNew(this.props.params.institutionId);
 
     return (
       <Grid>
@@ -278,7 +287,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
                     label={t("NewAccountPage.fidLabel")}
                     help={t("NewAccountPage.fidHelp")}
                     placeholder={t("NewAccountPage.fidPlaceholder")}
-                    {...fields.fid}
+                    {...wrapWarning(fields.fid)}
                   />
                 </Col>
 
@@ -288,7 +297,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
                     label={t("NewAccountPage.orgLabel")}
                     help={t("NewAccountPage.orgHelp")}
                     placeholder={t("NewAccountPage.orgPlaceholder")}
-                    {...fields.org}
+                    {...wrapWarning(fields.org)}
                   />
                 </Col>
 
@@ -298,7 +307,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
                     label={t("NewAccountPage.ofxLabel")}
                     help={t("NewAccountPage.ofxHelp")}
                     placeholder={t("NewAccountPage.ofxPlaceholder")}
-                    {...fields.ofx}
+                    {...wrapWarning(fields.ofx)}
                   />
                 </Col>
               </Row>
@@ -428,9 +437,9 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
           <Button onClick={this.onClose}>{t("NewAccountPage.close")}</Button>
           <Button
             bsStyle="primary"
-            onClick={this.reForm.handleSubmit(this.onSave)}
+            onClick={this.reForm.handleSubmit(editing ? this.onSave : this.onCreate)}
           >
-            {t("NewAccountPage.save")}
+            {editing ? t("NewAccountPage.save") : t("NewAccountPage.create")}
           </Button>
         </div>
 
@@ -520,19 +529,24 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
     else {
       change = { [this.state.editing]: { $set: account } };
     }
-    this.mutateAccounts(change);
-  }
 
-  @autobind
-  onAccountDelete(index: number) {
-    this.mutateAccounts({ $splice: [[index, 1]] });
-  }
-
-  mutateAccounts(change: any) {
     this.setState(
       {
         accounts: mutate(this.state.accounts, change)
       },
+      () => {
+        this.reForm.runValidate();
+        this.onModalHide();
+      }
+    );
+  }
+
+  @autobind
+  onAccountDelete(index: number) {
+    this.setState(
+      mutate(this.state, {
+        accounts: { $splice: [[index, 1]] }
+      }),
       () => {
         this.reForm.runValidate();
         this.onModalHide();
@@ -593,23 +607,28 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
     );
   }
 
-  makeAccounts(institutionId: number): Account[] {
-    const makeAccount = (src: Account) => {
+  makeInstitutionAccount(institutionId: number) {
+    return (src: Account) => {
       return _.assign(
-        {},
+        {
+          // default dbid for newly created accounts
+          // hash in the time so a new/renumbered account won't collide with a deleted one
+          dbid: hash(institutionId + "" + src.number + "" + Date.now()),
+        },
         src,
         {
-          dbid: hash(institutionId + "" + src.number),
           institution: institutionId
         }
       );
     };
+  };
 
-    return this.state.accounts.map(makeAccount);
+  makeAccounts(institutionId: number): Account[] {
+    return this.state.accounts.map(this.makeInstitutionAccount(institutionId));
   }
 
   @autobind
-  onSave(e: React.FormEvent) {
+  onCreate(e: React.FormEvent) {
     const { updraft } = this.props;
 
     const time = Date.now();
@@ -621,6 +640,52 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
       updraft,
       Updraft.makeSave(updraft.institutionTable, time)(institution),
       ...accounts.map(Updraft.makeSave(updraft.accountTable, time))
+    )
+    .then(() => {
+      hashHistory.replace("/accounts");
+    });
+  }
+
+  @autobind
+  onSave(e: React.FormEvent) {
+    const { updraft, institutions } = this.props;
+
+    const institutionId = this.props.params.institutionId * 1; // coerce to number
+    verify(institutionId in institutions, "invalid institutionId");
+    const institutionOld = institutions[institutionId];
+    const institutionNew = this.makeInstitution(institutionId);
+    const institutionChange = makeDiff(institutionOld, institutionNew, institutionSpec);
+    const institutionChanges = Object.keys(institutionChange).length == 0 ? [] : [institutionChange];
+
+    const accountsOld = accountsForInstitution(this.props.accounts, institutionId);
+    const accountsOldById = _.keyBy(accountsOld, acct => acct.dbid);
+    const accountsNew = this.makeAccounts(institutionId);
+    const accountsAdded = _(this.state.accounts)
+      .map(this.makeInstitutionAccount(institutionId))
+      .filter((acct: Account) => !(acct.dbid in accountsOldById))
+      .value();
+    const accountsRemoved = _(accountsOldById)
+      .keys()
+      .filter((accountId: number) => !_.some(accountsNew, acct => acct.dbid == accountId))
+      .value();
+    const accountsChanges = _(accountsNew)
+      .filter(acct => (acct.dbid in accountsOldById))
+      .map(acctNew => makeDiff(accountsOldById[acctNew.dbid], acctNew, accountSpec))
+      .filter(change => Object.keys(change).length > 0)
+      .value();
+
+    console.log("accountsAdded: ", accountsAdded);
+    console.log("accountsChanges: ", accountsChanges);
+    console.log("accountsRemoved: ", accountsRemoved);
+
+    const time = Date.now();
+
+    this.props.updraftAdd(
+      updraft,
+      ...institutionChanges.map(Updraft.makeChange(updraft.institutionTable, time)),
+      ...accountsRemoved.map(Updraft.makeDelete(updraft.accountTable, time)),
+      ...accountsChanges.map(Updraft.makeChange(updraft.accountTable, time)),
+      ...accountsAdded.map(Updraft.makeSave(updraft.accountTable, time))
     )
     .then(() => {
       hashHistory.replace("/accounts");
@@ -643,4 +708,51 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
       hashHistory.replace("/accounts");
     });
   }
+}
+
+function accountsForInstitution(accounts: AccountCollection, institutionId: number): Account[] {
+  return _(accounts)
+    .filter((acct: Account) => acct.institution == institutionId)
+    .sortBy((acct: Account) => acct.name)
+    .value();
+}
+
+
+const hasOwnProperty = Object.hasOwnProperty;
+
+function makeDiff<Element, Mutator>(lhs: Element, rhs: Element, spec: Updraft.TableSpec<Element, Mutator, any>): Mutator {
+  const change = {} as any;
+  const specKeys = spec ? Object.keys(spec.columns) : null;
+
+  const removedFields = (specKeys || Object.keys(lhs)).filter(key => hasOwnProperty.call(lhs, key) && !hasOwnProperty.call(rhs, key));
+  if (removedFields && removedFields.length) {
+    change.$delete = removedFields;
+  }
+
+  (specKeys || Object.keys(rhs)).forEach(key => {
+    let doSet = false;
+    if (!hasOwnProperty.call(lhs, key)) {
+      doSet = true;
+    }
+    else {
+      if ((lhs as any)[key] !== (rhs as any)[key]) {
+        doSet = true;
+      }
+    }
+
+    if (doSet) {
+      change[key] = { $set: (rhs as any)[key] };
+    }
+  });
+
+  if (spec && Object.keys(change).length > 0) {
+    _.forEach(spec.columns, (col: Updraft.Column, name: string) => {
+      if (col.isKey) {
+        verify(!(name in change), "objects have different keys!");
+        change[name] = (rhs as any)[name];
+      }
+    });
+  }
+
+  return change;
 }

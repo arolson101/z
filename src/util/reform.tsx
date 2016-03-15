@@ -23,6 +23,7 @@ export namespace ReForm {
   }
 
   export interface Field<type> {
+    name: string;
     defaultValue: type;
     checked: boolean;
     error: string;
@@ -102,6 +103,7 @@ export namespace ReForm {
         for (let fieldName of fieldNames) {
           const defaultValue = options.defaultValues[fieldName];
           state.fields[fieldName] = {
+            name: fieldName,
             defaultValue,
             value: defaultValue,
             checked: defaultValue,
