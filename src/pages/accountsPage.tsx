@@ -3,11 +3,11 @@
 import { connect } from "react-redux";
 import { Row, Grid, Panel } from "react-bootstrap";
 import * as Icon from "react-fa";
-import { Link } from "react-router";
 
-import { AccountGroup, accountGroups, StatelessComponent } from "../components";
+import { AccountGroup, accountGroups, StatelessComponent, Link, LinkButton } from "../components";
 import { AppState } from "../state";
 import { Account } from "../types";
+import { t } from "../i18n";
 
 interface Props {
   accountGroups: AccountGroup[];
@@ -40,6 +40,13 @@ export class AccountsPage extends StatelessComponent<Props> {
             </ul>
           </Panel>
         )}
+      </Row>
+      <Row>
+        <LinkButton to="/accounts/new">
+          <Icon name="plus"/>
+          {t(" ")}
+          {t("AccountsPage.add")}
+        </LinkButton>
       </Row>
     </Grid>;
   }

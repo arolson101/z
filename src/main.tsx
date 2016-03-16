@@ -6,7 +6,7 @@ import { createStore, applyMiddleware, compose } from "redux";
 import { connect, Provider } from "react-redux";
 import { syncHistory } from "redux-simple-router";
 import thunk from "redux-thunk";
-import { Router, Route, hashHistory } from "react-router";
+import { Router, Route } from "react-router";
 import { createDevTools, persistState } from "redux-devtools";
 import LogMonitor from "redux-devtools-log-monitor";
 import DockMonitor from "redux-devtools-dock-monitor";
@@ -19,6 +19,7 @@ import { Action, AccountCollection, configInit } from "./actions";
 import { appState, AppState } from "./state";
 import { i18nInit } from "./i18n";
 import { fiInit } from "./fi";
+import { history } from "./components";
 
 const DevTools = createDevTools(
   <DockMonitor toggleVisibilityKey="ctrl-h" changePositionKey="ctrl-q" defaultIsVisible={false}>
@@ -64,7 +65,7 @@ type createStoreFunction<State, Action> = (reducer: Redux.Reducer<State, Action>
 
 
 export function main(root: HTMLElement) {
-  const reduxRouterMiddleware = syncHistory(hashHistory);
+  const reduxRouterMiddleware = syncHistory(history);
 
   const middleware: any[] = [thunk, reduxRouterMiddleware];
 
@@ -100,7 +101,7 @@ export function main(root: HTMLElement) {
   ReactDOM.render(
     <Provider store={store}>
       <div>
-        <Router history={hashHistory}>
+        <Router history={history}>
           <Route path="/" component={Pages.RootPage} onEnter={requireUpdraftStore}>
             <Route path="accounts" component={Pages.AccountsPage}/>
             <Route path="accounts/:institutionId" component={Pages.NewAccountPage}/>

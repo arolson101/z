@@ -5,7 +5,6 @@ import * as React from "react";
 import { Alert, Panel, Button, Collapse, Grid, Input, Row, Col, Table } from "react-bootstrap";
 import * as Icon from "react-fa";
 //import * as LaddaButton from "react-ladda";
-import { hashHistory } from "react-router";
 import { connect } from "react-redux";
 import hash = require("string-hash");
 import { mutate, verify } from "updraft";
@@ -13,6 +12,7 @@ import { mutate, verify } from "updraft";
 import { AppState, FI, UpdraftState, t, InstitutionCollection, AccountCollection } from "../state";
 import { Account, accountSpec, AccountType, Institution, institutionSpec } from "../types";
 import {
+  history,
   ReactSelect,
   FadeTransitionGroup,
   ImageCheckbox,
@@ -596,7 +596,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
 
   @autobind
   onClose() {
-    hashHistory.goBack();
+    history.goBack();
   }
 
   makeInstitution(dbid: number): Institution {
@@ -642,7 +642,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
       ...accounts.map(Updraft.makeSave(updraft.accountTable, time))
     )
     .then(() => {
-      hashHistory.replace("/accounts");
+      history.replace("/accounts");
     });
   }
 
@@ -688,7 +688,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
       ...accountsAdded.map(Updraft.makeSave(updraft.accountTable, time))
     )
     .then(() => {
-      hashHistory.replace("/accounts");
+      history.replace("/accounts");
     });
   }
 
@@ -705,7 +705,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
       ...accountIds.map(Updraft.makeDelete(updraft.accountTable, time))
     )
     .then(() => {
-      hashHistory.replace("/accounts");
+      history.replace("/accounts");
     });
   }
 }

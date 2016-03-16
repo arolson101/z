@@ -4,9 +4,9 @@ import electron = require("electron");
 import { autobind } from "core-decorators";
 import * as React from "react";
 import { Alert, Button, Input, Modal } from "react-bootstrap";
-import { hashHistory } from "react-router";
 import { connect } from "react-redux";
 
+import { history } from "../components";
 import { ValidateHelper, ReForm } from "../util";
 import { t } from "../state";
 import { bindActionCreators, updraftCreateDb, updraftOpenDb } from "../actions";
@@ -229,7 +229,7 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
       () => {
         this.setState({ opening: false });
         this.onCancel();
-        hashHistory.replace("/");
+        history.replace("/");
       },
       (err: Error) => {
         this.setState({ opening: false, errorMessage: err.message });

@@ -36,6 +36,10 @@
     "calendar": "Calendar",
     "addAccountTooltip": "Add account"
   },
+  
+  "AccountsPage": {
+    "add": "Add Account"
+  },
 
   "NewAccountPage": {
     "addTitle": "Add Accounts",
