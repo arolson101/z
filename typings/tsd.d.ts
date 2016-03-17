@@ -39,3 +39,4 @@
 /// <reference path="moment-range/moment-range.d.ts" />
 /// <reference path="moment/moment.d.ts" />
 /// <reference path="react-select/react-select.d.ts" />
+/// <reference path="fixed-data-table/fixed-data-table.d.ts" />
