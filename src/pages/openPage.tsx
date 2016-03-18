@@ -13,6 +13,10 @@ import * as Icon from "react-fa";
 require("datatables.net");
 require("datatables.net-bs");
 require("datatables.net-bs/css/dataTables.bootstrap.css");
+require("datatables.net-buttons");
+require("datatables.net-buttons/js/buttons.colVis");
+require("datatables.net-buttons-bs");
+require("datatables.net-buttons-bs/css/buttons.bootstrap.css");
 require("datatables.net-colreorder");
 require("datatables.net-colreorder-bs/css/colReorder.bootstrap.css");
 require("datatables.net-keytable");
@@ -74,6 +78,10 @@ class MyTable extends React.Component<any, any> {
 
   componentDidMount() {
     $(this.refs["table"]).DataTable({
+      buttons: [
+        "colvis"
+      ],
+      dom: 'Bfrtip',
       responsive: true,
       keys: true,
       colReorder: true,
