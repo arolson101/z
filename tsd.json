@@ -137,8 +137,8 @@
     "react-select/react-select.d.ts": {
       "commit": "0cd5f0a1482dc3149f5446b1d885ef6ac7c57720"
     },
-    "fixed-data-table/fixed-data-table.d.ts": {
-      "commit": "2f47c75835b837777a85287611703d683b0aaa83"
+    "jquery.dataTables/jquery.dataTables.d.ts": {
+      "commit": "ce8ae773688d2244ba11fdf3378fcd68f773e1c4"
     }
   }
 }

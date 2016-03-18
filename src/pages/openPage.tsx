@@ -10,170 +10,78 @@ import * as path from "path";
 import * as fs from "fs";
 import * as Icon from "react-fa";
 
+require("datatables.net");
+require("datatables.net-bs");
+require("datatables.net-bs/css/dataTables.bootstrap.css");
+require("datatables.net-colreorder");
+require("datatables.net-colreorder-bs/css/colReorder.bootstrap.css");
+require("datatables.net-keytable");
+require("datatables.net-keytable-bs/css/keyTable.bootstrap.css");
+require("datatables.net-responsive");
+require("datatables.net-responsive-bs/css/responsive.bootstrap.css");
+require("datatables.net-scroller");
+require("datatables.net-scroller-bs/css/scroller.bootstrap.css");
+require("datatables.net-select");
+require("datatables.net-select-bs/css/select.bootstrap.css");
+
 import { AppState, Config, UpdraftState, KnownDb, t } from "../state";
 import { OpenDbDialog } from "../dialogs";
 import { formatFilesize, formatRelativeTime } from "../i18n";
 import { StatelessComponent } from "../components";
 
-require("fixed-data-table/dist/fixed-data-table.min.css");
-
-const {Table, Column, Cell} = require('fixed-data-table');
-
-
-    const style = {
-      position: 'absolute',
-      backgroundColor: '#EEE',
-      boxShadow: '0 5px 10px rgba(0, 0, 0, 0.2)',
-      border: '1px solid #CCC',
-      borderRadius: 3,
-      marginLeft: 0,
-      marginTop: -3,
-      padding: 10,
-      float: "left"
-    };
-
-class MyTextCell extends React.Component<any, any> {
-  render() {
-    const {rowIndex, field, data, selectedRow, container} = this.props;
-    const cellref = "cellref" + rowIndex;
-    return (
-      <Cell {...this.props}
-        style={{backgroundColor: rowIndex == selectedRow ? "blue" : null}}
-        ref={cellref}
-      >
-        <div style={{ position: 'relative' }}  />
-        <Overlay
-          show={rowIndex == selectedRow}
-          placement="bottom"
-          container={container}
-          target={() => ReactDOM.findDOMNode(this.refs[cellref])}
-        >
-          <div style={style} width="100%">
-            <strong>Holy guacamole!</strong> <br/>Check this info. 
-          </div>
-        </Overlay>
-
-
-        {data[rowIndex][field]}
-      </Cell>
-    );
-  }
-}
-
-class MyLinkCell extends React.Component<any, any> {
-  render() {
-    const {rowIndex, field, data} = this.props;
-    const link = data[rowIndex][field];
-    return (
-      <Cell {...this.props}>
-        <a href={link}>{link}</a>
-      </Cell>
-    );
-  }
-}
 
 class MyTable extends React.Component<any, any> {
-  constructor(props: any) {
-    super(props);
-
-    this.state = {
-      selectedRow: -1,
-      myTableData: [
-        {name: 'Rylan', email: 'Angelita_Weimann42@gmail.com'},
-        {name: 'Amelia', email: 'Dexter.Trantow57@hotmail.com'},
-        {name: 'Estevan', email: 'Aimee7@hotmail.com'},
-        {name: 'Florence', email: 'Jarrod.Bernier13@yahoo.com'},
-        {name: 'Tressa', email: 'Yadira1@hotmail.com'},
-      ],
-    };
-  }
+  // shouldComponentUpdate(nextProps: any, nextState: any): boolean {
+  //   // never re-render
+  //   return false;
+  // }
 
   render() {
-    return (
-      <Table
-        rowsCount={this.state.myTableData.length}
-        rowHeight={50}
-        headerHeight={50}
-        width={400}
-        height={500}
-        onRowClick={(e: any, i: number) => {
-          this.setState({selectedRow: i});
-        }}
-      >
-        <Column
-          header={<Cell>Name</Cell>}
-          cell={
-            <MyTextCell
-              data={this.state.myTableData}
-              selectedRow={this.state.selectedRow}
-              container={this}
-              field="name"
-            />
-          }
-          width={0}
-        />
-        <Column
-          header={<Cell>Email</Cell>}
-          cell={
-            <MyLinkCell
-              data={this.state.myTableData}
-              field="email"
-            />
-          }
-          width={200}
-        />
-      </Table>
-    );
+    return <table className="table table-striped table-bordered" ref="table" cellSpacing="0" width="100%">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Position</th>
+          <th>Office</th>
+        </tr>
+      </thead>
+      <tfoot>
+        <tr>
+          <th>Name</th>
+          <th>Position</th>
+          <th>Office</th>
+        </tr>
+      </tfoot>
+      <tbody>
+        <tr>
+          <td>Tiger Nixon</td>
+          <td>System Architect</td>
+          <td>Edinburgh</td>
+        </tr>
+        <tr>
+          <td>Tiger Nixon2</td>
+          <td>System Architect</td>
+          <td>Edinburgh</td>
+        </tr>
+        <tr>
+          <td>Tiger Nixon3</td>
+          <td>System Architect</td>
+          <td>Edinburgh</td>
+        </tr>
+      </tbody>
+    </table>;
+  }
+
+  componentDidMount() {
+    $(this.refs["table"]).DataTable({
+      responsive: true,
+      keys: true,
+      colReorder: true,
+      select: "os",
+      //scroller: true
+    } as any);
   }
 }
-
-class Example extends React.Component<any, any> {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      show: false
-    };
-  }
-
-  @autobind
-  toggle() {
-    this.setState({ show: !this.state.show });
-  }
-
-  render() {
-    const style = {
-      position: 'absolute',
-      backgroundColor: '#EEE',
-      boxShadow: '0 5px 10px rgba(0, 0, 0, 0.2)',
-      border: '1px solid #CCC',
-      borderRadius: 3,
-      marginLeft: -5,
-      marginTop: 5,
-      padding: 10
-    };
-
-    return (
-      <div style={{ height: 200, position: 'relative' }}>
-        <Button ref="target" onClick={this.toggle}>
-          I am an Overlay target
-        </Button>
-
-        <Overlay
-          show={this.state.show}
-          onHide={() => this.setState({ show: false })}
-          placement="right"
-          container={this}
-          target={() => ReactDOM.findDOMNode(this.refs["target"])}
-        >
-          <div style={style}>
-            <strong>Holy guacamole!</strong> Check this info.
-          </div>
-        </Overlay>
-      </div>
-    );
-  }
-}
-
 
 
 
