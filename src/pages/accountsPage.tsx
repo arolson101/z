@@ -27,7 +27,7 @@ export class AccountsPage extends StatelessComponent<Props> {
               <h3>
                 <Icon name="university" />
                 {group.institution.name}
-                <Link to={`/accounts/${group.institution.dbid}`} className="pull-right">
+                <Link to={`/accounts/edit/${group.institution.dbid}`} className="pull-right">
                   <Icon name="edit"/>
                 </Link>
               </h3>
@@ -35,7 +35,7 @@ export class AccountsPage extends StatelessComponent<Props> {
           >
             <ul>
             {_.map(group.accounts, (account: Account) =>
-                <li key={account.dbid}>{account.name}</li>
+                <li key={account.dbid}><Link to={`/accounts/${account.dbid}`}>{account.name}</Link></li>
             )}
             </ul>
           </Panel>

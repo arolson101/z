@@ -10,87 +10,10 @@ import * as path from "path";
 import * as fs from "fs";
 import * as Icon from "react-fa";
 
-require("datatables.net");
-require("datatables.net-bs");
-require("datatables.net-bs/css/dataTables.bootstrap.css");
-require("datatables.net-buttons");
-require("datatables.net-buttons/js/buttons.colVis");
-require("datatables.net-buttons-bs");
-require("datatables.net-buttons-bs/css/buttons.bootstrap.css");
-require("datatables.net-colreorder");
-require("datatables.net-colreorder-bs/css/colReorder.bootstrap.css");
-require("datatables.net-keytable");
-require("datatables.net-keytable-bs/css/keyTable.bootstrap.css");
-require("datatables.net-responsive");
-require("datatables.net-responsive-bs/css/responsive.bootstrap.css");
-require("datatables.net-scroller");
-require("datatables.net-scroller-bs/css/scroller.bootstrap.css");
-require("datatables.net-select");
-require("datatables.net-select-bs/css/select.bootstrap.css");
-
 import { AppState, Config, UpdraftState, KnownDb, t } from "../state";
 import { OpenDbDialog } from "../dialogs";
 import { formatFilesize, formatRelativeTime } from "../i18n";
 import { StatelessComponent } from "../components";
-
-
-class MyTable extends React.Component<any, any> {
-  // shouldComponentUpdate(nextProps: any, nextState: any): boolean {
-  //   // never re-render
-  //   return false;
-  // }
-
-  render() {
-    return <table className="table table-striped table-bordered" ref="table" cellSpacing="0" width="100%">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Position</th>
-          <th>Office</th>
-        </tr>
-      </thead>
-      <tfoot>
-        <tr>
-          <th>Name</th>
-          <th>Position</th>
-          <th>Office</th>
-        </tr>
-      </tfoot>
-      <tbody>
-        <tr>
-          <td>Tiger Nixon</td>
-          <td>System Architect</td>
-          <td>Edinburgh</td>
-        </tr>
-        <tr>
-          <td>Tiger Nixon2</td>
-          <td>System Architect</td>
-          <td>Edinburgh</td>
-        </tr>
-        <tr>
-          <td>Tiger Nixon3</td>
-          <td>System Architect</td>
-          <td>Edinburgh</td>
-        </tr>
-      </tbody>
-    </table>;
-  }
-
-  componentDidMount() {
-    $(this.refs["table"]).DataTable({
-      buttons: [
-        "colvis"
-      ],
-      dom: 'Bfrtip',
-      responsive: true,
-      keys: true,
-      colReorder: true,
-      select: "os",
-      //scroller: true
-    } as any);
-  }
-}
-
 
 
 interface Props extends React.Props<any> {
@@ -176,9 +99,6 @@ export class OpenPage extends React.Component<Props, State> {
     }
     return (
       <Grid>
-        <Col>
-          <MyTable/>
-        </Col>
         <Col>
           <ListGroup>
             <OpenDbDialog

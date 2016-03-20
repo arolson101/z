@@ -327,13 +327,13 @@ declare module "i18next-node-fs-backend" {
 
 declare module "react-chartjs" {
   import * as React from "react";
-  
+
   export interface ChartProps<T> extends React.HTMLProps<HTMLCanvasElement> {
     data: T | any; // conflicts with react's HTMLAttributes
     options: ChartOptions;
     redraw?: boolean;
   }
-  
+
   export type LinearChartProps = ChartProps<LinearChartData>;
   export class Bar extends React.Component<LinearChartProps, any> {}
   export class Line extends React.Component<LinearChartProps, any> {}
@@ -343,6 +343,24 @@ declare module "react-chartjs" {
   export class Pie extends React.Component<CircularChartProps, any> {}
   export class PolarArea extends React.Component<CircularChartProps, any> {}
   export class Radar extends React.Component<CircularChartProps, any> {}
-  
+
   export function createClass<T>(chartType: string, methodNames: string[], dataKey: string): new() => React.Component<T, any>;
+}
+
+
+declare namespace DataTables {
+  interface Settings {
+    buttons: string[];
+    responsive: boolean | ResponsiveOptions;
+    keys: boolean;
+    colReorder: boolean;
+    select: string;
+    scroller: boolean;
+  }
+
+  interface ResponsiveOptions {
+    details?: {
+      renderer?: (api: Object, rowIdx: number, columns: any[]) => boolean | string;
+    };
+  }
 }

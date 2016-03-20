@@ -1,3 +1,4 @@
+export * from "./accountDetailPage";
 export * from "./accountsPage";
 export * from "./schedulePage";
 export * from "./loginPage";

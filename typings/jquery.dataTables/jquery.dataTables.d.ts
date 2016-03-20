@@ -1107,7 +1107,7 @@ declare namespace DataTables {
         /**
         * Vertical scrolling. Since: 1.10 Exp: "200px"
         */
-        scrollY?: string;
+        scrollY?: string | number;
 
         /**
         * Feature control search (filtering) abilities Since: 1.10
@@ -1390,8 +1390,12 @@ declare namespace DataTables {
         dataSrc?: string | Function;
     }
 
+    interface FunctionAjaxCallback {
+        (param: AjaxData): void;
+    }
+
     interface FunctionAjax {
-        (data: Object, callback: Function, settings: SettingsLegacy): void;
+        (data: AjaxDataRequest, callback: FunctionAjaxCallback, settings: SettingsLegacy): void;
     }
 
     interface FunctionAjaxData {

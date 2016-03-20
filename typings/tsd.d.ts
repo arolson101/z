@@ -38,3 +38,4 @@
 /// <reference path="moment/moment.d.ts" />
 /// <reference path="react-select/react-select.d.ts" />
 /// <reference path="jquery.dataTables/jquery.dataTables.d.ts" />
+/// <reference path="faker/faker.d.ts" />

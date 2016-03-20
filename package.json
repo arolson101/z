@@ -39,6 +39,7 @@
     "datatables.net-scroller-bs": "^1.4.1",
     "datatables.net-select": "^1.1.2",
     "datatables.net-select-bs": "^1.1.2",
+    "faker": "^3.0.1",
     "filesize": "^3.2.1",
     "filist": "^1.0.1",
     "gulp-insert": "^0.5.0",
