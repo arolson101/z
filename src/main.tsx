@@ -104,9 +104,9 @@ export function main(root: HTMLElement) {
         <Router history={history}>
           <Route path="/" component={Pages.RootPage} onEnter={requireUpdraftStore}>
             <Route path="accounts" component={Pages.AccountsPage}/>
+            <Route path="accounts/new" component={Pages.NewAccountPage}/>
             <Route path="accounts/:accountId" component={Pages.AccountDetailPage}/>
             <Route path="accounts/edit/:institutionId" component={Pages.NewAccountPage}/>
-            <Route path="accounts/new" component={Pages.NewAccountPage}/>
             <Route path="schedule" component={Pages.SchedulePage}/>
           </Route>
           <Route path="/open" component={Pages.OpenPage}/>

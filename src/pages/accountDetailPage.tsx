@@ -1,36 +1,53 @@
 ///<reference path="../project.d.ts"/>
 
-import { connect } from "react-redux";
-import { Row, Grid, Col } from "react-bootstrap";
+import { autobind } from "core-decorators";
 import * as faker from "faker";
+import * as ReactDOM from "react-dom";
+import { connect } from "react-redux";
+import { Button, Row, Grid, Col } from "react-bootstrap";
+import hash = require("string-hash");
+import { verify } from "updraft";
 
-import { StatelessComponent } from "../components";
-import { AppState, AccountCollection } from "../state";
-import { Transaction } from "../types";
-import { t, formatDate, formatCurrency } from "../i18n";
+import { datatablesLoaded } from "../components";
+import { AppState, AccountCollection, UpdraftState } from "../state";
+import { Transaction, TransactionQuery/*, TransactionChange*/ } from "../types";
+import { /*t,*/ formatDate, formatCurrency } from "../i18n";
+import { bindActionCreators, updraftAdd } from "../actions";
+
+verify(datatablesLoaded, "this is just to ensure load order");
 
 interface Props {
   params?: {
     accountId?: number;
   };
+  updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
   accounts?: AccountCollection;
+  updraft?: UpdraftState;
 }
 
 interface State {
-  data?: Transaction[];
+  rows?: Transaction[];
+  offset?: number;
+  limit?: number;
+  count?: number;
 }
 
 
 @connect(
-  (state: AppState) => ({accounts: state.accounts})
+  (state: AppState) => ({
+    accounts: state.accounts,
+    updraft: state.updraft,
+  }),
+  (dispatch: Redux.Dispatch<any>) => bindActionCreators(
+    {
+      updraftAdd,
+    },
+    dispatch)
 )
 export class AccountDetailPage extends React.Component<Props, State> {
   state: State = {
-    data: _.range(0, 1000).map((x: number): Transaction => ([
-      /*date:*/ faker.date.past(1),
-      /*payee:*/ faker.name.findName(),
-      /*amount:*/ parseFloat(faker.finance.amount())
-    ]))
+    rows: [],
+    count: 0
   };
 
   render() {
@@ -41,6 +58,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
           <h1>{account.name}</h1>
         </Col>
       </Row>
+      <Button onClick={this.onAddRandomData}>add random data</Button>
       <Row>
         <Col>
           <table className="table table-striped table-bordered" ref="table" cellSpacing="0" width="100%">
@@ -57,8 +75,12 @@ export class AccountDetailPage extends React.Component<Props, State> {
     </Grid>;
   }
 
+  $table() {
+    return $(ReactDOM.findDOMNode(this.refs["table"]));
+  }
+
   componentDidMount() {
-    $(this.refs["table"]).DataTable({
+    this.$table().DataTable({
       buttons: [
         "colvis"
       ],
@@ -94,25 +116,101 @@ export class AccountDetailPage extends React.Component<Props, State> {
         trace: true,
       } as any,
       ajax: (data: DataTables.AjaxDataRequest, callback: DataTables.FunctionAjaxCallback, settings: DataTables.SettingsLegacy) => {
-        let out: Transaction[] = [];
-        //console.log(`requesting ${data.start} through ${data.length + data.start}`)
-        for (let i = data.start; i < Math.min(this.state.data.length, data.start + data.length); i++) {
-          out.push(this.state.data[i]);
-        }
-        callback({
-          draw: data.draw,
-          data: out,
-          recordsTotal: this.state.data.length,
-          recordsFiltered: this.state.data.length
-        });
+        const table = this.props.updraft.transactionTable;
+        const query: TransactionQuery = {
+          account: this.props.params.accountId
+        };
+        console.log(`requesting ${data.start} through ${data.length + data.start}`);
+
+        const countRows = (): Promise<number> => {
+          return table.find(query, { count: true }) as Promise<any>;
+        };
+
+        const updateCount = (): Promise<any> => {
+          if (this.state.count != 0) {
+            return Promise.resolve();
+          }
+          else {
+            console.log(`calculating result count`);
+            return countRows()
+            .then((count: any) => {
+              return new Promise((resolve, reject) => {
+                this.setState(
+                  { count },
+                  resolve
+                );
+              });
+            });
+          }
+        };
+
+        const runQuery = (): Promise<any> => {
+          return table
+          .find(query, { limit: data.length, offset: data.start, orderBy: { date: Updraft.OrderBy.ASC } })
+          .then((rows: Transaction[]) => {
+            return new Promise((resolve, reject) => {
+              this.setState(
+                { rows },
+                resolve
+              );
+            });
+          });
+        };
+
+        const returnResults = () => {
+          callback({
+            draw: data.draw,
+            data: this.state.rows,
+            recordsTotal: this.state.count,
+            recordsFiltered: this.state.count
+          });
+        };
+
+        updateCount()
+        .then(runQuery)
+        .then(returnResults);
       },
       columnDefs: [
         {
+          data: "date",
           render: formatDate,
-          targets: 0,
-          width: "80"
+          targets: 0
+        },
+        {
+          data: "payee",
+          targets: 1
+        },
+        {
+          data: "amount",
+          render: formatCurrency,
+          targets: 2
         }
       ]
     });
   }
+
+  componentWillUnmount() {
+    this.$table().DataTable().destroy();
+  }
+
+  @autobind
+  onAddRandomData() {
+    const { updraft, updraftAdd } = this.props;
+    const accountId = this.props.params.accountId;
+    const time = Date.now();
+
+    const transactions = _.range(0, 1000).map((x: number): Transaction => ({
+      dbid: hash("" + time + x + accountId),
+      account: accountId,
+      date: faker.date.past(5),
+      payee: faker.name.findName(),
+      amount: parseFloat(faker.finance.amount())
+    }));
+
+    updraftAdd(
+      updraft,
+      ...transactions.map(Updraft.makeSave(updraft.transactionTable, time))
+    );
+  }
 }
+

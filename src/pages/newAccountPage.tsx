@@ -19,7 +19,7 @@ import {
  } from "../components";
 import { AddAccountDialog } from "../dialogs";
 import { ValidateHelper, ReForm } from "../util";
-import { bindActionCreators, updraftAdd, updatePath } from "../actions";
+import { bindActionCreators, updraftAdd } from "../actions";
 import { readAccountProfiles } from "../online";
 
 interface Props {
@@ -27,7 +27,6 @@ interface Props {
     institutionId?: number;
   };
   updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
-  updatePath?: (path: string) => any;
   filist: FI[];
   institutions: InstitutionCollection;
   accounts: AccountCollection;
@@ -68,7 +67,7 @@ interface State extends ReForm.State {
 
 
 function isNew(institutionId: number): boolean {
-  return (institutionId as any) == "new";
+  return (typeof institutionId === "undefined") || (institutionId as any) == "new";
 }
 
 
@@ -82,7 +81,6 @@ function isNew(institutionId: number): boolean {
   (dispatch: Redux.Dispatch<any>) => bindActionCreators(
     {
       updraftAdd,
-      updatePath,
     },
     dispatch)
 )

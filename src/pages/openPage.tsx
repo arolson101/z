@@ -2,9 +2,8 @@
 
 import { autobind } from "core-decorators";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { connect } from "react-redux";
-import { Grid, Col, ListGroup, ListGroupItem, Button, Overlay } from "react-bootstrap";
+import { Grid, Col, ListGroup, ListGroupItem } from "react-bootstrap";
 import { createSelector } from "reselect";
 import * as path from "path";
 import * as fs from "fs";

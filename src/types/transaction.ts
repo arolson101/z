@@ -22,9 +22,12 @@ export const transactionSpec: TransactionTableSpec = {
   name: "transactions",
   columns: {
     dbid: Column.Int().Key(),
-    account: Column.Int(),
-    date: Column.DateTime(),
+    account: Column.Int().Index(),
+    date: Column.DateTime().Index(),
     payee: Column.Text(),
     amount: Column.Real().Default(0),
-  }
+  },
+  indices: [
+    ["account", "date"]
+  ]
 };

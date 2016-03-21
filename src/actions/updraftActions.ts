@@ -12,7 +12,10 @@ import {
   institutionSpec,
   Bill,
   BillTable,
-  billSpec
+  billSpec,
+  Transaction,
+  TransactionTable,
+  transactionSpec
 } from "../types";
 import { changeConfig } from "./configActions";
 import { UpdraftCollection, defineUpdraftCollection } from "../util";
@@ -31,6 +34,7 @@ export interface UpdraftState {
   accountTable?: AccountTable;
   institutionTable?: InstitutionTable;
   billTable?: BillTable;
+  transactionTable?: TransactionTable;
 }
 
 interface UpdraftOpenAction extends Action {
@@ -67,13 +71,24 @@ export const {
 } = defineUpdraftCollection(institutionSpec);
 
 
+export { Transaction };
+export type TransactionCollection = UpdraftCollection<Transaction>;
+
+export const {
+  load: loadTransactions,
+  add: addTransaction,
+  reducer: transactionCollectionReducer
+} = defineUpdraftCollection(transactionSpec);
+
+
 const UPDRAFT_OPENED = "updraft/opened";
 
 type loadAction = (table: Updraft.TableAny) => ThunkPromise;
 const tableLoadActionMap = new Map<Updraft.TableSpecAny, loadAction>([
   [accountSpec, loadAccounts],
   [institutionSpec, loadInstitutions],
-  [billSpec, loadBills]
+  [billSpec, loadBills],
+  //[transactionSpec, loadTransactions],
 ]);
 
 export function updraftOpened(state: UpdraftState): UpdraftOpenAction {
@@ -113,7 +128,9 @@ export function updraftAdd(state: UpdraftState, ...changes: Updraft.TableChange<
       tables = _.uniq(tables);
       let promises = tables.map((table) => {
         const loadAction = tableLoadActionMap.get(table.spec);
-        return dispatch(loadAction(table)) as Promise<any>;
+        if (loadAction) {
+          return dispatch(loadAction(table)) as Promise<any>;
+        }
       });
       return Promise.all(promises);
     });
@@ -152,6 +169,7 @@ function openDb(path: string, password: string, mode: number): ThunkPromise {
       state.accountTable = store.createTable(accountSpec);
       state.institutionTable = store.createTable(institutionSpec);
       state.billTable = store.createTable(billSpec);
+      state.transactionTable = store.createTable(transactionSpec);
 
       return store.open()
       .then(() => {
