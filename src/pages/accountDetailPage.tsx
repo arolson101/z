@@ -16,6 +16,9 @@ import { bindActionCreators, updraftAdd } from "../actions";
 
 verify(datatablesLoaded, "this is just to ensure load order");
 
+const batchSize = 500;
+const useBatch = true;
+
 interface Props {
   params?: {
     accountId?: number;
@@ -85,7 +88,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
         "colvis"
       ],
       //dom: "Bfrtip",
-      dom: "t",
+      //dom: "t",
       responsive: {
         details: {
           /*renderer: function ( api: Object, rowIdx: number, columns: any[] ): string | boolean {
@@ -145,22 +148,34 @@ export class AccountDetailPage extends React.Component<Props, State> {
         };
 
         const runQuery = (): Promise<any> => {
-          return table
-          .find(query, { limit: data.length, offset: data.start, orderBy: { date: Updraft.OrderBy.ASC } })
-          .then((rows: Transaction[]) => {
-            return new Promise((resolve, reject) => {
-              this.setState(
-                { rows },
-                resolve
-              );
+          if (data.start >= this.state.offset && (data.start + data.length) < (this.state.offset + this.state.limit)) {
+            console.log(`range is already cached`);
+            return Promise.resolve();
+          }
+          else {
+            const center = data.start + Math.floor(data.length / 2);
+            const offset = useBatch ? Math.max(center - Math.ceil(batchSize / 2), 0) : data.start;
+            const limit = useBatch ? Math.min(batchSize, this.state.count - offset) : data.length;
+            console.log(`running query for offset ${offset}, limit ${limit}`);
+            return table
+            .find(query, { limit, offset, orderBy: { date: Updraft.OrderBy.ASC } })
+            .then((rows: Transaction[]) => {
+              return new Promise((resolve, reject) => {
+                this.setState(
+                  { rows, offset, limit },
+                  resolve
+                );
+              });
             });
-          });
+          }
         };
 
         const returnResults = () => {
+          const start = data.start - this.state.offset;
+          const end = start + data.length;
           callback({
             draw: data.draw,
-            data: this.state.rows,
+            data: this.state.rows.slice(start, end),
             recordsTotal: this.state.count,
             recordsFiltered: this.state.count
           });
@@ -199,18 +214,22 @@ export class AccountDetailPage extends React.Component<Props, State> {
     const accountId = this.props.params.accountId;
     const time = Date.now();
 
-    const transactions = _.range(0, 1000).map((x: number): Transaction => ({
-      dbid: hash("" + time + x + accountId),
-      account: accountId,
-      date: faker.date.past(5),
-      payee: faker.name.findName(),
-      amount: parseFloat(faker.finance.amount())
-    }));
+    for (let i = 0; i < 10; i++) {
+      const transactions = _.range(0, 10000).map((x: number): Transaction => ({
+        dbid: hash(i.toString() + time.toString() + x.toString() + accountId.toString()),
+        account: accountId,
+        date: faker.date.past(5),
+        payee: faker.name.findName(),
+        amount: parseFloat(faker.finance.amount())
+      }));
 
-    updraftAdd(
-      updraft,
-      ...transactions.map(Updraft.makeSave(updraft.transactionTable, time))
-    );
+      updraftAdd(
+        updraft,
+        ...transactions.map(Updraft.makeSave(updraft.transactionTable, time))
+      );
+
+      this.forceUpdate();
+    }
   }
 }
 
