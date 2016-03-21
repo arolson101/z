@@ -3,6 +3,7 @@
 import electron = require("electron");
 import { autobind } from "core-decorators";
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import { Alert, Button, Input, Modal } from "react-bootstrap";
 import { connect } from "react-redux";
 
@@ -93,6 +94,18 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
     });
   }
 
+  componentDidUpdate(prevProps: Props, prevState: State) {
+    if (this.props.show && (this.props.show != prevProps.show)) {
+      const { open } = this.props;
+      if (this.state.fields.path.value) {
+        (this.refs[open ? "password" : "browse"] as any).getInputDOMNode().focus();
+      }
+      else {
+        (ReactDOM.findDOMNode(this.refs["browse"]) as any).focus();
+      }
+    }
+  }
+
   render() {
     const { fields, submitFailed } = this.state;
     const { open } = this.props;
@@ -129,10 +142,11 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
               placeholder={t("OpenDbDialog.pathPlaceholder")}
               value={fields.path.value}
               onChange={() => {}}
-              buttonAfter={<Button onClick={this.onBrowse}>{t("OpenDbDialog.browseButton")}</Button>}
+              buttonAfter={<Button onClick={this.onBrowse} ref="browse">{t("OpenDbDialog.browseButton")}</Button>}
             />
             <Input
               type="password"
+              ref="password"
               label={t("OpenDbDialog.passwordLabel")}
               placeholder={t("OpenDbDialog.passwordPlaceholder")}
               {...wrapError(fields.password1)}
