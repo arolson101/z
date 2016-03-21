@@ -33,6 +33,8 @@ interface State {
   offset?: number;
   limit?: number;
   count?: number;
+  search?: string;
+  searchCount?: number;
 }
 
 
@@ -50,7 +52,9 @@ interface State {
 export class AccountDetailPage extends React.Component<Props, State> {
   state: State = {
     rows: [],
-    count: 0
+    count: 0,
+    search: "",
+    searchCount: 0
   };
 
   render() {
@@ -120,12 +124,19 @@ export class AccountDetailPage extends React.Component<Props, State> {
       } as any,
       ajax: (data: DataTables.AjaxDataRequest, callback: DataTables.FunctionAjaxCallback, settings: DataTables.SettingsLegacy) => {
         const table = this.props.updraft.transactionTable;
-        const query: TransactionQuery = {
-          account: this.props.params.accountId
-        };
         console.log(`requesting ${data.start} through ${data.length + data.start}`);
 
-        const countRows = (): Promise<number> => {
+        const makeQuery = (search?: string): TransactionQuery => {
+          let q: TransactionQuery = {
+            account: this.props.params.accountId
+          };
+          if (search) {
+            q.payee = new RegExp(search, "i");
+          }
+          return q;
+        };
+
+        const countRows = (query: TransactionQuery): Promise<number> => {
           return table.find(query, { count: true }) as Promise<any>;
         };
 
@@ -135,7 +146,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
           }
           else {
             console.log(`calculating result count`);
-            return countRows()
+            return countRows(makeQuery())
             .then((count: any) => {
               return new Promise((resolve, reject) => {
                 this.setState(
@@ -147,8 +158,28 @@ export class AccountDetailPage extends React.Component<Props, State> {
           }
         };
 
+        const updateSearchCount = (): Promise<any> => {
+          const search = data.search.value;
+          if (this.state.searchCount != 0 && this.state.search == search) {
+            return Promise.resolve();
+          }
+          else {
+            console.log(`calculating search result count`);
+            return countRows(makeQuery(search))
+            .then((searchCount: any) => {
+              return new Promise((resolve, reject) => {
+                this.setState(
+                  { searchCount },
+                  resolve
+                );
+              });
+            });
+          }
+        };
+
         const runQuery = (): Promise<any> => {
-          if (data.start >= this.state.offset && (data.start + data.length) < (this.state.offset + this.state.limit)) {
+          const search = data.search.value;
+          if (data.start >= this.state.offset && (data.start + data.length) < (this.state.offset + this.state.limit) && this.state.search == search) {
             console.log(`range is already cached`);
             return Promise.resolve();
           }
@@ -158,11 +189,11 @@ export class AccountDetailPage extends React.Component<Props, State> {
             const limit = useBatch ? Math.min(batchSize, this.state.count - offset) : data.length;
             console.log(`running query for offset ${offset}, limit ${limit}`);
             return table
-            .find(query, { limit, offset, orderBy: { date: Updraft.OrderBy.ASC } })
+            .find(makeQuery(search), { limit, offset, orderBy: { date: Updraft.OrderBy.ASC } })
             .then((rows: Transaction[]) => {
               return new Promise((resolve, reject) => {
                 this.setState(
-                  { rows, offset, limit },
+                  { rows, search, offset, limit },
                   resolve
                 );
               });
@@ -177,11 +208,12 @@ export class AccountDetailPage extends React.Component<Props, State> {
             draw: data.draw,
             data: this.state.rows.slice(start, end),
             recordsTotal: this.state.count,
-            recordsFiltered: this.state.count
+            recordsFiltered: this.state.searchCount
           });
         };
 
         updateCount()
+        .then(updateSearchCount)
         .then(runQuery)
         .then(returnResults);
       },
