@@ -2,6 +2,7 @@
 
 import { autobind } from "core-decorators";
 import * as faker from "faker";
+import * as moment from "moment";
 import * as ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import { Button, Row, Grid, Col } from "react-bootstrap";
@@ -126,14 +127,28 @@ export class AccountDetailPage extends React.Component<Props, State> {
         const table = this.props.updraft.transactionTable;
         console.log(`requesting ${data.start} through ${data.length + data.start}`);
 
-        const makeQuery = (search?: string): TransactionQuery => {
+        const makeQuery = (search?: string): TransactionQuery[] => {
           let q: TransactionQuery = {
             account: this.props.params.accountId
           };
+          let qs: TransactionQuery[] = [];
           if (search) {
-            q.payee = { $like: `%${Q.escape(search)}%` };
+            qs.push(_.assign({ payee: { $like: `%${Q.escape(search)}%` } }, q));
+            let date = moment(search, "l");
+            if (date.isValid()) {
+              const start = date.toDate();
+              const end = moment(date).add(1, "days").toDate();
+              qs.push(_.assign({ date: { $after: start, $before: end } }, q));
+            }
+            let amount = filterFloat(search);
+            if (!isNaN(amount)) {
+              qs.push(_.assign({ amount }, q));
+            }
           }
-          return q;
+          else {
+            qs.push(q);
+          }
+          return qs;
         };
 
         const countRows = (query: TransactionQuery): Promise<number> => {
@@ -265,3 +280,11 @@ export class AccountDetailPage extends React.Component<Props, State> {
   }
 }
 
+function filterFloat(value: string): number {
+  if (/^(\-|\+)?([0-9]+(\.[0-9]+)?|Infinity)$/.test(value)) {
+    return Number(value);
+  }
+  else {
+    return NaN;
+  }
+}
