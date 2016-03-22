@@ -186,7 +186,7 @@ function sqliteOpen(path: string, mode: number): Promise<sqlite3.Database> {
   return new Promise<sqlite3.Database>((resolve, reject) => {
     let sdb = new sqlite3.Database(path, /*mode,*/ (err: Error) => {
       //sdb.on("trace", (sql: string) => console.log(sql));
-      sdb.on("profile", (sql: string, time: number) => console.log(`${time} ms: ${sql}`));
+      //sdb.on("profile", (sql: string, time: number) => console.log(`${time} ms: ${sql}`));
       if (err) {
         reject(err);
       }

@@ -36,6 +36,7 @@ interface State {
   count?: number;
   search?: string;
   searchCount?: number;
+  forceRefresh?: boolean;
 }
 
 
@@ -55,7 +56,8 @@ export class AccountDetailPage extends React.Component<Props, State> {
     rows: [],
     count: 0,
     search: "",
-    searchCount: 0
+    searchCount: 0,
+    forceRefresh: false
   };
 
   render() {
@@ -125,7 +127,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
       } as any,
       ajax: (data: DataTables.AjaxDataRequest, callback: DataTables.FunctionAjaxCallback, settings: DataTables.SettingsLegacy) => {
         const table = this.props.updraft.transactionTable;
-        console.log(`requesting ${data.start} through ${data.length + data.start}`);
+        //console.log(`requesting ${data.start} through ${data.length + data.start}`);
 
         const makeQuery = (search?: string): TransactionQuery[] => {
           let q: TransactionQuery = {
@@ -156,14 +158,15 @@ export class AccountDetailPage extends React.Component<Props, State> {
         };
 
         const updateCount = (): Promise<any> => {
-          if (this.state.count != 0) {
+          if (this.state.count != 0 && !this.state.forceRefresh) {
             return Promise.resolve();
           }
           else {
-            console.log(`calculating result count`);
+            //console.log(`calculating result count`);
             return countRows(makeQuery())
-            .then((count: any) => {
+            .then((count: number) => {
               return new Promise((resolve, reject) => {
+                //console.log(`result count: ${count}`);
                 this.setState(
                   { count },
                   resolve
@@ -175,13 +178,14 @@ export class AccountDetailPage extends React.Component<Props, State> {
 
         const updateSearchCount = (): Promise<any> => {
           const search = data.search.value;
-          if (this.state.searchCount != 0 && this.state.search == search) {
+          if (this.state.searchCount != 0 && this.state.search == search && !this.state.forceRefresh) {
             return Promise.resolve();
           }
           else {
-            console.log(`calculating search result count`);
+            //console.log(`calculating search result count`);
             return countRows(makeQuery(search))
-            .then((searchCount: any) => {
+            .then((searchCount: number) => {
+              //console.log(`search result count: ${searchCount}`);
               return new Promise((resolve, reject) => {
                 this.setState(
                   { searchCount },
@@ -194,21 +198,21 @@ export class AccountDetailPage extends React.Component<Props, State> {
 
         const runQuery = (): Promise<any> => {
           const search = data.search.value;
-          if (data.start >= this.state.offset && (data.start + data.length) < (this.state.offset + this.state.limit) && this.state.search == search) {
-            console.log(`range is already cached`);
+          if (data.start >= this.state.offset && (data.start + data.length) < (this.state.offset + this.state.limit) && this.state.search == search && !this.state.forceRefresh) {
+            //console.log(`range is already cached`);
             return Promise.resolve();
           }
           else {
             const center = data.start + Math.floor(data.length / 2);
             const offset = useBatch ? Math.max(center - Math.ceil(batchSize / 2), 0) : data.start;
             const limit = useBatch ? Math.min(batchSize, this.state.count - offset) : data.length;
-            console.log(`running query for offset ${offset}, limit ${limit}`);
+            //console.log(`running query for offset ${offset}, limit ${limit}`);
             return table
             .find(makeQuery(search), { limit, offset, orderBy: { date: Updraft.OrderBy.ASC } })
             .then((rows: Transaction[]) => {
               return new Promise((resolve, reject) => {
                 this.setState(
-                  { rows, search, offset, limit },
+                  { rows, search, offset, limit, forceRefresh: false },
                   resolve
                 );
               });
@@ -262,7 +266,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
     const time = Date.now();
 
     for (let i = 0; i < 1; i++) {
-      const transactions = _.range(0, 10000).map((x: number): Transaction => ({
+      const transactions = _.range(0, 10).map((x: number): Transaction => ({
         dbid: hash(i.toString() + time.toString() + x.toString() + accountId.toString()),
         account: accountId,
         date: faker.date.past(5),
@@ -273,9 +277,11 @@ export class AccountDetailPage extends React.Component<Props, State> {
       updraftAdd(
         updraft,
         ...transactions.map(Updraft.makeSave(updraft.transactionTable, time))
-      );
-
-      this.forceUpdate();
+      ).then(() => {
+        this.setState({forceRefresh: true}, () => {
+          this.$table().DataTable().ajax.reload();
+        });
+      });
     }
   }
 }
