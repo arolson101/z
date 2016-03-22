@@ -6,7 +6,7 @@ import * as ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import { Button, Row, Grid, Col } from "react-bootstrap";
 import hash = require("string-hash");
-import { verify } from "updraft";
+import { verify, Query as Q } from "updraft";
 
 import { datatablesLoaded } from "../components";
 import { AppState, AccountCollection, UpdraftState } from "../state";
@@ -131,7 +131,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
             account: this.props.params.accountId
           };
           if (search) {
-            q.payee = new RegExp(search, "i");
+            q.payee = { $like: `%${Q.escape(search)}%` };
           }
           return q;
         };
@@ -246,7 +246,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
     const accountId = this.props.params.accountId;
     const time = Date.now();
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 1; i++) {
       const transactions = _.range(0, 10000).map((x: number): Transaction => ({
         dbid: hash(i.toString() + time.toString() + x.toString() + accountId.toString()),
         account: accountId,
