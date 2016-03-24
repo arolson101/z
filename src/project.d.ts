@@ -350,12 +350,12 @@ declare module "react-chartjs" {
 
 declare namespace DataTables {
   interface Settings {
-    buttons: string[];
-    responsive: boolean | ResponsiveOptions;
-    keys: boolean;
-    colReorder: boolean;
-    select: string;
-    scroller: boolean;
+    buttons?: string[];
+    responsive?: boolean | ResponsiveOptions;
+    keys?: boolean;
+    colReorder?: boolean;
+    select?: string;
+    scroller?: boolean;
   }
 
   interface ResponsiveOptions {
@@ -363,4 +363,25 @@ declare namespace DataTables {
       renderer?: (api: Object, rowIdx: number, columns: any[]) => boolean | string;
     };
   }
+}
+
+
+interface JInplaceOptions {
+  url?: string;
+  type?: "input" | "select" | "textarea" | string;
+  activator?: string;
+  data?: any;
+  loadurl?: string;
+  object?: any;
+  textOnly?: boolean;
+  placeholder?: string;
+  inputClass?: string;
+  okButton?: string;
+  cancelButton?: string;
+  submitFunction?: (opts: JInplaceOptions, value: any) => any;
+  loadFunction?: (opts: JInplaceOptions) => any;
+}
+
+interface JQuery {
+  jinplace: (options?: JInplaceOptions) => JQuery;
 }

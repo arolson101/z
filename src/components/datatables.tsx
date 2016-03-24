@@ -17,5 +17,6 @@ require("datatables.net-scroller");
 require("datatables.net-scroller-bs/css/scroller.bootstrap.css");
 require("datatables.net-select");
 require("datatables.net-select-bs/css/select.bootstrap.css");
+require("jinplace/js/jinplace");
 
 export const datatablesLoaded = true;

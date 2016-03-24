@@ -114,9 +114,9 @@ export class AccountDetailPage extends React.Component<Props, State> {
           }*/
         }
       },
-      keys: true,
+      //keys: true,
       colReorder: true,
-      select: "os",
+      //select: "os",
 
       serverSide: true,
       deferRender: true,
@@ -251,7 +251,14 @@ export class AccountDetailPage extends React.Component<Props, State> {
           render: formatCurrency,
           targets: 2
         }
-      ]
+      ],
+      createdRow: (row: Node, data: Transaction, dataIndex: number): void => {
+        $("td", row).eq(1).jinplace({
+          submitFunction: (opts, value) => {
+            console.log("submit");
+          }
+        });
+      }
     });
   }
 
