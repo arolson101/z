@@ -25,7 +25,8 @@ if (dev) {
     hot: true,
     historyApiFallback: true,
     //stats: { colors: true }
-    noInfo: true
+    noInfo: true,
+    quiet: true
   });
   server.listen(port);
 }
