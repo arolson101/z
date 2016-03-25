@@ -9,7 +9,7 @@ var production = 0;
 
 var nodeModules = {};
 //fs.readdirSync('node_modules')
-["sqlite3", "filist", "i18next", "rrule"]
+["sqlite3", "filist", "i18next", "rrule", "faker", "sockjs-client"]
 	.concat(["electron", "fs", "path"])
   .filter(function(x) {
     return ['.bin', 'react-fa'].indexOf(x) === -1;

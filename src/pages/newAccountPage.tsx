@@ -432,6 +432,9 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
           {editing &&
             <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("NewAccountPage.delete")}</Button>
           }
+          {__DEVELOPMENT__ &&
+            <Button onClick={this.onRandom}><Icon name="random"/> random</Button>
+          }
           <Button onClick={this.onClose}>{t("NewAccountPage.close")}</Button>
           <Button
             bsStyle="primary"
@@ -590,6 +593,30 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
         });
       }
     );
+  }
+
+  @autobind
+  onRandom() {
+    if (__DEVELOPMENT__) {
+      const faker: Faker.FakerStatic = require("faker");
+      const fiIdx = _.random(1, this.props.filist.length) as any;
+      const fi = this.fiForOptionValue(fiIdx);
+      const accountTypes = _.range(0, AccountType.CREDITCARD);
+      let accounts: Account[] = _.sampleSize(accountTypes, _.random(0, accountTypes.length - 1)) 
+      .map((type: AccountType): Account => {
+        return {
+          visible: true,
+          type,
+          number: faker.finance.account(),
+          name: fi.name + " " + AccountType.tr(AccountType[type])
+        };
+      });
+      this.onInstitutionChange({value: fiIdx, label: ""});
+      this.setState(
+        { accounts },
+        () => this.reForm.runValidate()
+      );
+    }
   }
 
   @autobind

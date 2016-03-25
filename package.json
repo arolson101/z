@@ -42,7 +42,6 @@
     "faker": "^3.0.1",
     "filesize": "^3.2.1",
     "filist": "^1.0.1",
-    "gulp-insert": "^0.5.0",
     "history": "^2.0.1",
     "i18next": "^2.3.3",
     "i18next-node-fs-backend": "0.0.6",
@@ -79,7 +78,7 @@
     "sortablejs": "^1.4.2",
     "sqlite3": "^3.1.1",
     "string-hash": "^1.1.0",
-    "updraft": "^0.7.6",
+    "updraft": "^0.7.10",
     "x-editable": "^1.5.1"
   },
   "devDependencies": {

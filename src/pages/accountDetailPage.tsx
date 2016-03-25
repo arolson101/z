@@ -1,7 +1,6 @@
 ///<reference path="../project.d.ts"/>
 
 import { autobind } from "core-decorators";
-import * as faker from "faker";
 import * as moment from "moment";
 import * as ReactDOM from "react-dom";
 import { connect } from "react-redux";
@@ -68,7 +67,9 @@ export class AccountDetailPage extends React.Component<Props, State> {
           <h1>{account.name}</h1>
         </Col>
       </Row>
-      <Button onClick={this.onAddRandomData}>add random data</Button>
+      {__DEVELOPMENT__ &&
+        <Button onClick={this.onAddRandomData}><i className="fa fa-random"/>add random data</Button>
+      }
       <Row>
         <Col>
           <table className="table table-striped table-bordered" ref="table" cellSpacing="0" width="100%">
@@ -268,27 +269,30 @@ export class AccountDetailPage extends React.Component<Props, State> {
 
   @autobind
   onAddRandomData() {
-    const { updraft, updraftAdd } = this.props;
-    const accountId = this.props.params.accountId;
-    const time = Date.now();
+    if (__DEVELOPMENT__) {
+      const faker: Faker.FakerStatic = require("faker");
+      const { updraft, updraftAdd } = this.props;
+      const accountId = this.props.params.accountId;
+      const time = Date.now();
 
-    for (let i = 0; i < 1; i++) {
-      const transactions = _.range(0, 10).map((x: number): Transaction => ({
-        dbid: hash(i.toString() + time.toString() + x.toString() + accountId.toString()),
-        account: accountId,
-        date: faker.date.past(5),
-        payee: faker.name.findName(),
-        amount: parseFloat(faker.finance.amount())
-      }));
+      for (let i = 0; i < 1; i++) {
+        const transactions = _.range(0, 10).map((x: number): Transaction => ({
+          dbid: hash(i.toString() + time.toString() + x.toString() + accountId.toString()),
+          account: accountId,
+          date: faker.date.past(5),
+          payee: faker.name.findName(),
+          amount: parseFloat(faker.finance.amount())
+        }));
 
-      updraftAdd(
-        updraft,
-        ...transactions.map(Updraft.makeSave(updraft.transactionTable, time))
-      ).then(() => {
-        this.setState({forceRefresh: true}, () => {
-          this.$table().DataTable().ajax.reload();
+        updraftAdd(
+          updraft,
+          ...transactions.map(Updraft.makeSave(updraft.transactionTable, time))
+        ).then(() => {
+          this.setState({forceRefresh: true}, () => {
+            this.$table().DataTable().ajax.reload();
+          });
         });
-      });
+      }
     }
   }
 }

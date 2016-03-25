@@ -4,6 +4,7 @@ import { autobind } from "core-decorators";
 import * as React from "react";
 import { Button, Input, Modal, Row, Col } from "react-bootstrap";
 import { connect } from "react-redux";
+import * as Icon from "react-fa";
 import { verify } from "updraft";
 
 import { EnumSelect, CurrencyInput, AccountSelect, DatePicker } from "../components";
@@ -89,6 +90,9 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
       else {
         this.reForm.reset();
       }
+    }
+    else {
+      this.reForm.reset();
     }
   }
 
@@ -189,6 +193,9 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
             {this.props.editing != -1 &&
               <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("AddBillDialog.delete")}</Button>
             }
+            {__DEVELOPMENT__ &&
+              <Button onClick={this.onRandom}><Icon name="random"/> random</Button>
+            }
             <Button onClick={this.onCancel}>{t("AddBillDialog.cancel")}</Button>
             <Button
               bsStyle="primary"
@@ -251,6 +258,32 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
         }
       });
       onEdit(change);
+    }
+  }
+
+  @autobind
+  onRandom() {
+    if (__DEVELOPMENT__) {
+      const faker: Faker.FakerStatic = require("faker");
+      const recurring = Math.random() < 0.5;
+      let frequency: Frequency = Frequency.MONTH;
+      let recurrenceMultiple = _.random(1, 3);
+      if (Math.random() < 0.2) {
+        frequency = Frequency.YEAR;
+        recurrenceMultiple = 1;
+      } else if (Math.random() < 0.2) {
+        frequency = Frequency.WEEK;
+        recurrenceMultiple = _.random(1, 4);
+      }
+      this.reForm.setValues({
+        name: faker.company.companyName(),
+        amount: faker.finance.amount(-1000, 1000),
+        startingOn: faker.date.future(),
+        recurring,
+        frequency,
+        recurrenceMultiple,
+        notes: faker.lorem.sentences(_.random(1, 3))
+      });
     }
   }
 
