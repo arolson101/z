@@ -10,8 +10,8 @@ import * as Icon from "react-fa";
 import { createSelector } from "reselect";
 import { RRule } from "rrule";
 
-import { Account, Bill, BillChange } from "../types";
-import { rruleFixText, colorHash } from "../util";
+import { Account, Bill, BillChange, NextBill, makeNextBill } from "../types";
+import { colorHash, currentDate } from "../util";
 import { bindActionCreators, updraftAdd } from "../actions";
 import { AddScheduleDialog } from "../dialogs";
 import { AppState, UpdraftState, BillCollection, AccountCollection } from "../state";
@@ -26,14 +26,6 @@ interface DataPoint {
   change: number;
   value: number;
   description: string;
-}
-
-interface NextBill {
-  bill: Bill;
-  rruleFixedText: string;
-  rrule: __RRule.RRule;
-  next: Date;
-  last: Date;
 }
 
 interface Props extends React.Props<any> {
@@ -55,16 +47,7 @@ const calculateEntries = createSelector(
   (bills: BillCollection) => {
     let now = currentDate();
     return _(bills)
-    .map((bill: Bill) => {
-      let rrule = RRule.fromString(bill.rruleString);
-      return {
-        bill,
-        rrule,
-        next: rrule.after(now, true),
-        last: rrule.before(now, false),
-        rruleFixedText: rruleFixText(rrule)
-      } as NextBill;
-    })
+    .map((bill: Bill) => makeNextBill(bill, now))
     .sortBy((bill: NextBill) => bill.next || bill.last)
     .value();
   }
@@ -144,14 +127,6 @@ const calculateDataset = createSelector(
     return chartData;
   }
 );
-
-
-
-function currentDate(): Date {
-  let date = new Date();
-  date.setHours(0, 0, 0, 0);
-  return date;
-}
 
 
 function insertNewlines(str: string): any {

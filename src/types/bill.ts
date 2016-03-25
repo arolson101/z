@@ -1,6 +1,8 @@
 ///<reference path="../project.d.ts"/>
 
 import { Column, Mutate as M, Query as Q } from "updraft";
+import { RRule } from "rrule";
+import { rruleFixText } from "../util";
 
 
 export interface _Bill<key, id, str, date, num> {
@@ -29,3 +31,22 @@ export const billSpec: BillTableSpec = {
     notes: Column.Text()
   }
 };
+
+export interface NextBill {
+  bill: Bill;
+  rruleFixedText: string;
+  rrule: __RRule.RRule;
+  next: Date;
+  last: Date;
+}
+
+export function makeNextBill(bill: Bill, now: Date) {
+  let rrule = RRule.fromString(bill.rruleString);
+  return ({
+    bill,
+    rrule,
+    next: rrule.after(now, true),
+    last: rrule.before(now, false),
+    rruleFixedText: rruleFixText(rrule)
+  });
+}

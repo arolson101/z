@@ -1,0 +1,10 @@
+tr.future td {
+  background-color: #EEEEEE;
+}
+
+tr.futureLast td {
+  border-bottom: 2px solid blue !important;
+}
+
+td.details-control {
+}

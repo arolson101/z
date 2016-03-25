@@ -5,16 +5,18 @@ import * as moment from "moment";
 import * as ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import { Button, Row, Grid, Col } from "react-bootstrap";
+import { createSelector } from "reselect";
 import hash = require("string-hash");
-import { verify, Query as Q } from "updraft";
+import { Query as Q } from "updraft";
 
-import { datatablesLoaded } from "../components";
-import { AppState, AccountCollection, UpdraftState } from "../state";
-import { Transaction, TransactionQuery/*, TransactionChange*/ } from "../types";
+import "../components/datatables";
+import { AppState, AccountCollection, BillCollection, UpdraftState } from "../state";
+import { Bill, NextBill, makeNextBill, Transaction, TransactionQuery/*, TransactionChange*/ } from "../types";
 import { /*t,*/ formatDate, formatCurrency } from "../i18n";
 import { bindActionCreators, updraftAdd } from "../actions";
+import { currentDate } from "../util";
 
-verify(datatablesLoaded, "this is just to ensure load order");
+require("./accountDetailPage.css");
 
 const batchSize = 500;
 const useBatch = true;
@@ -26,6 +28,7 @@ interface Props {
   updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
   accounts?: AccountCollection;
   updraft?: UpdraftState;
+  bills?: Transaction[];
 }
 
 interface State {
@@ -39,10 +42,42 @@ interface State {
 }
 
 
+const calculateBills = createSelector(
+  (state: AppState) => state.bills,
+  (bills: BillCollection) => {
+    const now = currentDate();
+    return (accountId: number) => {
+      return _(bills)
+      .filter((bill: Bill) => bill.account == accountId)
+      .map((bill: Bill) => makeNextBill(bill, now))
+      .filter((next: NextBill) => next.next)
+      .sortBy((next: NextBill) => next.next)
+      .map((next: NextBill): Transaction => ({
+        dbid: next.bill.dbid,
+        account: accountId,
+        date: next.next,
+        payee: next.bill.name,
+        amount: next.bill.amount,
+        icon: "clock-o"
+      }))
+      .value();
+    };
+  }
+);
+
+
+function formatIcon(icon: string) {
+  if (icon) {
+    return `<i class="fa fa-${icon}"></i>`;
+  }
+}
+
+
 @connect(
-  (state: AppState) => ({
+  (state: AppState, ownProps?: Props): Props => ({
     accounts: state.accounts,
     updraft: state.updraft,
+    bills: calculateBills(state)(ownProps.params.accountId)
   }),
   (dispatch: Redux.Dispatch<any>) => bindActionCreators(
     {
@@ -75,6 +110,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
           <table className="table table-striped table-bordered" ref="table" cellSpacing="0" width="100%">
             <thead>
               <tr>
+                <th></th>
                 <th>Date</th>
                 <th>Payee</th>
                 <th>Amount</th>
@@ -115,9 +151,9 @@ export class AccountDetailPage extends React.Component<Props, State> {
           }*/
         }
       },
-      //keys: true,
+      keys: true,
       colReorder: true,
-      //select: "os",
+      select: "os",
 
       serverSide: true,
       deferRender: true,
@@ -199,7 +235,10 @@ export class AccountDetailPage extends React.Component<Props, State> {
 
         const runQuery = (): Promise<any> => {
           const search = data.search.value;
-          if (data.start >= this.state.offset && (data.start + data.length) < (this.state.offset + this.state.limit) && this.state.search == search && !this.state.forceRefresh) {
+          if (data.start >= this.state.offset
+            && (data.start + data.length) < (this.state.offset + this.state.limit)
+            && this.state.search == search
+            && !this.state.forceRefresh) {
             //console.log(`range is already cached`);
             return Promise.resolve();
           }
@@ -209,7 +248,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
             const limit = useBatch ? Math.min(batchSize, this.state.count - offset) : data.length;
             //console.log(`running query for offset ${offset}, limit ${limit}`);
             return table
-            .find(makeQuery(search), { limit, offset, orderBy: { date: Updraft.OrderBy.ASC } })
+            .find(makeQuery(search), { limit, offset, orderBy: { date: Updraft.OrderBy.DESC } })
             .then((rows: Transaction[]) => {
               return new Promise((resolve, reject) => {
                 this.setState(
@@ -224,41 +263,68 @@ export class AccountDetailPage extends React.Component<Props, State> {
         const returnResults = () => {
           const start = data.start - this.state.offset;
           const end = start + data.length;
+          const billCount = this.props.bills.length;
           callback({
             draw: data.draw,
-            data: this.state.rows.slice(start, end),
-            recordsTotal: this.state.count,
-            recordsFiltered: this.state.searchCount
+            data: [
+              ...this.props.bills,
+              ...this.state.rows.slice(start, end)
+            ],
+            recordsTotal: billCount + this.state.count,
+            recordsFiltered: billCount + this.state.searchCount
           });
         };
 
-        updateCount()
+        Promise.resolve()
+        .then(updateCount)
         .then(updateSearchCount)
         .then(runQuery)
         .then(returnResults);
       },
       columnDefs: [
         {
+          data: "icon",
+          width: "20px",
+          defaultContent: "",
+          className: "details-control text-center",
+          orderable: false,
+          render: formatIcon,
+          targets: 0,
+        },
+        {
           data: "date",
           render: formatDate,
-          targets: 0
+          className: "details-control text-right",
+          width: "75px",
+          orderable: false,
+          targets: 1
         },
         {
           data: "payee",
-          targets: 1
+          orderable: false,
+          targets: 2
         },
         {
           data: "amount",
           render: formatCurrency,
-          targets: 2
+          orderable: false,
+          targets: 3
         }
       ],
+      "order": [[1, "desc"]],
       createdRow: (row: Node, data: Transaction, dataIndex: number): void => {
-        $("td", row).eq(1).jinplace({
-          submitFunction: (opts, value) => {
-            console.log("submit");
-          }
-        });
+        const lastBill = this.props.bills.length - 1;
+        if (dataIndex <= lastBill) {
+          $(row).addClass("text-muted");
+        }
+        if (dataIndex == lastBill) {
+          $(row).addClass("futureLast");
+        }
+        // $("td", row).eq(1).jinplace({
+        //   submitFunction: (opts, value) => {
+        //     console.log("submit");
+        //   }
+        // });
       }
     });
   }
@@ -281,7 +347,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
           account: accountId,
           date: faker.date.past(5),
           payee: faker.name.findName(),
-          amount: parseFloat(faker.finance.amount())
+          amount: parseFloat(faker.finance.amount(-500, 500))
         }));
 
         updraftAdd(

@@ -602,7 +602,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
       const fiIdx = _.random(1, this.props.filist.length) as any;
       const fi = this.fiForOptionValue(fiIdx);
       const accountTypes = _.range(0, AccountType.CREDITCARD);
-      let accounts: Account[] = _.sampleSize(accountTypes, _.random(0, accountTypes.length - 1)) 
+      let accounts: Account[] = _.sampleSize(accountTypes, _.random(0, accountTypes.length - 1))
       .map((type: AccountType): Account => {
         return {
           visible: true,

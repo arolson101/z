@@ -277,7 +277,7 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
       }
       this.reForm.setValues({
         name: faker.company.companyName(),
-        amount: faker.finance.amount(-1000, 1000),
+        amount: faker.finance.amount(-500, 500),
         startingOn: faker.date.future(),
         recurring,
         frequency,

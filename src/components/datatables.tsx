@@ -19,4 +19,4 @@ require("datatables.net-select");
 require("datatables.net-select-bs/css/select.bootstrap.css");
 require("jinplace/js/jinplace");
 
-export const datatablesLoaded = true;
+export {}
