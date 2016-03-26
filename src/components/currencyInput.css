@@ -1,0 +1,8 @@
+
+/* Hide the spin button from number input */
+
+.currencyInput::-webkit-inner-spin-button, 
+.currencyInput::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}

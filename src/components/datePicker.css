@@ -1,0 +1,19 @@
+/* Hide the clear button from date input */
+
+.datePicker::-webkit-clear-button {
+  -webkit-appearance: none;
+  display: none;
+}
+
+/* Hide the spin button from date input */
+
+.datePicker::-webkit-inner-spin-button { 
+  -webkit-appearance: none;
+  display: none;
+  margin: 0; 
+}
+
+.datePicker::-ms-clear {
+  display: none;
+  margin: 0; 
+}

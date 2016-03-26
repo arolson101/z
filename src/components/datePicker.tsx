@@ -1,29 +1,31 @@
 /// <reference path="../project.d.ts"/>
 
 import { autobind } from "core-decorators";
-import * as React from "react";
-//import * as Icon from "react-fa";
-import { Input } from "react-bootstrap";
 import * as moment from "moment";
+import * as React from "react";
+import * as Icon from "react-fa";
+import { Input } from "react-bootstrap";
 
 //require("bootstrap-datepicker/dist/css/bootstrap-datepicker3.css");
 //require("bootstrap-datepicker/dist/js/bootstrap-datepicker.js");
+require("./datePicker.css");
 
 interface Props {
   value: Date;
-  defaultValue: Date;
   onChange(value: Date): any;
 }
 
 
 export class DatePicker extends React.Component<Props, any> {
   render() {
-    const value = this.dateToString(this.props.value || this.props.defaultValue || new Date());
+    const value = this.dateToString(this.props.value || new Date());
     return <Input
+      {...this.props}
       type="date"
       {...{ value }}
+      className="datePicker"
       onChange={this.onChange}
-      /*addonAfter={<Icon name="calendar"/>}*/
+      addonBefore={<Icon name="calendar"/>}
     />;
   }
 
@@ -42,5 +44,4 @@ export class DatePicker extends React.Component<Props, any> {
       this.props.onChange(value);
     }
   }
-
 }
