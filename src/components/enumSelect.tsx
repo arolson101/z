@@ -1,7 +1,6 @@
 ///<reference path="../project.d.ts"/>
 
 import { Input, InputProps } from "react-bootstrap";
-import { StatelessComponent } from "./component";
 import { EnumEx, EnumType } from "../util";
 
 
@@ -11,7 +10,7 @@ interface Props extends InputProps {
 }
 
 
-export class EnumSelect extends StatelessComponent<Props> {
+export class EnumSelect extends React.Component<Props, any> {
   render() {
     return <Input type="select" {...this.props as any}>
       {EnumEx.map(this.props.enum, (name: string, value: number) =>

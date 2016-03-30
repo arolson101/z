@@ -3,7 +3,6 @@
 import { Button } from "react-bootstrap";
 import * as Icon from "react-fa";
 import { autobind } from "core-decorators";
-import { StatelessComponent } from "./component";
 
 interface Props {
   on: string;
@@ -12,7 +11,7 @@ interface Props {
   onChange: (value: any) => any;
 }
 
-export class ImageCheckbox extends StatelessComponent<Props> {
+export class ImageCheckbox extends React.Component<Props, any> {
   render() {
     const { on, off, value } = this.props;
     return <Button

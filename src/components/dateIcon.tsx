@@ -1,7 +1,5 @@
 ///<reference path="../project.d.ts"/>
 
-import { StatelessComponent } from "./component";
-
 require("./dateIcon.css");
 
 interface Props {
@@ -9,7 +7,7 @@ interface Props {
   style?: __React.CSSProperties;
 }
 
-export class DateIcon extends StatelessComponent<Props> {
+export class DateIcon extends React.Component<Props, any> {
   render() {
     const timeprops = { datetime: this.props.date.toUTCString() };
     const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][this.props.date.getDay()];

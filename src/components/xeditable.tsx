@@ -3,7 +3,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { autobind } from "core-decorators";
-import { StatelessComponent } from "./component";
 
 // require("x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css");
 // require("x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js");
@@ -15,7 +14,7 @@ interface ChangeProps {
 interface Props extends React.Props<any>, ChangeProps {}
 interface XEditableProps extends Props, XEditable.Options {}
 
-export class XEditable extends StatelessComponent<XEditableProps> {
+export class XEditable extends React.Component<XEditableProps, any> {
   render() {
     return <a href="#" ref="a">
       {this.props.children}
@@ -55,7 +54,7 @@ export class XEditable extends StatelessComponent<XEditableProps> {
 
 interface XSelectProps extends Props, XEditable.SelectOptions {}
 
-export class XSelect extends StatelessComponent<XSelectProps> {
+export class XSelect extends React.Component<XSelectProps, any> {
   render() {
     return <XEditable {...this.props} type="select">{this.props.children}</XEditable>;
   }
@@ -64,7 +63,7 @@ export class XSelect extends StatelessComponent<XSelectProps> {
 
 interface XTextProps extends Props, XEditable.TextOptions {}
 
-export class XText extends StatelessComponent<XTextProps> {
+export class XText extends React.Component<XTextProps, any> {
   render() {
     return <XEditable {...this.props} type="text">{this.props.children}</XEditable>;
   }

@@ -1,6 +1,5 @@
 ///<reference path="../project.d.ts"/>
 
-import { StatelessComponent } from "./component";
 import { Input, InputProps } from "react-bootstrap";
 
 
@@ -9,7 +8,7 @@ interface Props extends InputProps {
 }
 
 
-export class CurrencyInput extends StatelessComponent<Props> {
+export class CurrencyInput extends React.Component<Props, any> {
   render() {
     return (
       <Input type="number" {...this.props} />

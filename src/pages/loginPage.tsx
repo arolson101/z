@@ -2,10 +2,9 @@
 
 // import { connect } from "react-redux";
 // import { AppState } from "../state";
-import { StatelessComponent } from "../components";
 
 
-export class LoginPage extends StatelessComponent<any> {
+export class LoginPage extends React.Component<any, any> {
   render() {
     return <div>login page</div>;
   }
@@ -13,7 +12,7 @@ export class LoginPage extends StatelessComponent<any> {
 
 
 
-export class AppLoginPage extends StatelessComponent<any> {
+export class AppLoginPage extends React.Component<any, any> {
   render() {
     return <LoginPage/>;
   }

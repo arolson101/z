@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { Input, InputProps } from "react-bootstrap";
 import { createSelector } from "reselect";
 
-import { StatelessComponent } from "./component";
 import { AppState, t } from "../state";
 import { Account, Institution } from "../types";
 
@@ -38,7 +37,7 @@ interface Props extends InputProps {
 @connect(
   (state: AppState) => ({accountGroups: accountGroups(state)})
 )
-export class AccountSelect extends StatelessComponent<Props> {
+export class AccountSelect extends React.Component<Props, any> {
   render() {
     return <Input type="select" {...this.props}>
       <option>{t("AccountSelect.none")}</option>
