@@ -8,6 +8,7 @@ export interface _Transaction<key, id, str, date, num> {
   date?: date;
   payee?: str;
   amount?: num;
+  bill?: id;
 }
 
 export interface Transaction extends _Transaction<number, number, string, Date, number> {
@@ -26,6 +27,7 @@ export const transactionSpec: TransactionTableSpec = {
     date: Column.DateTime().Index(),
     payee: Column.Text().Index(),
     amount: Column.Real().Index().Default(0),
+    bill: Column.Int().Index(),
   },
   indices: [
     ["account", "date"]

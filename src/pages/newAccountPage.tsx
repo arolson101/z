@@ -699,9 +699,9 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
       .filter(change => Object.keys(change).length > 0)
       .value();
 
-    console.log("accountsAdded: ", accountsAdded);
-    console.log("accountsChanges: ", accountsChanges);
-    console.log("accountsRemoved: ", accountsRemoved);
+    // console.log("accountsAdded: ", accountsAdded);
+    // console.log("accountsChanges: ", accountsChanges);
+    // console.log("accountsRemoved: ", accountsRemoved);
 
     const time = Date.now();
 

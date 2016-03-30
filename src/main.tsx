@@ -19,7 +19,7 @@ import { Action, AccountCollection, configInit } from "./actions";
 import { appState, AppState } from "./state";
 import { i18nInit } from "./i18n";
 import { fiInit } from "./fi";
-import { history } from "./components";
+import { history, BillTransactionSync } from "./components";
 
 const DevTools = createDevTools(
   <DockMonitor toggleVisibilityKey="ctrl-h" changePositionKey="ctrl-q" defaultIsVisible={false}>
@@ -101,6 +101,8 @@ export function main(root: HTMLElement) {
   ReactDOM.render(
     <Provider store={store}>
       <div>
+        <BillTransactionSync/>
+
         <Router history={history}>
           <Route path="/" component={Pages.RootPage} onEnter={requireUpdraftStore}>
             <Route path="accounts" component={Pages.AccountsPage}/>

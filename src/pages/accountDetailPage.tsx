@@ -342,7 +342,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
       const time = Date.now();
 
       for (let i = 0; i < 1; i++) {
-        const transactions = _.range(0, 10).map((x: number): Transaction => ({
+        const transactions = _.range(0, 1000).map((x: number): Transaction => ({
           dbid: hash(i.toString() + time.toString() + x.toString() + accountId.toString()),
           account: accountId,
           date: faker.date.past(5),
