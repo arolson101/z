@@ -5,13 +5,12 @@ import * as moment from "moment";
 import * as ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import { Button, Row, Grid, Col } from "react-bootstrap";
-import { createSelector } from "reselect";
 import hash = require("string-hash");
 import { Query as Q } from "updraft";
 
 import "../components/datatables";
-import { AppState, AccountCollection, BillCollection, UpdraftState } from "../state";
-import { Bill, NextBill, makeNextBill, Transaction, TransactionQuery/*, TransactionChange*/ } from "../types";
+import { AppState, AccountCollection, UpdraftState } from "../state";
+import { Transaction, TransactionQuery, TransactionStatus } from "../types";
 import { /*t,*/ formatDate, formatCurrency } from "../i18n";
 import { bindActionCreators, updraftAdd } from "../actions";
 import { currentDate } from "../util";
@@ -28,7 +27,6 @@ interface Props {
   updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
   accounts?: AccountCollection;
   updraft?: UpdraftState;
-  bills?: Transaction[];
 }
 
 interface State {
@@ -39,31 +37,10 @@ interface State {
   search?: string;
   searchCount?: number;
   forceRefresh?: boolean;
+  futureIndex?: number;
+  futureLimitCount?: number;
+  futureLimitUnit?: string;
 }
-
-
-const calculateBills = createSelector(
-  (state: AppState) => state.bills,
-  (bills: BillCollection) => {
-    const now = currentDate();
-    return (accountId: number) => {
-      return _(bills)
-      .filter((bill: Bill) => bill.account == accountId)
-      .map((bill: Bill) => makeNextBill(bill, now))
-      .filter((next: NextBill) => next.next)
-      .sortBy((next: NextBill) => next.next)
-      .map((next: NextBill): Transaction => ({
-        dbid: next.bill.dbid,
-        account: accountId,
-        date: next.next,
-        payee: next.bill.name,
-        amount: next.bill.amount,
-        icon: "clock-o"
-      }))
-      .value();
-    };
-  }
-);
 
 
 function formatIcon(icon: string) {
@@ -76,8 +53,7 @@ function formatIcon(icon: string) {
 @connect(
   (state: AppState, ownProps?: Props): Props => ({
     accounts: state.accounts,
-    updraft: state.updraft,
-    bills: calculateBills(state)(ownProps.params.accountId)
+    updraft: state.updraft
   }),
   (dispatch: Redux.Dispatch<any>) => bindActionCreators(
     {
@@ -91,7 +67,10 @@ export class AccountDetailPage extends React.Component<Props, State> {
     count: 0,
     search: "",
     searchCount: 0,
-    forceRefresh: false
+    forceRefresh: false,
+    futureIndex: 0,
+    futureLimitCount: 1,
+    futureLimitUnit: "month",
   };
 
   render() {
@@ -165,10 +144,12 @@ export class AccountDetailPage extends React.Component<Props, State> {
       ajax: (data: DataTables.AjaxDataRequest, callback: DataTables.FunctionAjaxCallback, settings: DataTables.SettingsLegacy) => {
         const table = this.props.updraft.transactionTable;
         //console.log(`requesting ${data.start} through ${data.length + data.start}`);
+        const maxDate = moment().add(this.state.futureLimitCount, this.state.futureLimitUnit).toDate();
 
         const makeQuery = (search?: string): TransactionQuery[] => {
           let q: TransactionQuery = {
-            account: this.props.params.accountId
+            account: this.props.params.accountId,
+            date: { $before: maxDate }
           };
           let qs: TransactionQuery[] = [];
           if (search) {
@@ -250,9 +231,13 @@ export class AccountDetailPage extends React.Component<Props, State> {
             return table
             .find(makeQuery(search), { limit, offset, orderBy: { date: Updraft.OrderBy.DESC } })
             .then((rows: Transaction[]) => {
+              let now = new Date();
+              let futureIndex = _.findLastIndex(rows, (tx: Transaction) => tx.date > now);
+              _.forEach(rows, assignIcon(now));
+
               return new Promise((resolve, reject) => {
                 this.setState(
-                  { rows, search, offset, limit, forceRefresh: false },
+                  { rows, search, offset, limit, forceRefresh: false, futureIndex },
                   resolve
                 );
               });
@@ -263,15 +248,11 @@ export class AccountDetailPage extends React.Component<Props, State> {
         const returnResults = () => {
           const start = data.start - this.state.offset;
           const end = start + data.length;
-          const billCount = this.props.bills.length;
           callback({
             draw: data.draw,
-            data: [
-              ...this.props.bills,
-              ...this.state.rows.slice(start, end)
-            ],
-            recordsTotal: billCount + this.state.count,
-            recordsFiltered: billCount + this.state.searchCount
+            data: this.state.rows.slice(start, end),
+            recordsTotal: this.state.count,
+            recordsFiltered: this.state.searchCount
           });
         };
 
@@ -313,11 +294,10 @@ export class AccountDetailPage extends React.Component<Props, State> {
       ],
       "order": [[1, "desc"]],
       createdRow: (row: Node, data: Transaction, dataIndex: number): void => {
-        const lastBill = this.props.bills.length - 1;
-        if (dataIndex <= lastBill) {
+        if (data.status == TransactionStatus.Scheduled) {
           $(row).addClass("text-muted");
         }
-        if (dataIndex == lastBill) {
+        if (dataIndex == this.state.futureIndex) {
           $(row).addClass("futureLast");
         }
         // $("td", row).eq(1).jinplace({
@@ -370,4 +350,17 @@ function filterFloat(value: string): number {
   else {
     return NaN;
   }
+}
+
+function assignIcon(now: Date) {
+  return (tx: Transaction) => {
+    if (tx.status == TransactionStatus.Scheduled) {
+      if (tx.date > now) {
+        tx["icon"] = "clock-o";
+      }
+      else {
+        tx["icon"] = "exclamation-triangle";
+      }
+    }
+  };
 }
