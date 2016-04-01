@@ -1,6 +1,5 @@
 ///<reference path="../project.d.ts"/>
 
-import { StatelessComponent } from "./component";
 import { Link } from "react-router";
 
 
@@ -12,7 +11,7 @@ interface Props {
 }
 
 
-export class Breadcrumbs extends StatelessComponent<Props> {
+export class Breadcrumbs extends React.Component<Props, any> {
   render() {
     return (
       <ol className="breadcrumb">

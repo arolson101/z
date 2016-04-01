@@ -12,7 +12,6 @@ import * as Icon from "react-fa";
 import { AppState, Config, UpdraftState, KnownDb, t } from "../state";
 import { OpenDbDialog } from "../dialogs";
 import { formatFilesize, formatRelativeTime } from "../i18n";
-import { StatelessComponent } from "../components";
 
 
 interface Props extends React.Props<any> {
@@ -60,7 +59,7 @@ interface OpenItemProps extends React.Props<any> {
   onClick: Function;
 }
 
-class OpenItem extends StatelessComponent<OpenItemProps> {
+class OpenItem extends React.Component<OpenItemProps, any> {
   render() {
     return <ListGroupItem
       onClick={this.props.onClick}

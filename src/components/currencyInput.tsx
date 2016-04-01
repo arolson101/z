@@ -12,7 +12,7 @@ interface Props extends InputProps {
   locale: string;
 }
 
-export class CurrencyInput extends StatelessComponent<Props> {
+export class CurrencyInput extends React.Component<Props, any> {
   render() {
     return (
       <Input
