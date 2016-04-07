@@ -353,15 +353,28 @@ declare namespace DataTables {
     buttons?: string[];
     responsive?: boolean | ResponsiveOptions;
     keys?: boolean;
-    colReorder?: boolean;
+    colReorder?: boolean | ReorderOptions;
     select?: string;
     scroller?: boolean;
   }
 
   interface ResponsiveOptions {
     details?: {
+      type?: string;
+      display?: Function;
       renderer?: (api: Object, rowIdx: number, columns: any[]) => boolean | string;
     };
+  }
+
+  interface ReorderOptions {
+    realtime?: boolean;
+    order?: number[];
+    fixedColumnsLeft?: number;
+    fixedColumnsRight?: number;
+  }
+
+  interface ColumnDefsSettings {
+    responsivePriority?: number;
   }
 }
 

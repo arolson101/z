@@ -114,6 +114,8 @@ export class AccountDetailPage extends React.Component<Props, State> {
       //dom: "t",
       responsive: {
         details: {
+          //display: $.fn.dataTable.Responsive.display.childRowImmediate,
+          //type: "inline",
           /*renderer: function ( api: Object, rowIdx: number, columns: any[] ): string | boolean {
                 let data = $.map( columns, function ( col, i ) {
                     return col.hidden ?
@@ -131,7 +133,9 @@ export class AccountDetailPage extends React.Component<Props, State> {
         }
       },
       keys: true,
-      colReorder: true,
+      colReorder: {
+        fixedColumnsLeft: 1
+      },
       select: "os",
 
       serverSide: true,
@@ -270,6 +274,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
           className: "details-control text-center",
           orderable: false,
           render: formatIcon,
+          responsivePriority: 3,
           targets: 0,
         },
         {
@@ -278,20 +283,24 @@ export class AccountDetailPage extends React.Component<Props, State> {
           className: "details-control text-right",
           width: "75px",
           orderable: false,
+          responsivePriority: 0,
           targets: 1
         },
         {
           data: "payee",
           orderable: false,
+          responsivePriority: 1,
           targets: 2
         },
         {
           data: "amount",
           render: formatCurrency,
           orderable: false,
+          responsivePriority: 2,
           targets: 3
         }
       ],
+      scrollCollapse: false,
       "order": [[1, "desc"]],
       createdRow: (row: Node, data: Transaction, dataIndex: number): void => {
         if (data.status == TransactionStatus.Scheduled) {
