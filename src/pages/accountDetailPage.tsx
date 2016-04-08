@@ -153,7 +153,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
         const makeQuery = (search?: string): TransactionQuery[] => {
           let q: TransactionQuery = {
             account: this.props.params.accountId,
-            date: { $before: maxDate }
+            date: { $lte: maxDate }
           };
           let qs: TransactionQuery[] = [];
           if (search) {
