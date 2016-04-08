@@ -1,6 +1,6 @@
  /// <reference path="../project.d.ts"/>
 
-import { createClass as createChart } from "react-chartjs";
+import { createClass as createChart, ChartOptions } from "react-chartjs";
 require("chart.js-scatter");
 
 // see http://dima117.github.io/Chart.Scatter/
