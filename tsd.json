@@ -1,0 +1,147 @@
+{
+  "version": "v4",
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "node/node.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "chai/chai.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "mocha/mocha.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "redux/redux.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "redux-thunk/redux-thunk.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "es6-collections/es6-collections.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "es6-promise/es6-promise.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "rx/rx.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "rx/rx-lite.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "react-redux/react-redux.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "react-router/react-router.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "react/react-dom.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react-mixin/react-mixin.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "i18next/i18next.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "jquery/jquery.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "lodash/lodash.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "react-bootstrap/react-bootstrap.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "select2/select2.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "core-decorators/core-decorators.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "react/react-addons-transition-group.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react-addons-css-transition-group.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "moment/moment-node.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "numeraljs/numeraljs.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "express/express.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "i18next-express-middleware/i18next-express-middleware.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "i18next-sprintf-postprocessor/i18next-sprintf-postprocessor.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "serve-static/serve-static.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "mime/mime.d.ts": {
+      "commit": "72f0056f69f9a2290d2589c1a692896d24406928"
+    },
+    "sqlite3/sqlite3.d.ts": {
+      "commit": "bda9391b4987bbf91a713ccaf586c108106ced1f"
+    },
+    "sanitize-filename/sanitize-filename.d.ts": {
+      "commit": "bda9391b4987bbf91a713ccaf586c108106ced1f"
+    },
+    "github-electron/github-electron.d.ts": {
+      "commit": "85af69c91599a6c904618545f0613970e1ff3f64"
+    },
+    "react/react-global.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "chartjs/chart.d.ts": {
+      "commit": "4ba57e605bd71bf7248de65aac0b4f50e3eb1c9e"
+    },
+    "moment-range/moment-range.d.ts": {
+      "commit": "4ba57e605bd71bf7248de65aac0b4f50e3eb1c9e"
+    },
+    "moment/moment.d.ts": {
+      "commit": "4ba57e605bd71bf7248de65aac0b4f50e3eb1c9e"
+    },
+    "react/react-addons-perf.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react-addons-linked-state-mixin.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react-addons-create-fragment.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react-addons-shallow-compare.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react-addons-update.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react-addons-test-utils.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react-addons-pure-render-mixin.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react/react.d.ts": {
+      "commit": "0144ad5a74053f2292424847259c4c8e1d0fecaa"
+    },
+    "react-select/react-select.d.ts": {
+      "commit": "0cd5f0a1482dc3149f5446b1d885ef6ac7c57720"
+    },
+    "jquery.dataTables/jquery.dataTables.d.ts": {
+      "commit": "ce8ae773688d2244ba11fdf3378fcd68f773e1c4"
+    },
+    "faker/faker.d.ts": {
+      "commit": "ce8ae773688d2244ba11fdf3378fcd68f773e1c4"
+    }
+  }
+}

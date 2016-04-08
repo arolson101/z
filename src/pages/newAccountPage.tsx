@@ -19,7 +19,7 @@ import {
  } from "../components";
 import { AddAccountDialog } from "../dialogs";
 import { ValidateHelper, ReForm } from "../util";
-import { bindActionCreators, Dispatch, updraftAdd } from "../actions";
+import { bindActionCreators, updraftAdd } from "../actions";
 import { readAccountProfiles } from "../online";
 
 interface Props {
@@ -78,7 +78,7 @@ function isNew(institutionId: number): boolean {
     institutions: state.institutions,
     accounts: state.accounts
   } as Props),
-  (dispatch: Dispatch) => bindActionCreators(
+  (dispatch: Redux.Dispatch<any>) => bindActionCreators(
     {
       updraftAdd,
     },
@@ -462,7 +462,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
   }
 
   @autobind
-  onInstitutionChange(newValue: ReactSelect.Option) {
+  onInstitutionChange(newValue: __ReactSelect.Option) {
     const { fields } = this.state;
     const value = newValue ? newValue.value : null;
     const values: any = {

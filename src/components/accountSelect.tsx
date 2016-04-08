@@ -35,15 +35,15 @@ interface Props extends InputProps {
 
 
 @connect(
-  (state: AppState): Props => ({accountGroups: accountGroups(state)})
+  (state: AppState) => ({accountGroups: accountGroups(state)})
 )
 export class AccountSelect extends React.Component<Props, any> {
   render() {
     return <Input type="select" {...this.props}>
       <option>{t("AccountSelect.none")}</option>
-      {_.map(this.props.accountGroups, (accountGroup: AccountGroup) =>
+      {_.map(this.props.accountGroups, (accountGroup) =>
         <optgroup key={accountGroup.institution.dbid} label={accountGroup.institution.name}>
-          {_.map(accountGroup.accounts, (account: Account) =>
+          {_.map(accountGroup.accounts, (account) =>
             <option key={account.dbid} value={account.dbid as any}>
               {account.name}
             </option>

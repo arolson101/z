@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { createStore, applyMiddleware, compose, Reducer, Store } from "redux";
+import { createStore, applyMiddleware, compose } from "redux";
 import { connect, Provider } from "react-redux";
 import { syncHistory } from "redux-simple-router";
 import thunk from "redux-thunk";
@@ -61,7 +61,7 @@ function getDebugSessionKey() {
 }
 
 
-type createStoreFunction<State, Action> = (reducer: Reducer<State, Action>, initialState?: State) => Store<State, Action>
+type createStoreFunction<State, Action> = (reducer: Redux.Reducer<State, Action>, initialState?: State) => Redux.Store<State, Action>
 
 
 export function main(root: HTMLElement) {

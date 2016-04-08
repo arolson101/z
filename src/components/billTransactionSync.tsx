@@ -6,7 +6,7 @@ import hash = require("string-hash");
 import * as moment from "moment";
 
 import { AppState, BillCollection, UpdraftState } from "../state";
-import { updraftAdd, bindActionCreators, Dispatch, ThunkPromise } from "../actions";
+import { updraftAdd, bindActionCreators, ThunkPromise } from "../actions";
 import { Bill, Transaction, TransactionQuery, TransactionStatus } from "../types";
 
 interface Props {
@@ -28,7 +28,7 @@ interface State {
     bills: state.bills,
     updraft: state.updraft,
   }),
-  (dispatch: Dispatch) => bindActionCreators(
+  (dispatch: Redux.Dispatch<any>) => bindActionCreators(
     {
       updraftAdd,
     },

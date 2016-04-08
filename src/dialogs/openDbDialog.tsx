@@ -10,7 +10,7 @@ import { connect } from "react-redux";
 import { history } from "../components";
 import { ValidateHelper, ReForm } from "../util";
 import { t } from "../state";
-import { bindActionCreators, updraftCreateDb, updraftOpenDb, Dispatch } from "../actions";
+import { bindActionCreators, updraftCreateDb, updraftOpenDb } from "../actions";
 
 const dialog = electron.remote.dialog;
 const BrowserWindow = electron.remote.BrowserWindow;
@@ -45,7 +45,7 @@ interface State extends ReForm.State {
 
 @connect(
   null,
-  (dispatch: Dispatch) => bindActionCreators(
+  (dispatch: Redux.Dispatch<any>) => bindActionCreators(
     {
       updraftCreateDb,
       updraftOpenDb

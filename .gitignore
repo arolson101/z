@@ -4,7 +4,6 @@ app/vendor.*
 app/z.*
 coverage
 node_modules
-typings
 temp
 tmp
 *.log
