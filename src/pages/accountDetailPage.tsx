@@ -13,7 +13,6 @@ import { AppState, AccountCollection, UpdraftState } from "../state";
 import { Transaction, TransactionQuery, TransactionStatus } from "../types";
 import { /*t,*/ formatDate, formatCurrency } from "../i18n";
 import { bindActionCreators, Dispatch, updraftAdd } from "../actions";
-import { currentDate } from "../util";
 
 require("./accountDetailPage.css");
 

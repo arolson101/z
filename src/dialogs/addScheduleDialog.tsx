@@ -8,6 +8,7 @@ import * as Icon from "react-fa";
 import { verify } from "updraft";
 
 import { EnumSelect, CurrencyInput, AccountSelect, DatePicker } from "../components";
+import { today } from "../actions";
 import { ValidateHelper, ReForm, rruleFixEndOfMonth } from "../util";
 import { Bill, BillChange, Frequency, RRule } from "../types";
 import { AppState, BillCollection, t } from "../state";
@@ -48,13 +49,6 @@ interface State extends ReForm.State {
 }
 
 
-function currentDate(): Date {
-  let date = new Date();
-  date.setHours(0, 0, 0, 0);
-  return date;
-}
-
-
 @connect(
   (state: AppState) => ({bills: state.bills} as Props)
 )
@@ -64,7 +58,7 @@ function currentDate(): Date {
     recurring: Recurrance.Repeat,
     frequency: Frequency.MONTH,
     recurrenceMultiple: 1,
-    startingOn: currentDate(),
+    startingOn: today(),
     account: "",
     amount: "",
     notes: ""

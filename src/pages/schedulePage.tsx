@@ -11,7 +11,7 @@ import { createSelector } from "reselect";
 import { RRule } from "rrule";
 
 import { Account, Bill, BillChange, NextBill, makeNextBill } from "../types";
-import { colorHash, currentDate } from "../util";
+import { colorHash } from "../util";
 import { bindActionCreators, Dispatch, updraftAdd } from "../actions";
 import { AddScheduleDialog } from "../dialogs";
 import { AppState, UpdraftState, BillCollection, AccountCollection } from "../state";
@@ -34,6 +34,7 @@ interface Props extends React.Props<any> {
   updraft: UpdraftState;
   updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
   chartData?: ScatterChartData;
+  today?: Date;
 }
 
 interface State {
@@ -44,10 +45,10 @@ interface State {
 
 const calculateEntries = createSelector(
   (state: AppState) => state.bills,
-  (bills: BillCollection) => {
-    let now = currentDate();
+  (state: AppState) => state.today,
+  (bills: BillCollection, today: Date) => {
     return _(bills)
-    .map((bill: Bill) => makeNextBill(bill, now))
+    .map((bill: Bill) => makeNextBill(bill, today))
     .sortBy((bill: NextBill) => bill.next || bill.last)
     .value();
   }
@@ -61,8 +62,9 @@ interface BillOccurrence {
 const calculateDataset = createSelector(
   (state: AppState) => state.accounts,
   (state: AppState) => state.bills,
-  (accounts: AccountCollection, bills: BillCollection): ScatterChartData => {
-    let start = currentDate();
+  (state: AppState) => state.today,
+  (accounts: AccountCollection, bills: BillCollection, today: Date): ScatterChartData => {
+    let start = today;
     let end = moment(start).add(1, "Y").toDate();
 
     let occurrencesByAccount = _(accounts)

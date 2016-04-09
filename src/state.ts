@@ -19,7 +19,8 @@ import {
   fiReducer,
   UpdraftState,
   KnownDb,
-  updraftReducer
+  updraftReducer,
+  todayReducer
 } from "./actions";
 import { t } from "./i18n";
 
@@ -45,6 +46,7 @@ export interface AppState {
   filist: FI[];
   form: any;
   updraft: UpdraftState;
+  today: Date;
 }
 
 export const appState = combineReducers<AppState, Action>({
@@ -55,5 +57,6 @@ export const appState = combineReducers<AppState, Action>({
   bills: billCollectionReducer,
   institutions: institutionCollectionReducer,
   filist: fiReducer,
-  updraft: updraftReducer
+  updraft: updraftReducer,
+  today: todayReducer,
 });

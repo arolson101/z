@@ -28,11 +28,3 @@ export function rruleFixEndOfMonth(opts: __RRule.Options) {
     }
   }
 }
-
-
-export function currentDate(): Date {
-  let date = new Date();
-  date.setHours(0, 0, 0, 0);
-  return date;
-}
-
