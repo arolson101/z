@@ -462,7 +462,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
   }
 
   @autobind
-  onInstitutionChange(newValue: ReactSelect.Option) {
+  onInstitutionChange(newValue: {value: string | number, label: string}) {
     const { fields } = this.state;
     const value = newValue ? newValue.value : null;
     const values: any = {
@@ -471,7 +471,7 @@ export class NewAccountPage extends React.Component<Props, State> implements ReF
 
     type FiFunction = (fi: FI) => string;
     const oldFi = this.fiForOptionValue(fields.institution.value);
-    const newFi = this.fiForOptionValue(value);
+    const newFi = this.fiForOptionValue(value as string);
     const initField = (stateKey: string, fiProp?: string | FiFunction) => {
       fiProp = fiProp || stateKey;
       let getValue: FiFunction = fiProp as FiFunction;
