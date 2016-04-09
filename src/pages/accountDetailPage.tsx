@@ -12,7 +12,7 @@ import "../components/datatables";
 import { AppState, AccountCollection, UpdraftState } from "../state";
 import { Transaction, TransactionQuery, TransactionStatus } from "../types";
 import { /*t,*/ formatDate, formatCurrency } from "../i18n";
-import { bindActionCreators, updraftAdd } from "../actions";
+import { bindActionCreators, Dispatch, updraftAdd } from "../actions";
 import { currentDate } from "../util";
 
 require("./accountDetailPage.css");
@@ -55,7 +55,7 @@ function formatIcon(icon: string) {
     accounts: state.accounts,
     updraft: state.updraft
   }),
-  (dispatch: Redux.Dispatch<any>) => bindActionCreators(
+  (dispatch: Dispatch) => bindActionCreators(
     {
       updraftAdd,
     },

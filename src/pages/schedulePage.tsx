@@ -12,7 +12,7 @@ import { RRule } from "rrule";
 
 import { Account, Bill, BillChange, NextBill, makeNextBill } from "../types";
 import { colorHash, currentDate } from "../util";
-import { bindActionCreators, updraftAdd } from "../actions";
+import { bindActionCreators, Dispatch, updraftAdd } from "../actions";
 import { AddScheduleDialog } from "../dialogs";
 import { AppState, UpdraftState, BillCollection, AccountCollection } from "../state";
 import { formatCurrency, formatDate, t } from "../i18n";
@@ -146,7 +146,7 @@ function insertNewlines(str: string): any {
     nextBills: calculateEntries(state),
     chartData: calculateDataset(state)
   } as Props),
-  (dispatch: Redux.Dispatch<any>) => bindActionCreators(
+  (dispatch: Dispatch) => bindActionCreators(
     {
       updraftAdd
     },
