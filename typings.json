@@ -11,6 +11,7 @@
     "i18next": "registry:dt/i18next#2.3.4+20160319103745",
     "jquery": "registry:dt/jquery#1.10.0+20160316155526",
     "jquery.dataTables": "https://raw.githubusercontent.com/arolson101/typings-jquery.dataTables/master/jquery.dataTables.d.ts",
+    "jsdom": "registry:dt/jsdom#2.0.0+20160316155526",
     "lodash": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/lodash/lodash.d.ts",
     "mocha": "registry:dt/mocha#2.2.5+20160317120654",
     "moment-range": "registry:dt/moment-range#2.0.3+20160317120654",

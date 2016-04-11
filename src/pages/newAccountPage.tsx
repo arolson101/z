@@ -72,18 +72,25 @@ function isNew(institutionId: number): boolean {
 
 
 @connect(
-  (state: AppState) => ({
+  (state: AppState): Props => ({
     filist: state.filist,
     updraft: state.updraft,
     institutions: state.institutions,
     accounts: state.accounts
-  } as Props),
+  }),
   (dispatch: Dispatch) => bindActionCreators(
     {
       updraftAdd,
     },
     dispatch)
 )
+export class NewAccountPage extends React.Component<Props, State> {
+  render() {
+    return <NewAccountPageDisplay {...this.props}/>;
+  }
+}
+
+
 @ReForm({
   defaultValues: {
     name: "",
@@ -105,7 +112,7 @@ function isNew(institutionId: number): boolean {
     accountsValid: ""
   },
 })
-export class NewAccountPage extends React.Component<Props, State> implements ReForm.Component {
+export class NewAccountPageDisplay extends React.Component<Props, State> implements ReForm.Component {
   reForm: ReForm.Interface;
 
   state = {

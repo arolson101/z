@@ -1,6 +1,5 @@
 ///<reference path="../project.d.ts"/>
 
-import * as electron from "electron";
 import * as path from "path";
 import * as fs from "fs";
 import { mutate, Mutate as M } from "updraft";
@@ -19,9 +18,6 @@ export interface Config extends _Config<StringObj> {}
 export interface ConfigChange extends _Config<M.obj> {}
 
 const emptyConfig: Config = { recentDbs: new Set<string>() };
-
-const app = electron.remote.app;
-const initPath = path.join(app.getPath("userData"), "init.json");
 
 const CONFIG_SET = "config/set";
 interface SetAction extends Action {
@@ -62,8 +58,17 @@ export function configReducer(state: Config = emptyConfig, action: Action) {
 }
 
 
+function getInitPath(): string {
+  const electron = require("electron");
+  const app = electron.remote.app;
+  const initPath = path.join(app.getPath("userData"), "init.json");
+  return initPath;
+}
+
+
 export function configInit(): Thunk {
   return (dispatch: Dispatch) => {
+    const initPath = getInitPath();
     try {
       let appConfig = JSON.parse(fs.readFileSync(initPath, "utf8")) as Config;
       console.log("read config from " + initPath);
@@ -78,6 +83,7 @@ export function configInit(): Thunk {
 
 function writeConfig(config: Config): Promise<any> {
   return new Promise((resolve, reject) => {
+    const initPath = getInitPath();
     fs.writeFile(initPath, JSON.stringify(config), (err) => {
       if (err) {
         reject(err);
