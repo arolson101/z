@@ -6,8 +6,6 @@ import { routeReducer } from "redux-simple-router";
 
 import {
   Action,
-  Config,
-  configReducer,
   localeReducer,
   AccountCollection,
   accountCollectionReducer,
@@ -18,27 +16,26 @@ import {
   FI,
   fiReducer,
   UpdraftState,
-  KnownDb,
   updraftReducer,
+  storesReducer,
   todayReducer
 } from "./actions";
 import { t } from "./i18n";
+import { StoreInfo } from "./system";
 
 export {
   FI,
   t,
   AccountCollection,
   BillCollection,
-  Config,
   InstitutionCollection,
   UpdraftState,
-  KnownDb,
+  StoreInfo,
   connect
 };
 
 export interface AppState {
   locale: string;
-  config: Config;
   routing: ReactRouter.RouterState;
   accounts: AccountCollection;
   bills: BillCollection;
@@ -46,17 +43,18 @@ export interface AppState {
   filist: FI[];
   form: any;
   updraft: UpdraftState;
+  stores: StoreInfo[];
   today: Date;
 }
 
 export const appState = combineReducers<AppState, Action>({
   locale: localeReducer,
-  config: configReducer,
   routing: routeReducer,
   accounts: accountCollectionReducer,
   bills: billCollectionReducer,
   institutions: institutionCollectionReducer,
   filist: fiReducer,
   updraft: updraftReducer,
+  stores: storesReducer,
   today: todayReducer,
 });

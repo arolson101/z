@@ -1,7 +1,5 @@
 ///<reference path="../project.d.ts"/>
 
-import sqlite3 = require("sqlite3");
-
 import { Action, Dispatch, Thunk, ThunkPromise } from "./action";
 import {
   Account,
@@ -17,19 +15,11 @@ import {
   TransactionTable,
   transactionSpec
 } from "../types";
-import { changeConfig } from "./configActions";
 import { UpdraftCollection, defineUpdraftCollection } from "../util";
+import { sys, OpenStoreInfo } from "../system";
 
-
-export interface KnownDb {
-  name: string;
-  path: string;
-  size: number;
-  lastModified: Date;
-}
 
 export interface UpdraftState {
-  sdb?: sqlite3.Database;
   store?: Updraft.Store;
   accountTable?: AccountTable;
   institutionTable?: InstitutionTable;
@@ -138,32 +128,15 @@ export function updraftAdd(state: UpdraftState, ...changes: Updraft.TableChange<
 }
 
 
-export interface CreateDbInfo {
-  path: string;
-  password: string;
-}
+export { OpenStoreInfo };
 
-
-export function updraftCreateDb(info: CreateDbInfo): ThunkPromise {
-  return openDb(info.path, info.password, sqlite3.OPEN_CREATE);
-}
-
-
-export function updraftOpenDb(info: CreateDbInfo): ThunkPromise {
-  return openDb(info.path, info.password, sqlite3.OPEN_READWRITE);
-}
-
-
-function openDb(path: string, password: string, mode: number): ThunkPromise {
+export function updraftOpen(info: OpenStoreInfo): ThunkPromise {
   return (dispatch: Dispatch) => {
-    return sqliteOpen(path, mode)
-    .then(sdb => sqliteKey(sdb, password))
-    .then(sdb => {
-      let db = Updraft.createSQLiteWrapper(sdb);
+    return sys.openStore(info)
+    .then(db => {
       let store = Updraft.createStore({db});
       let state: UpdraftState = {
-        store,
-        sdb
+        store
       };
 
       state.accountTable = store.createTable(accountSpec);
@@ -173,7 +146,6 @@ function openDb(path: string, password: string, mode: number): ThunkPromise {
 
       return store.open()
       .then(() => {
-        dispatch(addRecentDb(path));
         dispatch(updraftOpened(state));
         dispatch(updraftLoadData(state));
       });
@@ -181,49 +153,3 @@ function openDb(path: string, password: string, mode: number): ThunkPromise {
   };
 }
 
-
-function sqliteOpen(path: string, mode: number): Promise<sqlite3.Database> {
-  return new Promise<sqlite3.Database>((resolve, reject) => {
-    let sdb = new sqlite3.Database(path, /*mode,*/ (err: Error) => {
-      //sdb.on("trace", (sql: string) => console.log(sql));
-      //sdb.on("profile", (sql: string, time: number) => console.log(`${time} ms: ${sql}`));
-      if (err) {
-        reject(err);
-      }
-      else {
-        resolve(sdb);
-      }
-    });
-  });
-}
-
-
-function sqliteKey(sdb: sqlite3.Database, key: string): Promise<sqlite3.Database> {
-  return new Promise<sqlite3.Database>((resolve, reject) => {
-    // set the key
-    sdb.run("PRAGMA key='" + key.replace("'", "''") + "';", (err: Error) => {
-      if (err) {
-        reject(err);
-      }
-      else {
-        // test the key
-        sdb.run("SELECT count(*) FROM sqlite_master;", (err2: Error) => {
-          if (err2) {
-            reject(err2);
-          }
-          else {
-            resolve(sdb);
-          }
-        });
-      }
-    });
-  });
-}
-
-
-function addRecentDb(path: string): Thunk {
-  return (dispatch: Dispatch) => {
-    const change = changeConfig( { recentDbs: { $set: { [path]: 1 } } } );
-    dispatch(change);
-  };
-}

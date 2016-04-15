@@ -1,28 +1,23 @@
 ///<reference path="../project.d.ts"/>
 
-import electron = require("electron");
 import { autobind } from "core-decorators";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import { Alert, Button, Input, Modal } from "react-bootstrap";
 import { connect } from "react-redux";
 
 import { history } from "../components";
 import { ValidateHelper, ReForm } from "../util";
 import { t } from "../state";
-import { bindActionCreators, updraftCreateDb, updraftOpenDb, Dispatch } from "../actions";
-
-const dialog = electron.remote.dialog;
-const BrowserWindow = electron.remote.BrowserWindow;
+import { bindActionCreators, updraftOpen, OpenStoreInfo, Dispatch } from "../actions";
+import { sys } from "../system";
 
 
 interface Props extends React.Props<any> {
-  updraftCreateDb?(info: any): Promise<any>;
-  updraftOpenDb?(info: any): Promise<any>;
+  updraftOpen?(info: OpenStoreInfo): Promise<any>;
 
   show: boolean;
   open: boolean;
-  path: string;
+  name: string;
   onCancel: Function;
 }
 
@@ -32,7 +27,7 @@ interface State extends ReForm.State {
   errorMessage?: string;
 
   fields?: {
-    path: ReForm.Field<string>;
+    name: ReForm.Field<string>;
     password1: ReForm.Field<string>;
     password2: ReForm.Field<string>;
 
@@ -47,15 +42,14 @@ interface State extends ReForm.State {
   null,
   (dispatch: Dispatch) => bindActionCreators(
     {
-      updraftCreateDb,
-      updraftOpenDb
+      updraftOpen
     },
     dispatch
   )
 )
 @ReForm({
   defaultValues: {
-    path: "",
+    name: "",
     password1: "",
     password2: ""
   }
@@ -72,14 +66,17 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
     const errors: ReForm.Errors = {};
     let v = new ValidateHelper(values, errors);
 
-    v.checkNonempty("path");
-    v.checkNonempty("password1");
+    v.checkFilename("name");
 
-    if (!this.props.open) {
-      v.checkNonempty("password2");
+    if ( sys.supportsPassword() ) {
+      v.checkNonempty("password1");
 
-      if (!errors["password1"] && values["password1"] != values["password2"]) {
-        errors["password2"] = t("validate.passwordsMatch");
+      if (!this.props.open) {
+        v.checkNonempty("password2");
+
+        if (!errors["password1"] && values["password1"] != values["password2"]) {
+          errors["password2"] = t("validate.passwordsMatch");
+        }
       }
     }
 
@@ -88,7 +85,7 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
 
   componentWillReceiveProps(nextProps: Props) {
     this.reForm.setValues({
-      path: nextProps.path,
+      name: nextProps.name,
       password1: "",
       password2: ""
     });
@@ -97,12 +94,7 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
   componentDidUpdate(prevProps: Props, prevState: State) {
     if (this.props.show && (this.props.show != prevProps.show)) {
       const { open } = this.props;
-      if (this.state.fields.path.value) {
-        (this.refs[open ? "password" : "browse"] as any).getInputDOMNode().focus();
-      }
-      else {
-        (ReactDOM.findDOMNode(this.refs["browse"]) as any).focus();
-      }
+      (this.refs[open && sys.supportsPassword() ? "password" : "name"] as any).getInputDOMNode().focus();
     }
   }
 
@@ -138,20 +130,22 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
           <Modal.Body>
             <Input
               type="text"
-              label={t("OpenDbDialog.pathLabel")}
-              placeholder={t("OpenDbDialog.pathPlaceholder")}
-              value={fields.path.value}
-              onChange={() => {}}
-              buttonAfter={<Button onClick={this.onBrowse} ref="browse">{t("OpenDbDialog.browseButton")}</Button>}
+              ref="name"
+              label={t("OpenDbDialog.nameLabel")}
+              placeholder={t("OpenDbDialog.namePlaceholder")}
+              {...wrapError(fields.name)}
+              readOnly={open}
             />
-            <Input
-              type="password"
-              ref="password"
-              label={t("OpenDbDialog.passwordLabel")}
-              placeholder={t("OpenDbDialog.passwordPlaceholder")}
-              {...wrapError(fields.password1)}
-            />
-            {!open &&
+            {sys.supportsPassword() &&
+              <Input
+                type="password"
+                ref="password"
+                label={t("OpenDbDialog.passwordLabel")}
+                placeholder={t("OpenDbDialog.passwordPlaceholder")}
+                {...wrapError(fields.password1)}
+              />
+            }
+            {sys.supportsPassword() && !open &&
               <Input
                 type="password"
                 label={t("OpenDbDialog.confirmPasswordLabel")}
@@ -179,7 +173,7 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
             <Button
               bsStyle="primary"
               type="submit"
-              disabled={!!fields.path.error && this.state.opening}
+              disabled={!!fields.name.error && this.state.opening}
             >
               {open ? t("OpenDbDialog.open") : t("OpenDbDialog.create")}
             </Button>
@@ -190,55 +184,16 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
   }
 
   @autobind
-  onBrowse() {
-    const { fields } = this.state;
-    if (this.props.open) {
-      dialog.showOpenDialog(
-        BrowserWindow.getFocusedWindow(),
-        {
-          title: t("OpenDbDialog.openDialogTitle"),
-          defaultPath: electron.remote.app.getPath("home"),
-          filters: [
-            { name: t("OpenDbDialog.filetypeName"), extensions: [ t("OpenDbDialog.filetypeExt") ] },
-            { name: t("OpenDbDialog.filetypeAll"), extensions: [ "*" ] }
-          ]
-        },
-        (fileNames: string[]) => {
-          if (fileNames) {
-            fields.path.onChange(fileNames[0]);
-          }
-        }
-      );
-    }
-    else {
-      dialog.showSaveDialog(
-        BrowserWindow.getFocusedWindow(),
-        {
-          title: t("OpenDbDialog.saveDialogTitle"),
-          defaultPath: electron.remote.app.getPath("home"),
-          filters: [
-            { name: t("OpenDbDialog.filetypeName"), extensions: [ t("OpenDbDialog.filetypeExt") ] }
-          ]
-        },
-        (fileName: string) => {
-          if (fileName) {
-            fields.path.onChange(fileName);
-          }
-        }
-      );
-    }
-  }
-
-  @autobind
   onSubmit() {
-    const { open, updraftCreateDb, updraftOpenDb } = this.props;
+    const { open, updraftOpen } = this.props;
     const { fields } = this.state;
     const opts = {
-      path: fields.path.value,
-      password: fields.password1.value
+      name: fields.name.value,
+      password: fields.password1.value,
+      create: !open
     };
     this.setState({ opening: true, errorMessage: undefined });
-    const p = open ? updraftOpenDb(opts) : updraftCreateDb(opts);
+    const p = updraftOpen(opts);
     p.then(
       () => {
         this.setState({ opening: false });

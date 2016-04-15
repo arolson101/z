@@ -3,8 +3,6 @@
 import { Input, InputProps } from "react-bootstrap";
 import * as Icon from "react-fa";
 
-import { StatelessComponent } from "./component";
-
 require("./currencyInput.css");
 
 

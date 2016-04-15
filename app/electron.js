@@ -1,4 +1,4 @@
-///<reference path="../typings/tsd.d.ts"/>
+///<reference path="../typings/main.d.ts"/>
 'use strict';
 
 require('module').globalPaths.push(__dirname + "/node_modules");
@@ -47,9 +47,9 @@ app.on('window-all-closed', function() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
-  var initPath = path.join(app.getPath("userData"), "init.json");
+  var configPath = path.join(app.getPath("userData"), "config.json");
   
-  var config = readConfig(initPath);
+  var config = readConfig(configPath);
   
 	// Create the browser window.
 	mainWindow = new BrowserWindow(config);
@@ -58,10 +58,12 @@ app.on('ready', function() {
 	mainWindow.loadURL(dev ? ('http://localhost:' + port + '/') :  "file://" + __dirname + "/index.html");
 
 	// Open the DevTools.
-	mainWindow.webContents.openDevTools();
+  if (dev) {
+	  mainWindow.webContents.openDevTools();
+  }
   
   mainWindow.on('close', function() {
-    writeConfig(initPath);
+    writeConfig(configPath);
   });
 
 	// Emitted when the window is closed.
@@ -74,10 +76,10 @@ app.on('ready', function() {
 });
 
 
-function readConfig(initPath) {
+function readConfig(configPath) {
   var data;
   try {
-    data = JSON.parse(fs.readFileSync(initPath, 'utf8'));
+    data = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   }
   catch(e) {
   }
@@ -91,11 +93,11 @@ function readConfig(initPath) {
   );
 }
 
-function writeConfig(initPath) {
+function writeConfig(configPath) {
   var data = Object.assign(
     {}, 
-    readConfig(initPath),
+    readConfig(configPath),
     mainWindow.getBounds()
   );
-  fs.writeFileSync(initPath, JSON.stringify(data));
+  fs.writeFileSync(configPath, JSON.stringify(data));
 }

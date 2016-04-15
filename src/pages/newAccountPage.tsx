@@ -221,7 +221,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
             >
               <ReactSelect
                 placeholder={t("NewAccountPage.institutionPlaceholder")}
-                {...fields.institution}
+                {...fields.institution as any}
                 onChange={this.onInstitutionChange}
                 options={_.map(filist, fi => ({
                   value: this.optionValueForFi(fi),

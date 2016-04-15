@@ -6,7 +6,6 @@
 declare let __DEVELOPMENT__: boolean;
 
 import React = __React;
-//declare var _: _.LoDashStatic;
 
 
 // version 3 isn't in tsd (yet)
@@ -380,4 +379,10 @@ interface JInplaceOptions {
 
 interface JQuery {
   jinplace: (options?: JInplaceOptions) => JQuery;
+}
+
+
+declare module "i18next-xhr-backend" {
+  let XHR: any;
+  export default XHR;
 }

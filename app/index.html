@@ -10,9 +10,11 @@
       //   process.on('uncaughtException', function(e) {});
       // }
 
-      // ensure bundle.js can find node modules
-      const path = require("path");
-      module.paths.push(path.resolve(process.cwd(), 'node_modules'));
+      if (typeof module != "undefined") {
+        // ensure z.js can find node modules
+        const path = require("path");
+        module.paths.push(path.resolve(process.cwd(), 'node_modules'));
+      }
     </script>
   </head>
 

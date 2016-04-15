@@ -1,7 +1,7 @@
 {
-  "name": "x",
+  "name": "z",
   "version": "1.0.0",
   "description": "",
   "author": "",
-  "main": "app.js"
+  "main": "electron.js"
 }

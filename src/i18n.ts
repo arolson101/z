@@ -1,17 +1,14 @@
 ///<reference path="./project.d.ts"/>
 
-//import electron = require("electron");
 import * as moment from "moment";
 import currentLocaleFunction = require("current-locale");
 import { verify } from "updraft";
 import * as numeral from "numeral";
 import filesize = require("filesize");
 import i18next = require("i18next");
-import FilesystemBackend = require("i18next-node-fs-backend");
 
 import { Thunk, Dispatch, setLocale } from "./actions";
-
-//const appPath = electron.remote.app.getAppPath();
+import { sys } from "./system";
 
 
 export const supportedLocales = [
@@ -24,7 +21,7 @@ export const supportedLocales = [
 const fallbackLocale = "en-US";
 
 export const i18n = i18next
-  .use(FilesystemBackend);
+  .use(sys.i18nBackend());
 
 export function t(key: string, options?: Object): string {
   return i18n.t(key, options);
@@ -33,7 +30,7 @@ export function t(key: string, options?: Object): string {
 export function loadLocale(locale: string): Promise<string> {
   return new Promise((resolve, reject) => {
     i18n
-    .use(FilesystemBackend)
+    .use(sys.i18nBackend())
     .init(
       {
         lng: locale,
