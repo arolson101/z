@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "postinstall": "typings install",
     "test": "mocha --require ts-node/register test/test.tsx",
     "tslint": "node_modules/.bin/tslint 'src/**/*.ts*'",
     "serve": "webpack-dev-server --content-base app/ --inline --history-api-fallback --no-info",
