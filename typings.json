@@ -21,6 +21,7 @@
     "nvd3": "registry:dt/nvd3#1.8.1+20160317120654",
     "react": "registry:dt/react#0.14.0+20160319053454",
     "react-addons-css-transition-group": "registry:dt/react-addons-css-transition-group#0.14.0+20160316155526",
+    "react-addons-test-utils": "registry:dt/react-addons-test-utils#0.14.0+20160417144949",
     "react-addons-transition-group": "registry:dt/react-addons-transition-group#0.14.0+20160316155526",
     "react-bootstrap": "https://raw.githubusercontent.com/arolson101/typings-react-bootstrap/master/react-bootstrap.d.ts",
     "react-dom": "registry:dt/react-dom#0.14.0+20160316155526",

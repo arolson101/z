@@ -22,7 +22,8 @@ import { ValidateHelper, ReForm } from "../util";
 import { bindActionCreators, Dispatch, updraftAdd } from "../actions";
 import { readAccountProfiles } from "../online";
 
-interface Props {
+
+interface PageProps {
   params?: {
     institutionId?: number;
   };
@@ -32,6 +33,42 @@ interface Props {
   accounts: AccountCollection;
   updraft: UpdraftState;
 }
+
+function isNew(institutionId: number): boolean {
+  return (typeof institutionId === "undefined") || (institutionId as any) == "new";
+}
+
+
+@connect(
+  (state: AppState): PageProps => ({
+    filist: state.filist,
+    updraft: state.updraft,
+    institutions: state.institutions,
+    accounts: state.accounts
+  }),
+  (dispatch: Dispatch) => bindActionCreators(
+    {
+      updraftAdd,
+    },
+    dispatch)
+)
+export class NewAccountPage extends React.Component<PageProps, any> {
+  render() {
+    return <NewAccountPageDisplay {...this.props} institutionId={this.props.params.institutionId}/>;
+  }
+}
+
+
+
+interface Props {
+  institutionId?: number;
+  updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
+  filist: FI[];
+  institutions: InstitutionCollection;
+  accounts: AccountCollection;
+  updraft: UpdraftState;
+}
+
 
 interface State extends ReForm.State {
   fields?: {
@@ -64,32 +101,6 @@ interface State extends ReForm.State {
   gettingAccountsSuccess?: number;
   gettingAccountsError?: string;
 }
-
-
-function isNew(institutionId: number): boolean {
-  return (typeof institutionId === "undefined") || (institutionId as any) == "new";
-}
-
-
-@connect(
-  (state: AppState): Props => ({
-    filist: state.filist,
-    updraft: state.updraft,
-    institutions: state.institutions,
-    accounts: state.accounts
-  }),
-  (dispatch: Dispatch) => bindActionCreators(
-    {
-      updraftAdd,
-    },
-    dispatch)
-)
-export class NewAccountPage extends React.Component<Props, State> {
-  render() {
-    return <NewAccountPageDisplay {...this.props}/>;
-  }
-}
-
 
 @ReForm({
   defaultValues: {
@@ -129,13 +140,13 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
   }
 
   componentWillReceiveProps(nextProps: Props) {
-    if (this.props.params.institutionId != nextProps.params.institutionId) {
+    if (this.props.institutionId != nextProps.institutionId) {
       this.applyFormValues(nextProps, false);
     }
   }
 
   applyFormValues(props: Props, isMounting: boolean) {
-    const institutionId = props.params.institutionId;
+    const institutionId = props.institutionId;
     if (isNew(institutionId)) {
       if (!isMounting) {
         this.reForm.reset();
@@ -209,7 +220,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
       return props;
     };
 
-    const editing = !isNew(this.props.params.institutionId);
+    const editing = !isNew(this.props.institutionId);
 
     return (
       <Grid>
@@ -682,7 +693,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
   onSave(e: React.FormEvent) {
     const { updraft, institutions } = this.props;
 
-    const institutionId = this.props.params.institutionId * 1; // coerce to number
+    const institutionId = this.props.institutionId * 1; // coerce to number
     verify(institutionId in institutions, "invalid institutionId");
     const institutionOld = institutions[institutionId];
     const institutionNew = this.makeInstitution(institutionId);
@@ -726,7 +737,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
 
   @autobind
   onDelete() {
-    const { updraft, params: { institutionId } } = this.props;
+    const { updraft, institutionId } = this.props;
     const { accounts } = this.state;
     const time = Date.now();
     const accountIds = accounts.map(acct => acct.dbid);

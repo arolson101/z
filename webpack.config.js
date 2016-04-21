@@ -61,6 +61,7 @@ module.exports = {
 		// production defines
 		new webpack.DefinePlugin({
 			__DEVELOPMENT__: production ? 0 : 1,
+			__TEST__: 0,
 			"process.env": {
 				NODE_ENV: JSON.stringify(production ? "production" : "development")
 			}

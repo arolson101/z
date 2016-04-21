@@ -4,6 +4,7 @@
 ///<reference path="../node_modules/updraft/dist/updraft.d.ts"/>
 
 declare let __DEVELOPMENT__: boolean;
+declare let __TEST__: boolean;
 
 import React = __React;
 

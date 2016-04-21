@@ -25,10 +25,18 @@ export interface System {
 
 function detectSystem(): System {
   try {
+    if (__TEST__) {
+      return require("./system.node");
+    }
+
     require("electron");
     return require("./system.electron");
   }
-  catch (ex) {}
+  catch (ex) {
+    if (__TEST__) {
+      console.error(ex);
+    }
+  }
 
   return require("./system.browser");
 }

@@ -34,22 +34,18 @@ export function deriveKey(passphrase: string, salt: string): Promise<string> {
 
 export function encrypt(key: Buffer, plainText: string): Cipher {
   const algorithm = "aes-256-cbc";
-  const inputEncoding = "utf8";
-  const outputEncoding = "base64";
   const ivbuf = randomBytes(16);
   const iv = ivbuf.toString("base64");
   const cipher = createCipheriv(algorithm, key, iv);
-  let cipherText = cipher.update(plainText, inputEncoding, outputEncoding);
-  cipherText += cipher.final(outputEncoding);
+  let cipherText = cipher.update(plainText, "utf8", "base64");
+  cipherText += cipher.final("base64");
   return { algorithm, iv, cipherText };
 }
 
 export function decrypt(key: Buffer, cipher: Cipher): string {
-  const inputEncoding = "base64";
-  const outputEncoding = "utf8";
   const decipher = createDecipheriv(cipher.algorithm, key, cipher.iv);
-  let plainText = decipher.update(cipher.cipherText, inputEncoding, outputEncoding);
-  plainText += decipher.final(outputEncoding);
+  let plainText = decipher.update(cipher.cipherText, "base64", "utf8");
+  plainText += decipher.final("utf8");
   return plainText;
 }
 
