@@ -16,24 +16,17 @@ import { bindActionCreators, Dispatch, updraftAdd } from "../actions";
 import { AddScheduleDialog } from "../dialogs";
 import { AppState, UpdraftState, BillCollection, AccountCollection } from "../state";
 import { formatCurrency, formatDate, t } from "../i18n";
-import { ScatterChart, ScatterChartData, ScatterChartDataSet, ScatterPoint } from "../components";
+import { CurrencyChart, CurrencyChartDataset, CurrencyChartPoint } from "../components";
 //import { DateIcon } from "../components";
 
-// TODO: refresh on day change
 
-interface DataPoint {
-  date: Date;
-  change: number;
-  value: number;
-  description: string;
-}
 
 interface Props extends React.Props<any> {
   nextBills: NextBill[];
   accounts: AccountCollection;
   updraft: UpdraftState;
   updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
-  chartData?: ScatterChartData;
+  chartData?: CurrencyChartDataset[];
   today?: Date;
 }
 
@@ -63,7 +56,7 @@ const calculateDataset = createSelector(
   (state: AppState) => state.accounts,
   (state: AppState) => state.bills,
   (state: AppState) => state.today,
-  (accounts: AccountCollection, bills: BillCollection, today: Date): ScatterChartData => {
+  (accounts: AccountCollection, bills: BillCollection, today: Date): CurrencyChartDataset[] => {
     let start = today;
     let end = moment(start).add(1, "Y").toDate();
 
@@ -87,9 +80,9 @@ const calculateDataset = createSelector(
 
     let accountData = _.mapValues(occurrencesByAccount, (occurrences: BillOccurrence[], accountId: any) => {
       let balance = accounts[accountId].balance;
-      let data: ScatterPoint[] = [{
-        x: start,
-        y: balance
+      let data: CurrencyChartPoint[] = [{
+        date: start,
+        value: balance
       }];
       let lastDate = start;
       let lastIndex = 0;
@@ -102,29 +95,26 @@ const calculateDataset = createSelector(
           lastDate = occurrence.date;
           lastIndex = data.length;
           data.push({
-            x: occurrence.date,
-            y: balance
+            date: occurrence.date,
+            value: balance
           });
         }
         balance += occurrence.amount;
-        data[lastIndex].y = balance;
+        data[lastIndex].value = balance;
       });
       return data;
     });
 
-    let chartData: ScatterChartData = {
-      labels: [],
-      datasets: _(accounts)
-      .map((account: Account, accountId: number): ScatterChartDataSet => {
-        let dataSet: ScatterChartDataSet = {
-          label: account.name,
-          strokeColor: colorHash(account.dbid.toString()),
-          data: accountData[accountId]
-        };
-        return dataSet;
-      })
-      .value()
-    };
+    let chartData: CurrencyChartDataset[] = _(accounts)
+    .map((account: Account, accountId: number): CurrencyChartDataset => {
+      let dataSet: CurrencyChartDataset = {
+        key: account.name,
+        color: colorHash(account.dbid.toString()),
+        values: accountData[accountId]
+      };
+      return dataSet;
+    })
+    .value();
 
     return chartData;
   }
@@ -142,12 +132,12 @@ function insertNewlines(str: string): any {
 
 
 @connect(
-  (state: AppState) => ({
+  (state: AppState): Props => ({
     accounts: state.accounts,
     updraft: state.updraft,
     nextBills: calculateEntries(state),
     chartData: calculateDataset(state)
-  } as Props),
+  }),
   (dispatch: Dispatch) => bindActionCreators(
     {
       updraftAdd
@@ -209,25 +199,7 @@ export class SchedulePage extends React.Component<Props, State> {
         {t(" ")}
         {t("SchedulePage.add")}
       </Button>
-      <ScatterChart
-        data={this.props.chartData}
-        options={{
-          animation: false,
-          // xScaleOverride: true,
-          // xScaleSteps: 5,
-          // xScaleStartValue: currentDate(),
-          legendTemplate: "legend",
-          scaleType: "date",
-          scaleLabel: "$<%=value%>",
-          scaleDateFormat: "mmm d",
-          scaleDateTimeFormat: "mmm d",
-          tooltipTemplate: "<%if (datasetLabel){%><%=datasetLabel%>: <%}%><%=argLabel%> <%=valueLabel%>",
-          pointDot: false,
-          bezierCurve: false,
-          responsive: true
-        }}
-        redraw
-      />
+      <CurrencyChart height={250} datasets={this.props.chartData} />
     </div>;
   }
 

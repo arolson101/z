@@ -35,9 +35,6 @@ module.exports = {
 
 	resolve: {
 		extensions: ['', '.js', '.jsx', '.ts', '.tsx'],
-    alias: {
-      "Chart": "chart.js"
-    }
 	},
 
 	module: {
@@ -79,7 +76,6 @@ module.exports = {
 			"ReactBootstrap": "react-bootstrap",
 			"Updraft": "updraft",
 			"ofx4js": "ofx4js",
-      "Chart": "chart.js"
 		}),
 	],
 
