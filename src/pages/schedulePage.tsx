@@ -199,7 +199,7 @@ export class SchedulePage extends React.Component<Props, State> {
         {t(" ")}
         {t("SchedulePage.add")}
       </Button>
-      <CurrencyChart height={250} datasets={this.props.chartData} />
+      <CurrencyChart height={400} datasets={this.props.chartData} />
     </div>;
   }
 

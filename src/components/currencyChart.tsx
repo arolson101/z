@@ -1,5 +1,6 @@
 ///<reference path="../project.d.ts"/>
 
+import { autobind } from "core-decorators";
 import ReactDOM = require("react-dom");
 import d3 = require("d3");
 const nvd3: nv.Nvd3Static = require("nvd3");
@@ -27,6 +28,8 @@ export interface Props {
 
 
 export class CurrencyChart extends React.Component<Props, any> {
+  chart: nv.LineChart;
+
   render() {
     return <svg ref="svg" height={this.props.height}/>;
   }
@@ -46,38 +49,43 @@ export class CurrencyChart extends React.Component<Props, any> {
     min = Math.min(min - pad, 0);
     max = Math.max(max + pad, 0);
 
-    const chart = nvd3.models.lineChart()
+    this.chart = nvd3.models.lineChart()
       .x((d: CurrencyChartPoint) => d.date)
       .y((d: CurrencyChartPoint) => d.value)
       .xScale(d3.time.scale())
       .forceY([min, max])
       //.margin({left: 100})  //Adjust chart margins to give the x-axis some breathing room.
-      .useInteractiveGuideline(true)
+      //.useInteractiveGuideline(true)
       //.transitionDuration(350)
       .showLegend(true)
       .showYAxis(true)
       .showXAxis(true)
     ;
 
-    chart.xAxis
+    this.chart.xAxis
       .showMaxMin(false)
       .tickFormat(d3.time.format("%b %-d"));
 
-    chart.yAxis
+    this.chart.yAxis
       .showMaxMin(false)
       .tickFormat(formatCurrency);
 
     let svg = ReactDOM.findDOMNode(this.refs["svg"]);
     d3.select(svg)
         .datum(this.props.datasets)
-        .call(chart);
+        .call(this.chart);
 
-    //Update the chart when window resizes.
-    nvd3.utils.windowResize(function() { chart.update(); });
+    window.addEventListener("resize", this.handleResize);
   }
 
   componentWillUnmount() {
     let svg = ReactDOM.findDOMNode(this.refs["svg"]);
     d3.select(svg).remove();
+    window.removeEventListener("resize", this.handleResize);
+  }
+
+  @autobind
+  handleResize() {
+    this.chart.update();
   }
 }
