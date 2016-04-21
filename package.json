@@ -12,6 +12,7 @@
     "start": "node_modules/.bin/electron app",
     "update": "ncu && tsd update --save --overwrite",
     "install_sqlite3_osx": "export LDFLAGS=\"-L`brew --prefix`/opt/sqlcipher/lib\" && export CPPFLAGS=\"-I`brew --prefix`/opt/sqlcipher/include\" && npm install sqlite3 --build-from-source --sqlite_libname=sqlcipher --sqlite=`brew --prefix`",
+    "fix_sqlite3_osx": "npm run fix_sqlite3_osx:1 && npm run fix_sqlite3_osx:2",
     "fix_sqlite3_windows": "npm run fix_sqlite3_windows:1 && npm run fix_sqlite3_windows:2",
     "fix_sqlite3_windows:1": "pushd node_modules\\sqlite3 && node-gyp configure --module_name=node_sqlite3 --module_path=../lib/binding/electron-v0.37-win32-x64 && popd",
     "fix_sqlite3_windows:2": "pushd node_modules\\sqlite3 && node-gyp rebuild --target=0.37.6 --arch=x64 --target_platform=win32 --dist-url=https://atom.io/download/atom-shell --module_name=node_sqlite3 --module_path=../lib/binding/electron-v0.37-win32-x64 && popd"
@@ -57,7 +58,7 @@
     "radium": "^0.17.1",
     "react": "^15.0.1",
     "react-addons-css-transition-group": "^15.0.1",
-    "react-bootstrap": "^0.29.0",
+    "react-bootstrap": "^0.28.3",
     "react-chartjs": "^0.7.3",
     "react-dom": "^15.0.1",
     "react-fa": "^4.0.1",
