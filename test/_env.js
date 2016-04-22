@@ -17,28 +17,5 @@ global.d3 = require("d3");
 global.ofx4js = require("ofx4js");
 global.Updraft = require("updraft");
 
-
-const jsdom = require("jsdom");
-var doc = jsdom.jsdom('<!doctype html><html><body></body></html>');
-
-// get the window object out of the document
-var win = doc.defaultView;
-
-// set globals for mocha that make access to document and window feel 
-// natural in the test environment
-global.document = doc;
-global.window = win;
-
-// take all properties of the window object and also attach it to the 
-// mocha global object
-propagateToGlobal(win);
-
-// from mocha-jsdom https://github.com/rstacruz/mocha-jsdom/blob/master/index.js#L80
-function propagateToGlobal (window) {
-  for (let key in window) {
-    if (!window.hasOwnProperty(key)) continue;
-    if (key in global) continue;
-
-    global[key] = window[key];
-  }
-}
+require("jsdom-global")();
+delete global["XMLHttpRequest"]; // mysterious fix: https://github.com/TypeStrong/ts-node/issues/92
