@@ -37,18 +37,68 @@ function dummyFI(id: number, name: string): FI {
 }
 
 
+function findNode<T extends Element>(component: React.Component<any, any>, name: string, selector: string): T {
+  expect(component.refs).to.have.property(name);
+  const node = ReactDOM.findDOMNode(component.refs[name]);
+  expect(node).not.to.be.null;
+  const child = node.querySelector(selector);
+  return child as T;
+}
+
+function simulateChangeTargetValue(element: Element, value: string) {
+  TestUtils.Simulate.change(element, { target: { value } } as React.SyntheticEventData);
+  return frame();
+}
+
+const simulateChangeInstitution = async function(institution: Element, value: string) {
+  simulateChangeTargetValue(institution, value);
+  TestUtils.Simulate.keyDown(institution, { keyCode: 9, key: "Tab" });
+  return frame();
+};
+
+function frame(time: number = 0): Promise<any> {
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      function() {
+        resolve();
+      },
+      time
+    );
+  });
+}
+
+
 describe("NewAccountPageDisplay", function() {
   let component: NewAccountPageDisplay;
   let filist: FI[];
+  let institution: HTMLInputElement;
+  let name: HTMLInputElement;
+  let web: HTMLInputElement;
+  let address: HTMLInputElement;
+  let notes: HTMLInputElement;
+  let fid: HTMLInputElement;
+  let org: HTMLInputElement;
+  let ofx: HTMLInputElement;
+
+  const findNodes = () => {
+    institution = findNode<HTMLInputElement>(component, "institution", ".Select-input input");
+    name = findNode<HTMLInputElement>(component, "name", "input");
+    web = findNode<HTMLInputElement>(component, "web", "input");
+    address = findNode<HTMLInputElement>(component, "address", "textarea");
+    notes = findNode<HTMLInputElement>(component, "notes", "textarea");
+    fid = findNode<HTMLInputElement>(component, "fid", "input");
+    org = findNode<HTMLInputElement>(component, "org", "input");
+    ofx = findNode<HTMLInputElement>(component, "ofx", "input");
+  };
 
   beforeEach(function() {
     let store = createStore(appState);
     let state = store.getState();
 
     filist = [
-      dummyFI(0, "abc"),
-      dummyFI(1, "bcd"),
-      dummyFI(2, "cde"),
+      dummyFI(0, "fi0"),
+      dummyFI(1, "fi1"),
+      dummyFI(2, "fi2"),
     ];
 
     component = TestUtils.renderIntoDocument(
@@ -61,28 +111,55 @@ describe("NewAccountPageDisplay", function() {
     ) as any;
   });
 
+  it("selecting an institution sets fields", async function() {
+    const assertFiValues = (fi: FI) => {
+      findNodes();
+      expect(name.value).to.equal(fi.name, "name doesn't match");
+      expect(web.value).to.equal(fi.profile.siteURL, "web doesn't match");
+      expect(address.value).to.equal(
+        fi.profile.address1 + "\n" +
+        fi.profile.address2 + "\n" +
+        fi.profile.address3 + "\n" +
+        fi.profile.city + ", " +
+        fi.profile.state + " " +
+        fi.profile.zip + "\n" +
+        fi.profile.country,
+        "address doesn't match"
+      );
+      expect(notes.value).to.equal("", "notes doesn't match");
+      expect(fid.value).to.equal(fi.fid, "fid doesn't match");
+      expect(org.value).to.equal(fi.org, "org doesn't match");
+      expect(ofx.value).to.equal(fi.ofx, "ofx doesn't match");
+    };
 
-  it("selecting a value sets all fields", function() {
-    const input = ReactDOM.findDOMNode(component.refs["institution"]).querySelector("input");
+    findNodes();
 
-    const fi = filist[2];
-    TestUtils.Simulate.focus(input);
-    TestUtils.Simulate.change(input, { target: { value: fi.name } } as React.SyntheticEventData);
-    TestUtils.Simulate.keyDown(input, { keyCode: 13, key: "Enter" });
-    expect(component.state.fields.name.value).to.equal(fi.name);
-    expect(component.state.fields.web.value).to.equal(fi.profile.siteURL);
-    expect(component.state.fields.address.value).to.equal(
-      fi.profile.address1 + "\n" +
-      fi.profile.address2 + "\n" +
-      fi.profile.address3 + "\n" +
-      fi.profile.city + ", " +
-      fi.profile.state + " " +
-      fi.profile.zip + "\n" +
-      fi.profile.country
-    );
-    expect(component.state.fields.notes.value).to.equal("");
-    expect(component.state.fields.fid.value).to.equal(fi.fid);
-    expect(component.state.fields.org.value).to.equal(fi.org);
-    expect(component.state.fields.ofx.value).to.equal(fi.ofx);
+    // changing input values changes state
+    await simulateChangeTargetValue(name, "asdf");
+    expect(component.state.fields.name.value).to.equal("asdf", "state.fields.name doesn't match");
+    expect(name.value).to.equal("asdf");
+    await simulateChangeTargetValue(name, "");
+
+    // select institution, check fields
+    let fi = filist[0];
+    await simulateChangeInstitution(institution, fi.name);
+    assertFiValues(fi);
+
+    // select different institution; fields should be updated
+    fi = filist[1];
+    await simulateChangeInstitution(institution, fi.name);
+    assertFiValues(fi);
+
+    // select different institution; unchanged fields should be updated
+    await simulateChangeTargetValue(name, "asdf");
+    fi = filist[2];
+    await simulateChangeInstitution(institution, fi.name);
+    expect(name.value).to.equal("asdf");
+    expect(web.value).to.equal(fi.profile.siteURL, "web doesn't match");
+
+    // changing fid/org/ofx to a different value will provide a warning
+    expect(findNode(component, "fid", ".glyphicon-warning-sign")).to.be.null;
+    await simulateChangeTargetValue(fid, "wrong");
+    expect(findNode(component, "fid", ".glyphicon-warning-sign")).to.be.not.null;
   });
 });

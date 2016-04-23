@@ -60,7 +60,7 @@
     "notesPlaceholder": "",
     "notesHelp": "Enter notes",
     "enableOnline": "Download transactions",
-    "differentWarning": "Expected \"{{expectedValue}}\"",
+    "differentWarning": "Expected \"{{- expectedValue}}\"",
     "ofxInfo": "These values are unique to your financial institution, and are filled in automatically when you select from the list above.  They must be set to automatically download transactions.",
     "fidLabel": "FID",
     "fidPlaceholder": "",

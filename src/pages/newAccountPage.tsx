@@ -249,6 +249,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
           <Col xs={12} md={6}>
             <Input
               type="text"
+              ref="name"
               label={t("NewAccountPage.nameLabel")}
               help={t("NewAccountPage.nameHelp")}
               placeholder={t("NewAccountPage.namePlaceholder")}
@@ -259,6 +260,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
           <Col xs={12} md={6}>
             <Input
               type="text"
+              ref="web"
               label={t("NewAccountPage.webLabel")}
               placeholder={t("NewAccountPage.webPlaceholder")}
               {...fields.web}
@@ -271,6 +273,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
             <Input
               type="textarea"
               rows={4}
+              ref="address"
               label={t("NewAccountPage.addressLabel")}
               placeholder={t("NewAccountPage.addressPlaceholder")}
               {...fields.address}
@@ -281,6 +284,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
             <Input
               type="textarea"
               rows={4}
+              ref="notes"
               label={t("NewAccountPage.notesLabel")}
               placeholder={t("NewAccountPage.notesPlaceholder")}
               {...fields.notes}
@@ -290,6 +294,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
 
         <Input
           type="checkbox"
+          ref="online"
           label={t("NewAccountPage.enableOnline")}
           {...fields.online}
         />
@@ -301,6 +306,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
                 <Col xs={6} md={3}>
                   <Input
                     type="text"
+                    ref="fid"
                     label={t("NewAccountPage.fidLabel")}
                     help={t("NewAccountPage.fidHelp")}
                     placeholder={t("NewAccountPage.fidPlaceholder")}
@@ -311,6 +317,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
                 <Col xs={6} md={3}>
                   <Input
                     type="text"
+                    ref="org"
                     label={t("NewAccountPage.orgLabel")}
                     help={t("NewAccountPage.orgHelp")}
                     placeholder={t("NewAccountPage.orgPlaceholder")}
@@ -321,6 +328,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
                 <Col xs={12} md={6}>
                   <Input
                     type="text"
+                    ref="ofx"
                     label={t("NewAccountPage.ofxLabel")}
                     help={t("NewAccountPage.ofxHelp")}
                     placeholder={t("NewAccountPage.ofxPlaceholder")}
@@ -335,6 +343,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
                 <Col xs={6}>
                   <Input
                     type="text"
+                    ref="username"
                     label={t("NewAccountPage.usernameLabel")}
                     help={t("NewAccountPage.usernameHelp")}
                     placeholder={t("NewAccountPage.usernamePlaceholder")}
@@ -345,6 +354,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
                 <Col xs={6}>
                   <Input
                     type="text"
+                    ref="password"
                     label={t("NewAccountPage.passwordLabel")}
                     help={t("NewAccountPage.passwordHelp")}
                     placeholder={t("NewAccountPage.passwordPlaceholder")}
