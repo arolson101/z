@@ -438,6 +438,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
             <Col xs={12}>
               <Button
                 type="button"
+                ref="addAccount"
                 bsStyle="success"
                 onClick={this.onAddAccount}>{t("NewAccountPage.addAccount")}
               </Button>
@@ -553,13 +554,12 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
   @autobind
   onAccountSave(account: Account) {
     let change: any = {};
-    if (this.state.adding) {
+    if (this.state.editing == -1) {
       change = { $push: [account] };
     }
     else {
       change = { [this.state.editing]: { $set: account } };
     }
-
     this.setState(
       {
         accounts: mutate(this.state.accounts, change)

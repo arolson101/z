@@ -117,7 +117,7 @@ export class AddAccountDialog extends React.Component<Props, State> implements R
 
     return (
       <Modal show={this.props.show} onHide={this.onCancel}>
-        <form onSubmit={handleSubmit(this.onSave)}>
+        <form onSubmit={handleSubmit(this.onSave)} ref="form">
           <Modal.Header closeButton>
             <Modal.Title>{adding ? t("AddAccountDialog.addTitle") : t("AddAccountDialog.editTitle")}</Modal.Title>
           </Modal.Header>
@@ -125,12 +125,14 @@ export class AddAccountDialog extends React.Component<Props, State> implements R
             <EnumSelect label={t("AddAccountDialog.typeLabel")} {...fields.type} enum={AccountType}/>
             <Input
               type="text"
+              ref="name"
               label={t("AddAccountDialog.nameLabel")}
               placeholder={t("AddAccountDialog.namePlaceholder")}
               {...wrapError(fields.name)}
             />
             <Input
               type="text"
+              ref="number"
               label={t("AddAccountDialog.numberLabel")}
               placeholder={t("AddAccountDialog.numberPlaceholder")}
               {...wrapError(fields.number)}
