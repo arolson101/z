@@ -54,7 +54,15 @@ function isNew(institutionId: number): boolean {
 )
 export class NewAccountPage extends React.Component<PageProps, any> {
   render() {
-    return <NewAccountPageDisplay {...this.props} institutionId={this.props.params.institutionId}/>;
+    return <NewAccountPageDisplay {...this.props} institutionId={this.props.params.institutionId} updraftAdd={this.onUpdraftAdd}/>;
+  }
+
+  @autobind
+  onUpdraftAdd(state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]): Promise<any> {
+    let p = this.props.updraftAdd.apply(this, arguments) as Promise<any>;
+    return p.then(() => {
+      history.replace("/accounts");
+    });
   }
 }
 
@@ -468,6 +476,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
           <Button onClick={this.onClose}>{t("NewAccountPage.close")}</Button>
           <Button
             bsStyle="primary"
+            ref="submit"
             onClick={this.reForm.handleSubmit(editing ? this.onSave : this.onCreate)}
           >
             {editing ? t("NewAccountPage.save") : t("NewAccountPage.create")}
@@ -694,10 +703,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
       updraft,
       Updraft.makeSave(updraft.institutionTable, time)(institution),
       ...accounts.map(Updraft.makeSave(updraft.accountTable, time))
-    )
-    .then(() => {
-      history.replace("/accounts");
-    });
+    );
   }
 
   @autobind

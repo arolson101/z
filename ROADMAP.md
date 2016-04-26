@@ -1,0 +1,3 @@
+- update react-bootstrap Input -> FormGroup/FormControl
+- replace test refs with classes
+- more tests

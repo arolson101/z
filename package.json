@@ -106,6 +106,8 @@
     "mocha": "^2.4.5",
     "react-addons-test-utils": "^15.0.1",
     "react-hot-loader": "^2.0.0-alpha-4",
+    "sinon": "^1.17.3",
+    "sinon-chai": "^2.8.0",
     "sockjs-client": "^1.0.3",
     "style-loader": "^0.13.1",
     "ts-node": "^0.7.2",

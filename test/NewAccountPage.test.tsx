@@ -2,13 +2,15 @@
 "use strict";
 import { expect } from "chai";
 import { createStore } from "redux";
-import TestUtils = require("react-addons-test-utils");
+import * as TestUtils from "react-addons-test-utils";
+import * as sinon from "sinon";
 
 import { dummyFI, findNode, simulateChangeValue, simulateClick, simulateSubmit, frame } from "./util";
 
 import { appState,
   NewAccountPageDisplay,
-  FI
+  FI,
+  AccountType
  } from "../src/index";
 import { AddAccountDialog } from "../src/dialogs";
 
@@ -32,6 +34,7 @@ describe("NewAccountPageDisplay", function() {
   let org: HTMLInputElement;
   let ofx: HTMLInputElement;
   let addAccount: HTMLButtonElement;
+  let updraftAdd: Sinon.SinonSpy;
 
   const findNodes = () => {
     institution = findNode<HTMLInputElement>(component, "institution", ".Select-input input");
@@ -48,6 +51,7 @@ describe("NewAccountPageDisplay", function() {
   beforeEach(function() {
     let store = createStore(appState);
     let state = store.getState();
+    updraftAdd = sinon.spy();
 
     filist = [
       dummyFI(0, "fi0"),
@@ -61,6 +65,7 @@ describe("NewAccountPageDisplay", function() {
         institutions={state.institutions}
         accounts={state.accounts}
         updraft={state.updraft}
+        updraftAdd={updraftAdd}
       />
     ) as any;
 
@@ -126,7 +131,24 @@ describe("NewAccountPageDisplay", function() {
   });
 
 
-  it("submit fails when name or accounts are empty");
+  it("submit does nothing when name or accounts are empty", async function() {
+    const save = findNode<HTMLButtonElement>(component, "submit", "");
+
+    // saving initially does nothing
+    await simulateClick(save);
+    expect(updraftAdd).to.have.not.been.called;
+
+    // set name
+    await simulateChangeValue(name, "dummy name");
+    await simulateClick(save);
+    expect(updraftAdd).to.have.not.been.called;
+
+    // add account
+    component.onAccountSave({type: AccountType.CHECKING, name: "dummy account name", number: "1234"});
+    await frame();
+    await simulateClick(save);
+    expect(updraftAdd).to.have.been.calledOnce;
+  });
 
 
   it("adds accounts", async function() {

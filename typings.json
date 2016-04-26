@@ -31,6 +31,8 @@
     "react-router/history": "registry:dt/react-router/history#2.0.0+20160316155526",
     "redux-devtools": "registry:dt/redux-devtools#3.0.0+20151215130854",
     "sanitize-filename": "registry:dt/sanitize-filename#1.1.1+20160317120654",
+    "sinon": "registry:dt/sinon#1.16.0+20160317120654",
+    "sinon-chai": "registry:dt/sinon-chai#2.7.0+20160317120654",
     "sqlite3": "registry:dt/sqlite3#2.2.3+20160316155526",
     "x-editable": "registry:dt/x-editable#0.0.0+20150219193024"
   },
