@@ -4,7 +4,7 @@ import { autobind } from "core-decorators";
 import * as moment from "moment";
 import * as React from "react";
 import * as Icon from "react-fa";
-import { Input } from "react-bootstrap";
+import { FormControl } from "react-bootstrap";
 
 //require("bootstrap-datepicker/dist/css/bootstrap-datepicker3.css");
 //require("bootstrap-datepicker/dist/js/bootstrap-datepicker.js");
@@ -19,7 +19,7 @@ interface Props {
 export class DatePicker extends React.Component<Props, any> {
   render() {
     const value = this.dateToString(this.props.value || new Date());
-    return <Input
+    return <FormControl
       {...this.props}
       type="date"
       {...{ value }}

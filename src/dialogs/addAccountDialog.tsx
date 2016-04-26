@@ -2,7 +2,7 @@
 
 import { autobind } from "core-decorators";
 import * as React from "react";
-import { Button, Input, Modal } from "react-bootstrap";
+import { Button, ControlLabel, FormGroup, FormControl, Modal } from "react-bootstrap";
 
 import { t } from "../state";
 import { ValidateHelper, ReForm } from "../util";
@@ -122,21 +122,25 @@ export class AddAccountDialog extends React.Component<Props, State> implements R
             <Modal.Title>{adding ? t("AddAccountDialog.addTitle") : t("AddAccountDialog.editTitle")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <EnumSelect label={t("AddAccountDialog.typeLabel")} {...fields.type} enum={AccountType}/>
-            <Input
-              type="text"
-              ref="name"
-              label={t("AddAccountDialog.nameLabel")}
-              placeholder={t("AddAccountDialog.namePlaceholder")}
-              {...wrapError(fields.name)}
-            />
-            <Input
-              type="text"
-              ref="number"
-              label={t("AddAccountDialog.numberLabel")}
-              placeholder={t("AddAccountDialog.numberPlaceholder")}
-              {...wrapError(fields.number)}
-            />
+            <EnumSelect label={t("AddAccountDialog.typeLabel")} {...fields.type as any} enum={AccountType}/>
+            <FormGroup controlId="addAccountDlg_name">
+              <ControlLabel>{t("AddAccountDialog.nameLabel")}</ControlLabel>
+              <FormControl
+                type="text"
+                id="name"
+                placeholder={t("AddAccountDialog.namePlaceholder")}
+                {...wrapError(fields.name)}
+              />
+            </FormGroup>
+            <FormGroup controlId="addAccountDlg_number">
+              <ControlLabel>{t("AddAccountDialog.numberLabel")}</ControlLabel>
+              <FormControl
+                type="text"
+                ref="number"
+                placeholder={t("AddAccountDialog.numberPlaceholder")}
+                {...wrapError(fields.number)}
+              />
+            </FormGroup>
           </Modal.Body>
           <Modal.Footer>
             {this.props.editing != -1 &&

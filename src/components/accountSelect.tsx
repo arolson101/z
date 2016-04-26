@@ -1,7 +1,7 @@
 ///<reference path="../project.d.ts"/>
 
 import { connect } from "react-redux";
-import { Input, InputProps } from "react-bootstrap";
+import { FormControl } from "react-bootstrap";
 import { createSelector } from "reselect";
 
 import { AppState, t } from "../state";
@@ -29,7 +29,7 @@ export const accountGroups = createSelector(
 );
 
 
-interface Props extends InputProps {
+interface Props extends React.HTMLAttributes {
   accountGroups?: AccountGroup[];
 }
 
@@ -39,7 +39,7 @@ interface Props extends InputProps {
 )
 export class AccountSelect extends React.Component<Props, any> {
   render() {
-    return <Input type="select" {...this.props}>
+    return <FormControl componentClass="select" {...this.props}>
       <option>{t("AccountSelect.none")}</option>
       {_.map(this.props.accountGroups, (accountGroup: AccountGroup) =>
         <optgroup key={accountGroup.institution.dbid} label={accountGroup.institution.name}>
@@ -50,6 +50,6 @@ export class AccountSelect extends React.Component<Props, any> {
           )}
         </optgroup>
       )}
-    </Input>;
+    </FormControl>;
   }
 }

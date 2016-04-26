@@ -33,18 +33,11 @@ export function dummyFI(id: number, name: string): FI {
 }
 
 
-export function findNode<T extends Element>(component: React.Component<any, any>, name: string, selector: string): T {
-  expect(component).to.not.be.null;
-  expect(component.refs).to.have.property(name);
-  const node = ReactDOM.findDOMNode(component.refs[name]);
-  expect(node).not.to.be.null;
-  if (selector) {
-    const child = node.querySelector(selector);
-    return child as T;
-  }
-  else {
-    return node as T;
-  }
+export function findNode<T extends Element>(component: Element, selector: string): T {
+  expect(component).to.be.not.null;
+  const node = component.querySelector(selector);
+  expect(node).to.be.ok;
+  return node as T;
 }
 
 

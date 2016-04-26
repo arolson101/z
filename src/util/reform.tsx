@@ -27,8 +27,8 @@ export namespace ReForm {
     checked: boolean;
     error: string;
     value: type;
-    onChange(e: Event | type): any;
-    onUpdate(e: Event | type): any;
+    onChange(e: React.SyntheticEvent | type): any;
+    onUpdate(e: React.SyntheticEvent | type): any;
   }
 
   export interface FieldObject {
@@ -106,9 +106,9 @@ export namespace ReForm {
             value: defaultValue,
             checked: defaultValue,
             error: "",
-            onChange: (e: Event | string) => {
+            onChange: (e: React.SyntheticEvent | string) => {
               let value: string | boolean = e as string;
-              const target = e ? (e as Event).target as HTMLInputElement : null;
+              const target = e ? (e as React.SyntheticEvent).target as HTMLInputElement : null;
               if (target) {
                 value = (target.type == "checkbox") ? target.checked : target.value;
               }
@@ -130,7 +130,7 @@ export namespace ReForm {
                 this.setState(finalState);
               }
             },
-            onUpdate: (e: Event | string) => {
+            onUpdate: (e: React.SyntheticEvent | string) => {
               this.onChange(e);
             }
           };

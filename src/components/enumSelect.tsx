@@ -1,21 +1,21 @@
 ///<reference path="../project.d.ts"/>
 
-import { Input, InputProps } from "react-bootstrap";
+import { FormControl, FormControlProps } from "react-bootstrap";
 import { EnumEx, EnumType } from "../util";
 
 
 
-interface Props extends InputProps {
+interface Props extends FormControlProps {
   enum: EnumType;
 }
 
 
 export class EnumSelect extends React.Component<Props, any> {
   render() {
-    return <Input type="select" {...this.props as any}>
+    return <FormControl componentClass="select" {...this.props}>
       {EnumEx.map(this.props.enum, (name: string, value: number) =>
-        <option key={value} value={value as any}>{this.props.enum.tr(name)}</option>
+        <option key={value} value={value}>{this.props.enum.tr(name)}</option>
       )}
-    </Input>;
+    </FormControl>;
   }
 }

@@ -1,19 +1,19 @@
 ///<reference path="../project.d.ts"/>
 
-import { Input, InputProps } from "react-bootstrap";
+import { FormControl, FormControlProps } from "react-bootstrap";
 import * as Icon from "react-fa";
 
 require("./currencyInput.css");
 
 
-interface Props extends InputProps {
+interface Props extends FormControlProps {
   locale: string;
 }
 
 export class CurrencyInput extends React.Component<Props, any> {
   render() {
     return (
-      <Input
+      <FormControl
         {...this.props}
         type="number"
         {...{step: "any"}}

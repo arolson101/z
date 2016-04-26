@@ -2,7 +2,8 @@
 
 import { autobind } from "core-decorators";
 import * as React from "react";
-import { Alert, Button, Input, Modal } from "react-bootstrap";
+import * as ReactDOM from "react-dom";
+import { Alert, Button, ControlLabel, FormGroup, FormControl, Modal } from "react-bootstrap";
 import { connect } from "react-redux";
 
 import { history } from "../components";
@@ -94,7 +95,7 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
   componentDidUpdate(prevProps: Props, prevState: State) {
     if (this.props.show && (this.props.show != prevProps.show)) {
       const { open } = this.props;
-      (this.refs[open && sys.supportsPassword() ? "password" : "name"] as any).getInputDOMNode().focus();
+      ReactDOM.findDOMNode<HTMLInputElement>(this.refs[open && sys.supportsPassword() ? "password" : "name"]).focus();
     }
   }
 
@@ -128,30 +129,36 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
             <Modal.Title>{open ? t("OpenDbDialog.openTitle") : t("OpenDbDialog.createTitle")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Input
-              type="text"
-              ref="name"
-              label={t("OpenDbDialog.nameLabel")}
-              placeholder={t("OpenDbDialog.namePlaceholder")}
-              {...wrapError(fields.name)}
-              readOnly={open}
-            />
-            {sys.supportsPassword() &&
-              <Input
-                type="password"
-                ref="password"
-                label={t("OpenDbDialog.passwordLabel")}
-                placeholder={t("OpenDbDialog.passwordPlaceholder")}
-                {...wrapError(fields.password1)}
+            <FormGroup>
+              <ControlLabel>{t("OpenDbDialog.nameLabel")}</ControlLabel>
+              <FormControl
+                type="text"
+                ref="name"
+                placeholder={t("OpenDbDialog.namePlaceholder")}
+                {...wrapError(fields.name)}
+                readOnly={open}
               />
+            </FormGroup>
+            {sys.supportsPassword() &&
+              <FormGroup>
+                <ControlLabel>{t("OpenDbDialog.passwordLabel")}</ControlLabel>
+                <FormControl
+                  type="password"
+                  ref="password"
+                  placeholder={t("OpenDbDialog.passwordPlaceholder")}
+                  {...wrapError(fields.password1)}
+                />
+              </FormGroup>
             }
             {sys.supportsPassword() && !open &&
-              <Input
-                type="password"
-                label={t("OpenDbDialog.confirmPasswordLabel")}
-                placeholder={t("OpenDbDialog.confirmPasswordPlaceholder")}
-                {...wrapError(fields.password2)}
-              />
+              <FormGroup>
+                <ControlLabel>{t("OpenDbDialog.confirmPasswordLabel")}</ControlLabel>
+                <FormControl
+                  type="password"
+                  placeholder={t("OpenDbDialog.confirmPasswordPlaceholder")}
+                  {...wrapError(fields.password2)}
+                />
+              </FormGroup>
             }
             {this.state.errorMessage &&
               <Alert

@@ -2,7 +2,7 @@
 
 import { autobind } from "core-decorators";
 import * as React from "react";
-import { Alert, Panel, Button, Collapse, Grid, Input, Row, Col, Table } from "react-bootstrap";
+import { Alert, Panel, Button, Checkbox, Collapse, FormGroup, FormControl, ControlLabel, HelpBlock, Grid, Row, Col, Table } from "react-bootstrap";
 import * as Icon from "react-fa";
 //import * as LaddaButton from "react-ladda";
 import { connect } from "react-redux";
@@ -197,35 +197,31 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
       !!fields.password.value
     );
 
-    const wrapErrorHelper = (props: any, error: string) => {
-      if (error) {
-        props.bsStyle = "error";
-        props.help = error;
+    const validationState = (field: ReForm.Field<string>): Object => {
+      if (field.error && submitFailed) {
+        return { validationState: "error" };
       }
-      props.hasFeedback = true;
     };
 
-    const wrapError = (field: ReForm.Field<string>, supressEmptyError?: boolean) => {
-      let props: any = _.extend({}, field);
-      let error: string = null;
-      const isEmpty = (field.value === undefined || field.value === "");
-      if (field.error && submitFailed && (!supressEmptyError || !isEmpty)) {
-        error = field.error;
+    const validationError = (field: ReForm.Field<string>): string => {
+      if (field.error && submitFailed) {
+        return field.error;
       }
-      wrapErrorHelper(props, error);
-      return props;
     };
 
     const expectedFi = this.fiForOptionValue(this.state.fields.institution.value);
-    const wrapWarning = (field: ReForm.Field<string>) => {
-      let props: any = _.extend({}, field);
+    const validateExpected = (field: ReForm.Field<string>): Object => {
       let expectedValue = (expectedFi ? (expectedFi as any)[field.name] : null);
       if (expectedValue && expectedValue != field.value) {
-        props.bsStyle = "warning";
-        props.help = t("NewAccountPage.differentWarning", {expectedValue});
-        props.hasFeedback = true;
+        return { validationState: "warning" };
       }
-      return props;
+    };
+
+    const expectedHelp = (field: ReForm.Field<string>): string => {
+      let expectedValue = (expectedFi ? (expectedFi as any)[field.name] : null);
+      if (expectedValue && expectedValue != field.value) {
+        return t("NewAccountPage.differentWarning", {expectedValue});
+      }
     };
 
     const editing = !isNew(this.props.institutionId);
@@ -234,12 +230,10 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
       <Grid>
         <Row>
           <Col xs={12}>
-            <Input
-              label={t("NewAccountPage.institutionLabel")}
-              help={t("NewAccountPage.institutionHelp")}
-            >
+            <FormGroup controlId="institution">
+              <ControlLabel>{t("NewAccountPage.institutionLabel")}</ControlLabel>
               <ReactSelect
-                ref="institution"
+                inputProps={{id: "institution"}}
                 placeholder={t("NewAccountPage.institutionPlaceholder")}
                 {...fields.institution}
                 onChange={this.onInstitutionChange}
@@ -249,99 +243,108 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
                 }))}
               >
               </ReactSelect>
-            </Input>
+              <HelpBlock>{t("NewAccountPage.institutionHelp")}</HelpBlock>
+            </FormGroup>
           </Col>
         </Row>
 
         <Row>
           <Col xs={12} md={6}>
-            <Input
-              type="text"
-              ref="name"
-              label={t("NewAccountPage.nameLabel")}
-              help={t("NewAccountPage.nameHelp")}
-              placeholder={t("NewAccountPage.namePlaceholder")}
-              {...wrapError(fields.name)}
-            />
+            <FormGroup controlId="name" {...validationState(fields.name)}>
+              <ControlLabel>{t("NewAccountPage.nameLabel")}</ControlLabel>
+              <FormControl
+                type="text"
+                placeholder={t("NewAccountPage.namePlaceholder")}
+                {...fields.name}
+              />
+              <FormControl.Feedback/>
+              <HelpBlock>{validationError(fields.name)}</HelpBlock>
+            </FormGroup>
           </Col>
 
           <Col xs={12} md={6}>
-            <Input
-              type="text"
-              ref="web"
-              label={t("NewAccountPage.webLabel")}
-              placeholder={t("NewAccountPage.webPlaceholder")}
-              {...fields.web}
-            />
+            <FormGroup controlId="web">
+              <ControlLabel>{t("NewAccountPage.webLabel")}</ControlLabel>
+              <FormControl
+                type="text"
+                placeholder={t("NewAccountPage.webPlaceholder")}
+                {...fields.web}
+              />
+            </FormGroup>
           </Col>
         </Row>
 
         <Row>
           <Col xs={12} md={6}>
-            <Input
-              type="textarea"
-              rows={4}
-              ref="address"
-              label={t("NewAccountPage.addressLabel")}
-              placeholder={t("NewAccountPage.addressPlaceholder")}
-              {...fields.address}
-            />
+            <FormGroup controlId="address">
+              <ControlLabel>{t("NewAccountPage.addressLabel")}</ControlLabel>
+              <FormControl
+                componentClass="textarea"
+                rows={4}
+                placeholder={t("NewAccountPage.addressPlaceholder")}
+                {...fields.address}
+              />
+            </FormGroup>
           </Col>
 
           <Col xs={12} md={6}>
-            <Input
-              type="textarea"
-              rows={4}
-              ref="notes"
-              label={t("NewAccountPage.notesLabel")}
-              placeholder={t("NewAccountPage.notesPlaceholder")}
-              {...fields.notes}
-            />
+            <FormGroup controlId="notes">
+              <ControlLabel>{t("NewAccountPage.notesLabel")}</ControlLabel>
+              <FormControl
+                componentClass="textarea"
+                rows={4}
+                placeholder={t("NewAccountPage.notesPlaceholder")}
+                {...fields.notes}
+              />
+            </FormGroup>
           </Col>
         </Row>
 
-        <Input
-          type="checkbox"
-          ref="online"
-          label={t("NewAccountPage.enableOnline")}
-          {...fields.online}
-        />
+        <Checkbox id="online" {...fields.online as any}>
+          {t("NewAccountPage.enableOnline")}
+        </Checkbox>
 
         <Collapse in={fields.online.checked}>
           <div>
             <Panel header={t("NewAccountPage.ofxInfo")}>
               <Row>
                 <Col xs={6} md={3}>
-                  <Input
-                    type="text"
-                    ref="fid"
-                    label={t("NewAccountPage.fidLabel")}
-                    help={t("NewAccountPage.fidHelp")}
-                    placeholder={t("NewAccountPage.fidPlaceholder")}
-                    {...wrapWarning(fields.fid)}
-                  />
+                  <FormGroup controlId="fid" {...validateExpected(fields.fid)}>
+                    <ControlLabel>{t("NewAccountPage.fidLabel")}</ControlLabel>
+                    <FormControl
+                      type="text"
+                      placeholder={t("NewAccountPage.fidPlaceholder")}
+                      {...fields.fid}
+                    />
+                    <FormControl.Feedback/>
+                    <HelpBlock>{expectedHelp(fields.fid)}</HelpBlock>
+                  </FormGroup>
                 </Col>
 
                 <Col xs={6} md={3}>
-                  <Input
-                    type="text"
-                    ref="org"
-                    label={t("NewAccountPage.orgLabel")}
-                    help={t("NewAccountPage.orgHelp")}
-                    placeholder={t("NewAccountPage.orgPlaceholder")}
-                    {...wrapWarning(fields.org)}
-                  />
+                  <FormGroup controlId="org" {...validateExpected(fields.org)}>
+                    <ControlLabel>{t("NewAccountPage.orgLabel")}</ControlLabel>
+                    <FormControl
+                      type="text"
+                      placeholder={t("NewAccountPage.orgPlaceholder")}
+                      {...fields.org}
+                    />
+                    <FormControl.Feedback/>
+                    <HelpBlock>{expectedHelp(fields.org)}</HelpBlock>
+                  </FormGroup>
                 </Col>
 
                 <Col xs={12} md={6}>
-                  <Input
-                    type="text"
-                    ref="ofx"
-                    label={t("NewAccountPage.ofxLabel")}
-                    help={t("NewAccountPage.ofxHelp")}
-                    placeholder={t("NewAccountPage.ofxPlaceholder")}
-                    {...wrapWarning(fields.ofx)}
-                  />
+                  <FormGroup controlId="ofx" {...validateExpected(fields.ofx)}>
+                    <ControlLabel>{t("NewAccountPage.ofxLabel")}</ControlLabel>
+                    <FormControl
+                      type="text"
+                      placeholder={t("NewAccountPage.ofxPlaceholder")}
+                      {...fields.ofx}
+                    />
+                    <FormControl.Feedback/>
+                    <HelpBlock>{expectedHelp(fields.ofx)}</HelpBlock>
+                  </FormGroup>
                 </Col>
               </Row>
             </Panel>
@@ -349,25 +352,23 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
             <Panel header={t("NewAccountPage.userpassInfo")}>
               <Row>
                 <Col xs={6}>
-                  <Input
-                    type="text"
-                    ref="username"
-                    label={t("NewAccountPage.usernameLabel")}
-                    help={t("NewAccountPage.usernameHelp")}
-                    placeholder={t("NewAccountPage.usernamePlaceholder")}
-                    {...fields.username}
-                  />
+                  <FormGroup controlId="username">
+                    <ControlLabel>{t("NewAccountPage.usernameLabel")}</ControlLabel>
+                    <FormControl
+                      type="text"
+                      {...fields.username}
+                    />
+                  </FormGroup>
                 </Col>
 
                 <Col xs={6}>
-                  <Input
-                    type="text"
-                    ref="password"
-                    label={t("NewAccountPage.passwordLabel")}
-                    help={t("NewAccountPage.passwordHelp")}
-                    placeholder={t("NewAccountPage.passwordPlaceholder")}
-                    {...fields.password}
-                  />
+                  <FormGroup controlId="password">
+                    <ControlLabel>{t("NewAccountPage.passwordLabel")}</ControlLabel>
+                    <FormControl
+                      type="text"
+                      {...fields.password}
+                    />
+                  </FormGroup>
                 </Col>
               </Row>
             </Panel>
@@ -446,7 +447,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
             <Col xs={12}>
               <Button
                 type="button"
-                ref="addAccount"
+                id="addAccount"
                 bsStyle="success"
                 onClick={this.onAddAccount}>{t("NewAccountPage.addAccount")}
               </Button>
@@ -457,6 +458,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
                   active={this.state.gettingAccounts}
                   disabled={!canGetAccounts}
                   onClick={this.onGetAccountList}
+                  id="submit"
                   >
                     <Icon name={this.state.gettingAccounts ? "fa-spinner fa-pulse" : "download"}/>
                     {" " + t("NewAccountPage.getAccountList")}
@@ -476,7 +478,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
           <Button onClick={this.onClose}>{t("NewAccountPage.close")}</Button>
           <Button
             bsStyle="primary"
-            ref="submit"
+            id="submit"
             onClick={this.reForm.handleSubmit(editing ? this.onSave : this.onCreate)}
           >
             {editing ? t("NewAccountPage.save") : t("NewAccountPage.create")}

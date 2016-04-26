@@ -2,7 +2,7 @@
 
 import { autobind } from "core-decorators";
 import * as React from "react";
-import { Button, Input, Modal, Row, Col } from "react-bootstrap";
+import { Button, FormGroup, FormControl, ControlLabel, Modal, Row, Col } from "react-bootstrap";
 import { connect } from "react-redux";
 import * as Icon from "react-fa";
 import { verify } from "updraft";
@@ -134,17 +134,19 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
             <Modal.Title>{adding ? t("AddBillDialog.addTitle") : t("AddBillDialog.editTitle")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Input
-              type="text"
-              label={t("AddBillDialog.nameLabel")}
-              placeholder={t("AddBillDialog.namePlaceholder")}
-              {...wrapError(fields.name)}
-            />
-            <CurrencyInput
-              label={t("AddBillDialog.amountLabel")}
-              placeholder={t("AddBillDialog.amountPlaceholder") }
-              {...wrapError(fields.amount) } />
-            <Input label={t("AddBillDialog.recurLabel")}>
+            <FormGroup controlId="name">
+              <ControlLabel>{t("AddBillDialog.nameLabel")}</ControlLabel>
+              <FormControl
+                type="text"
+                {...wrapError(fields.name)}
+              />
+            </FormGroup>
+            <FormGroup controlId="name">
+              <ControlLabel>{t("AddBillDialog.amountLabel")}</ControlLabel>
+              <CurrencyInput {...wrapError(fields.amount)}/>
+            </FormGroup>
+            <FormGroup controlId="notes">
+              <ControlLabel>{t("AddBillDialog.recurLabel")}</ControlLabel>
               <Row>
                 <Col xs={4}>
                   <DatePicker
@@ -152,14 +154,14 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
                   />
                 </Col>
                 <Col xs={3}>
-                  <Input type="select" {...fields.recurring}>
+                  <FormControl componentClass="select" {...fields.recurring as any}>
                     <option value="0">{t("AddBillDialog.once")}</option>
                     <option value="1">{t("AddBillDialog.repeatEvery")}</option>
-                  </Input>
+                  </FormControl>
                 </Col>
                 {recurring &&
                   <Col xs={2}>
-                    <Input
+                    <FormControl
                       style={{width:100}}
                       type="number"
                       min={1}
@@ -169,19 +171,23 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
                 }
                 {recurring &&
                   <Col xs={3}>
-                    <EnumSelect {...fields.frequency} enum={Frequency}/>
+                    <EnumSelect {...fields.frequency as any} enum={Frequency}/>
                   </Col>
                 }
               </Row>
-            </Input>
-            <AccountSelect label={t("AddBillDialog.accountLabel")} {...fields.account}/>
-            <Input
-              type="textarea"
-              label={t("AddBillDialog.notesLabel")}
-              placeholder={t("AddBillDialog.notesPlaceholder")}
-              rows={4}
-              {...wrapError(fields.notes)}
-            />
+            </FormGroup>
+            <FormGroup controlId="account">
+              <ControlLabel>{t("AddBillDialog.accountLabel")}</ControlLabel>
+              <AccountSelect {...fields.account as any}/>
+            </FormGroup>
+            <FormGroup controlId="notes">
+              <ControlLabel>{t("AddBillDialog.notesLabel")}</ControlLabel>
+              <FormControl
+                componentClass="textarea"
+                rows={4}
+                {...wrapError(fields.notes)}
+              />
+            </FormGroup>
           </Modal.Body>
           <Modal.Footer>
             {this.props.editing != -1 &&
