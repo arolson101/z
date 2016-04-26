@@ -72,97 +72,113 @@ describe("NewAccountPageDisplay", function() {
     findNodes();
   });
 
-  it("selecting an institution sets fields", async function() {
-    const assertFiValues = (fi: FI) => {
-      expect(name).to.have.property("value", fi.name, "name doesn't match");
+  describe("create accounts", function() {
+    it("selecting an institution sets fields", async function() {
+      const assertFiValues = (fi: FI) => {
+        expect(name).to.have.property("value", fi.name, "name doesn't match");
+        expect(web).to.have.property("value", fi.profile.siteURL, "web doesn't match");
+        expect(address).to.have.property(
+          "value",
+          fi.profile.address1 + "\n" +
+          fi.profile.address2 + "\n" +
+          fi.profile.address3 + "\n" +
+          fi.profile.city + ", " +
+          fi.profile.state + " " +
+          fi.profile.zip + "\n" +
+          fi.profile.country,
+          "address doesn't match"
+        );
+        expect(notes).to.have.property("value", "", "notes doesn't match");
+        expect(fid).to.have.property("value", fi.fid, "fid doesn't match");
+        expect(org).to.have.property("value", fi.org, "org doesn't match");
+        expect(ofx).to.have.property("value", fi.ofx, "ofx doesn't match");
+      };
+
+      // quick sanity check- changing input values also changes component state
+      await simulateChangeValue(name, "asdf");
+      expect(component.state.fields.name).to.have.property("value", "asdf", "state.fields.name doesn't match");
+      expect(name).to.have.property("value", "asdf");
+      await simulateChangeValue(name, "");
+
+      // select institution, check fields
+      let fi = filist[0];
+      await simulateChangeInstitution(institution, fi.name);
+      assertFiValues(fi);
+
+      // select different institution; fields should be updated
+      fi = filist[1];
+      await simulateChangeInstitution(institution, fi.name);
+      assertFiValues(fi);
+
+      // select different institution; unchanged fields should be updated
+      await simulateChangeValue(name, "different name");
+      fi = filist[2];
+      await simulateChangeInstitution(institution, fi.name);
+      expect(name).to.have.property("value", "different name");
       expect(web).to.have.property("value", fi.profile.siteURL, "web doesn't match");
-      expect(address).to.have.property(
-        "value",
-        fi.profile.address1 + "\n" +
-        fi.profile.address2 + "\n" +
-        fi.profile.address3 + "\n" +
-        fi.profile.city + ", " +
-        fi.profile.state + " " +
-        fi.profile.zip + "\n" +
-        fi.profile.country,
-        "address doesn't match"
-      );
-      expect(notes).to.have.property("value", "", "notes doesn't match");
-      expect(fid).to.have.property("value", fi.fid, "fid doesn't match");
-      expect(org).to.have.property("value", fi.org, "org doesn't match");
-      expect(ofx).to.have.property("value", fi.ofx, "ofx doesn't match");
-    };
+    });
 
-    // quick sanity check- changing input values also changes component state
-    await simulateChangeValue(name, "asdf");
-    expect(component.state.fields.name).to.have.property("value", "asdf", "state.fields.name doesn't match");
-    expect(name).to.have.property("value", "asdf");
-    await simulateChangeValue(name, "");
 
-    // select institution, check fields
-    let fi = filist[0];
-    await simulateChangeInstitution(institution, fi.name);
-    assertFiValues(fi);
+    it("shows a warning if fid/org/ofx are different", async function() {
+      let fi = filist[0];
+      await simulateChangeInstitution(institution, fi.name);
 
-    // select different institution; fields should be updated
-    fi = filist[1];
-    await simulateChangeInstitution(institution, fi.name);
-    assertFiValues(fi);
+      for (let key of ["fid", "org", "ofx"]) {
+        expect(findNode(component, key, ".glyphicon-warning-sign")).to.be.null;
+        const node = findNode<HTMLInputElement>(component, key, "input");
+        await simulateChangeValue(node, "wrong value");
+        expect(findNode(component, key, ".glyphicon-warning-sign")).to.be.not.null;
+      }
+    });
 
-    // select different institution; unchanged fields should be updated
-    await simulateChangeValue(name, "different name");
-    fi = filist[2];
-    await simulateChangeInstitution(institution, fi.name);
-    expect(name).to.have.property("value", "different name");
-    expect(web).to.have.property("value", fi.profile.siteURL, "web doesn't match");
+
+    it("submit does nothing when name or accounts are empty", async function() {
+      const save = findNode<HTMLButtonElement>(component, "submit", "");
+
+      // saving initially does nothing
+      await simulateClick(save);
+      expect(updraftAdd).to.have.not.been.called;
+
+      // set name
+      await simulateChangeValue(name, "dummy name");
+      await simulateClick(save);
+      expect(updraftAdd).to.have.not.been.called;
+
+      // add account
+      component.onAccountSave({type: AccountType.CHECKING, name: "dummy account name", number: "1234"});
+      await frame();
+      await simulateClick(save);
+      expect(updraftAdd).to.have.been.calledOnce;
+    });
+
+
+    it("adds accounts", async function() {
+      await simulateClick(addAccount);
+      let addAccountDialog = component.refs["addAccountDialog"] as AddAccountDialog;
+      let nameInput = findNode<HTMLInputElement>(addAccountDialog, "name", "input");
+      let numberInput = findNode<HTMLInputElement>(addAccountDialog, "number", "input");
+      let form = findNode<HTMLFormElement>(addAccountDialog, "form", "");
+      await simulateChangeValue(nameInput, "checking");
+      await simulateChangeValue(numberInput, "12345");
+      await simulateSubmit(form);
+      expect(component.state.accounts).to.have.length(1);
+    });
+
+
+    it("downloads account list from server");
   });
 
 
-  it("shows a warning if fid/org/ofx are different", async function() {
-    let fi = filist[0];
-    await simulateChangeInstitution(institution, fi.name);
+  describe("editing accounts", function() {
+    it("finds the institution");
+    it("change name");
+    it("change details");
 
-    for (let key of ["fid", "org", "ofx"]) {
-      expect(findNode(component, key, ".glyphicon-warning-sign")).to.be.null;
-      const node = findNode<HTMLInputElement>(component, key, "input");
-      await simulateChangeValue(node, "wrong value");
-      expect(findNode(component, key, ".glyphicon-warning-sign")).to.be.not.null;
-    }
+    describe("accounts", function() {
+      it("add");
+      it("remove");
+      it("rename");
+      it("change number");
+    });
   });
-
-
-  it("submit does nothing when name or accounts are empty", async function() {
-    const save = findNode<HTMLButtonElement>(component, "submit", "");
-
-    // saving initially does nothing
-    await simulateClick(save);
-    expect(updraftAdd).to.have.not.been.called;
-
-    // set name
-    await simulateChangeValue(name, "dummy name");
-    await simulateClick(save);
-    expect(updraftAdd).to.have.not.been.called;
-
-    // add account
-    component.onAccountSave({type: AccountType.CHECKING, name: "dummy account name", number: "1234"});
-    await frame();
-    await simulateClick(save);
-    expect(updraftAdd).to.have.been.calledOnce;
-  });
-
-
-  it("adds accounts", async function() {
-    await simulateClick(addAccount);
-    let addAccountDialog = component.refs["addAccountDialog"] as AddAccountDialog;
-    let nameInput = findNode<HTMLInputElement>(addAccountDialog, "name", "input");
-    let numberInput = findNode<HTMLInputElement>(addAccountDialog, "number", "input");
-    let form = findNode<HTMLFormElement>(addAccountDialog, "form", "");
-    await simulateChangeValue(nameInput, "checking");
-    await simulateChangeValue(numberInput, "12345");
-    await simulateSubmit(form);
-    expect(component.state.accounts).to.have.length(1);
-  });
-
-
-  it("downloads account list from server");
 });
