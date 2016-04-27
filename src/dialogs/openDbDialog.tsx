@@ -3,7 +3,7 @@
 import { autobind } from "core-decorators";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Alert, Button, ControlLabel, FormGroup, FormControl, Modal } from "react-bootstrap";
+import { Alert, Button, ControlLabel, FormGroup, FormControl, HelpBlock, Modal } from "react-bootstrap";
 import { connect } from "react-redux";
 
 import { history } from "../components";
@@ -103,23 +103,16 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
     const { fields, submitFailed } = this.state;
     const { open } = this.props;
 
-    const wrapErrorHelper = (props: any, error: string) => {
-      if (error) {
-        props.bsStyle = "error";
-        props.help = error;
+    const validationState = (field: ReForm.Field<string>): Object => {
+      if (field.error && submitFailed) {
+        return { validationState: "error" };
       }
-      props.hasFeedback = true;
     };
 
-    const wrapError = (field: ReForm.Field<any>, supressEmptyError?: boolean) => {
-      let props: any = _.extend({}, field);
-      let error: string = null;
-      const isEmpty = (field.value === undefined || field.value == "");
-      if (field.error && submitFailed && (!supressEmptyError || !isEmpty)) {
-        error = field.error;
+    const validationHelpText = (field: ReForm.Field<string>): string => {
+      if (field.error && submitFailed) {
+        return field.error;
       }
-      wrapErrorHelper(props, error);
-      return props;
     };
 
     return (
@@ -129,35 +122,41 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
             <Modal.Title>{open ? t("OpenDbDialog.openTitle") : t("OpenDbDialog.createTitle")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <FormGroup>
+            <FormGroup controlId="name" {...validationState(fields.name)}>
               <ControlLabel>{t("OpenDbDialog.nameLabel")}</ControlLabel>
               <FormControl
                 type="text"
                 ref="name"
                 placeholder={t("OpenDbDialog.namePlaceholder")}
-                {...wrapError(fields.name)}
+                {...fields.name}
                 readOnly={open}
               />
+              <FormControl.Feedback/>
+              <HelpBlock>{validationHelpText(fields.name)}</HelpBlock>
             </FormGroup>
             {sys.supportsPassword() &&
-              <FormGroup>
+              <FormGroup controlId="password1" {...validationState(fields.password1)}>
                 <ControlLabel>{t("OpenDbDialog.passwordLabel")}</ControlLabel>
                 <FormControl
                   type="password"
                   ref="password"
                   placeholder={t("OpenDbDialog.passwordPlaceholder")}
-                  {...wrapError(fields.password1)}
+                  {...fields.password1}
                 />
+                <FormControl.Feedback/>
+                <HelpBlock>{validationHelpText(fields.password1)}</HelpBlock>
               </FormGroup>
             }
             {sys.supportsPassword() && !open &&
-              <FormGroup>
+              <FormGroup controlId="password2" {...validationState(fields.password2)}>
                 <ControlLabel>{t("OpenDbDialog.confirmPasswordLabel")}</ControlLabel>
                 <FormControl
                   type="password"
                   placeholder={t("OpenDbDialog.confirmPasswordPlaceholder")}
-                  {...wrapError(fields.password2)}
+                  {...fields.password2}
                 />
+                <FormControl.Feedback/>
+                <HelpBlock>{validationHelpText(fields.password2)}</HelpBlock>
               </FormGroup>
             }
             {this.state.errorMessage &&

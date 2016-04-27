@@ -1,3 +1,4 @@
 - fix clunkly modal opening
-- cleanup wrapError (stateless component?)
+- branch react-bootstrap typings
+- fix i18next on tests
 - more tests

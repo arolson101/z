@@ -2,7 +2,7 @@
 
 import { autobind } from "core-decorators";
 import * as React from "react";
-import { Button, FormGroup, FormControl, ControlLabel, Modal, Row, Col } from "react-bootstrap";
+import { Button, FormGroup, FormControl, ControlLabel, HelpBlock, Modal, Row, Col } from "react-bootstrap";
 import { connect } from "react-redux";
 import * as Icon from "react-fa";
 import { verify } from "updraft";
@@ -105,23 +105,16 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
     const { fields, submitFailed } = this.state;
     const { handleSubmit } = this.reForm;
 
-    const wrapErrorHelper = (props: any, error: string) => {
-      if (error) {
-        props.bsStyle = "error";
-        props.help = error;
+    const validationState = (field: ReForm.Field<any>): Object => {
+      if (field.error && submitFailed) {
+        return { validationState: "error" };
       }
-      props.hasFeedback = true;
     };
 
-    const wrapError = (field: ReForm.Field<any>, supressEmptyError?: boolean) => {
-      let props: any = _.extend({}, field);
-      let error: string = null;
-      const isEmpty = (field.value === undefined || field.value == "");
-      if (field.error && submitFailed && (!supressEmptyError || !isEmpty)) {
-        error = field.error;
+    const validationHelpText = (field: ReForm.Field<any>): string => {
+      if (field.error && submitFailed) {
+        return field.error;
       }
-      wrapErrorHelper(props, error);
-      return props;
     };
 
     const adding = this.props.editing == -1;
@@ -134,18 +127,21 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
             <Modal.Title>{adding ? t("AddBillDialog.addTitle") : t("AddBillDialog.editTitle")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <FormGroup controlId="name">
+            <FormGroup controlId="name" {...validationState(fields.name)}>
               <ControlLabel>{t("AddBillDialog.nameLabel")}</ControlLabel>
               <FormControl
                 type="text"
-                {...wrapError(fields.name)}
+                {...fields.name}
               />
+              <FormControl.Feedback/>
+              <HelpBlock>{validationHelpText(fields.name)}</HelpBlock>
             </FormGroup>
-            <FormGroup controlId="name">
+            <FormGroup controlId="name" {...validationState(fields.amount)}>
               <ControlLabel>{t("AddBillDialog.amountLabel")}</ControlLabel>
-              <CurrencyInput {...wrapError(fields.amount)}/>
+              <CurrencyInput {...fields.amount as any}/>
+              <HelpBlock>{validationHelpText(fields.amount)}</HelpBlock>
             </FormGroup>
-            <FormGroup controlId="notes">
+            <FormGroup controlId="notes"  {...validationState(fields.recurring)}>
               <ControlLabel>{t("AddBillDialog.recurLabel")}</ControlLabel>
               <Row>
                 <Col xs={4}>
@@ -161,32 +157,40 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
                 </Col>
                 {recurring &&
                   <Col xs={2}>
-                    <FormControl
-                      style={{width:100}}
-                      type="number"
-                      min={1}
-                      {...wrapError(fields.recurrenceMultiple)}
-                    />
+                    <FormGroup componentId="recurrenceMultiple"  {...validationState(fields.recurrenceMultiple)}>
+                      <FormControl
+                        style={{width:100}}
+                        type="number"
+                        min={1}
+                        {...fields.recurrenceMultiple as any}
+                      />
+                      <FormControl.Feedback/>
+                      <HelpBlock>{validationHelpText(fields.recurrenceMultiple)}</HelpBlock>
+                    </FormGroup>
                   </Col>
                 }
                 {recurring &&
                   <Col xs={3}>
-                    <EnumSelect {...fields.frequency as any} enum={Frequency}/>
+                    <FormGroup componentId="frequency" {...validationState(fields.frequency)}>
+                      <EnumSelect {...fields.frequency as any} enum={Frequency}/>
+                    </FormGroup>
                   </Col>
                 }
               </Row>
             </FormGroup>
-            <FormGroup controlId="account">
+            <FormGroup controlId="account" {...validationState(fields.account)}>
               <ControlLabel>{t("AddBillDialog.accountLabel")}</ControlLabel>
               <AccountSelect {...fields.account as any}/>
             </FormGroup>
-            <FormGroup controlId="notes">
+            <FormGroup controlId="notes" {...validationState(fields.notes)}>
               <ControlLabel>{t("AddBillDialog.notesLabel")}</ControlLabel>
               <FormControl
                 componentClass="textarea"
                 rows={4}
-                {...wrapError(fields.notes)}
+                {...fields.notes}
               />
+              <FormControl.Feedback/>
+              <HelpBlock>{validationHelpText(fields.notes)}</HelpBlock>
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
