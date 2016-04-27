@@ -35,9 +35,7 @@ export function dummyFI(id: number, name: string): FI {
 
 export function findNode<T extends Element>(component: Element, selector: string): T {
   expect(component).to.be.not.null;
-  const node = component.querySelector(selector);
-  expect(node).to.be.ok;
-  return node as T;
+  return component.querySelector(selector) as T;
 }
 
 

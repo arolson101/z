@@ -127,41 +127,44 @@ describe("NewAccountPageDisplay", function() {
       let fi = filist[0];
       await simulateChangeInstitution(institution, fi.name);
 
-      // for (let key of ["fid", "org", "ofx"]) {
-      //   expect(findNode(component, key, ".glyphicon-warning-sign")).to.be.null;
-      //   const node = findNode<HTMLInputElement>(component, key, "input");
-      //   await simulateChangeValue(node, "wrong value");
-      //   expect(findNode(component, key, ".glyphicon-warning-sign")).to.be.not.null;
-      // }
+      for (let key of ["fid", "org", "ofx"]) {
+        expect(findNode(componentNode, `input#${key} ~ .glyphicon-warning-sign`)).to.be.null;
+        const node = findNode<HTMLInputElement>(componentNode, `input#${key}`);
+        await simulateChangeValue(node, "different value");
+        expect(findNode(componentNode, `input#${key} ~ .glyphicon-warning-sign`)).to.be.not.null;
+      }
     });
 
 
     it("submit does nothing when name or accounts are empty", async function() {
-      const save = findNode<HTMLButtonElement>(componentNode, "submit");
+      const submit = findNode<HTMLButtonElement>(componentNode, "button#submit");
 
       // saving initially does nothing
-      await simulateClick(save);
+      await simulateClick(submit);
       expect(updraftAdd).to.have.not.been.called;
 
       // set name
       await simulateChangeValue(name, "dummy name");
-      await simulateClick(save);
+      await simulateClick(submit);
       expect(updraftAdd).to.have.not.been.called;
 
       // add account
       component.onAccountSave({type: AccountType.CHECKING, name: "dummy account name", number: "1234"});
       await frame();
-      await simulateClick(save);
+      await simulateClick(submit);
       expect(updraftAdd).to.have.been.calledOnce;
     });
 
 
     it("adds accounts", async function() {
       await simulateClick(addAccount);
-      let addAccountDialog = ReactDOM.findDOMNode(component.refs["addAccountDialog"]);
-      let nameInput = findNode<HTMLInputElement>(addAccountDialog, "input#addAccountDlg_name");
-      let numberInput = findNode<HTMLInputElement>(addAccountDialog, "input#addAccountDlg_number");
-      let form = findNode<HTMLFormElement>(addAccountDialog, "form");
+      await frame();
+      await frame();
+      findNodes();
+      let addAccountDialog = component.refs["addAccountDialog"] as AddAccountDialog;
+      let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(addAccountDialog.refs["name"]);
+      let numberInput = ReactDOM.findDOMNode<HTMLInputElement>(addAccountDialog.refs["number"]);
+      let form = ReactDOM.findDOMNode<HTMLFormElement>(addAccountDialog.refs["form"]);
       await simulateChangeValue(nameInput, "checking");
       await simulateChangeValue(numberInput, "12345");
       await simulateSubmit(form);

@@ -127,7 +127,7 @@ export class AddAccountDialog extends React.Component<Props, State> implements R
               <ControlLabel>{t("AddAccountDialog.nameLabel")}</ControlLabel>
               <FormControl
                 type="text"
-                id="name"
+                ref="name"
                 placeholder={t("AddAccountDialog.namePlaceholder")}
                 {...wrapError(fields.name)}
               />
