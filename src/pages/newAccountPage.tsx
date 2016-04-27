@@ -203,25 +203,35 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
       }
     };
 
-    const validationError = (field: ReForm.Field<string>): string => {
+    const validationHelpText = (field: ReForm.Field<string>): string => {
       if (field.error && submitFailed) {
         return field.error;
       }
     };
 
-    const expectedFi = this.fiForOptionValue(this.state.fields.institution.value);
-    const validateExpected = (field: ReForm.Field<string>): Object => {
+    const renderFidOrgOfx = (which: string, label: string) => {
+      const expectedFi = this.fiForOptionValue(this.state.fields.institution.value);
+      const field = fields[which];
       let expectedValue = (expectedFi ? (expectedFi as any)[field.name] : null);
-      if (expectedValue && expectedValue != field.value) {
-        return { validationState: "warning" };
-      }
-    };
 
-    const expectedHelp = (field: ReForm.Field<string>): string => {
-      let expectedValue = (expectedFi ? (expectedFi as any)[field.name] : null);
+      let validationStateProp = {};
+      let helpText = "";
       if (expectedValue && expectedValue != field.value) {
-        return t("NewAccountPage.differentWarning", {expectedValue});
+        validationStateProp = { validationState: "warning" };
+        helpText = t("NewAccountPage.differentWarning", {expectedValue});
       }
+
+      return (
+        <FormGroup controlId={which} {...validationStateProp}>
+          <ControlLabel>{label}</ControlLabel>
+          <FormControl
+            type="text"
+            {...field}
+          />
+          <FormControl.Feedback/>
+          <HelpBlock>{helpText}</HelpBlock>
+        </FormGroup>
+      );
     };
 
     const editing = !isNew(this.props.institutionId);
@@ -258,7 +268,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
                 {...fields.name}
               />
               <FormControl.Feedback/>
-              <HelpBlock>{validationError(fields.name)}</HelpBlock>
+              <HelpBlock>{validationHelpText(fields.name)}</HelpBlock>
             </FormGroup>
           </Col>
 
@@ -309,42 +319,15 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
             <Panel header={t("NewAccountPage.ofxInfo")}>
               <Row>
                 <Col xs={6} md={3}>
-                  <FormGroup controlId="fid" {...validateExpected(fields.fid)}>
-                    <ControlLabel>{t("NewAccountPage.fidLabel")}</ControlLabel>
-                    <FormControl
-                      type="text"
-                      placeholder={t("NewAccountPage.fidPlaceholder")}
-                      {...fields.fid}
-                    />
-                    <FormControl.Feedback/>
-                    <HelpBlock>{expectedHelp(fields.fid)}</HelpBlock>
-                  </FormGroup>
+                  {renderFidOrgOfx("fid", t("NewAccountPage.fidLabel"))}
                 </Col>
 
                 <Col xs={6} md={3}>
-                  <FormGroup controlId="org" {...validateExpected(fields.org)}>
-                    <ControlLabel>{t("NewAccountPage.orgLabel")}</ControlLabel>
-                    <FormControl
-                      type="text"
-                      placeholder={t("NewAccountPage.orgPlaceholder")}
-                      {...fields.org}
-                    />
-                    <FormControl.Feedback/>
-                    <HelpBlock>{expectedHelp(fields.org)}</HelpBlock>
-                  </FormGroup>
+                  {renderFidOrgOfx("org", t("NewAccountPage.orgLabel"))}
                 </Col>
 
                 <Col xs={12} md={6}>
-                  <FormGroup controlId="ofx" {...validateExpected(fields.ofx)}>
-                    <ControlLabel>{t("NewAccountPage.ofxLabel")}</ControlLabel>
-                    <FormControl
-                      type="text"
-                      placeholder={t("NewAccountPage.ofxPlaceholder")}
-                      {...fields.ofx}
-                    />
-                    <FormControl.Feedback/>
-                    <HelpBlock>{expectedHelp(fields.ofx)}</HelpBlock>
-                  </FormGroup>
+                  {renderFidOrgOfx("ofx", t("NewAccountPage.ofxLabel"))}
                 </Col>
               </Row>
             </Panel>

@@ -1,3 +1,3 @@
-- update react-bootstrap Input -> FormGroup/FormControl
-- replace test refs with classes
+- fix clunkly modal opening
+- cleanup wrapError (stateless component?)
 - more tests

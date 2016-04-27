@@ -2,7 +2,7 @@
 
 import { autobind } from "core-decorators";
 import * as React from "react";
-import { Button, ControlLabel, FormGroup, FormControl, Modal } from "react-bootstrap";
+import { Button, ControlLabel, FormGroup, FormControl, HelpBlock, Modal } from "react-bootstrap";
 
 import { t } from "../state";
 import { ValidateHelper, ReForm } from "../util";
@@ -94,23 +94,16 @@ export class AddAccountDialog extends React.Component<Props, State> implements R
     const { fields, submitFailed } = this.state;
     const { handleSubmit } = this.reForm;
 
-    const wrapErrorHelper = (props: any, error: string) => {
-      if (error) {
-        props.bsStyle = "error";
-        props.help = error;
+    const validationState = (field: ReForm.Field<string>): Object => {
+      if (field.error && submitFailed) {
+        return { validationState: "error" };
       }
-      props.hasFeedback = true;
     };
 
-    const wrapError = (field: ReForm.Field<string>, supressEmptyError?: boolean) => {
-      let props: any = _.extend({}, field);
-      let error: string = null;
-      const isEmpty = (field.value === undefined || field.value === "");
-      if (field.error && submitFailed && (!supressEmptyError || !isEmpty)) {
-        error = field.error;
+    const validationHelpText = (field: ReForm.Field<string>): string => {
+      if (field.error && submitFailed) {
+        return field.error;
       }
-      wrapErrorHelper(props, error);
-      return props;
     };
 
     const adding = this.props.editing == -1;
@@ -123,23 +116,27 @@ export class AddAccountDialog extends React.Component<Props, State> implements R
           </Modal.Header>
           <Modal.Body>
             <EnumSelect label={t("AddAccountDialog.typeLabel")} {...fields.type as any} enum={AccountType}/>
-            <FormGroup controlId="addAccountDlg_name">
+            <FormGroup controlId="addAccountDlg_name" {...validationState(fields.name)}>
               <ControlLabel>{t("AddAccountDialog.nameLabel")}</ControlLabel>
               <FormControl
                 type="text"
                 ref="name"
                 placeholder={t("AddAccountDialog.namePlaceholder")}
-                {...wrapError(fields.name)}
+                {...fields.name}
               />
+              <FormControl.Feedback/>
+              <HelpBlock>{validationHelpText(fields.name)}</HelpBlock>
             </FormGroup>
-            <FormGroup controlId="addAccountDlg_number">
+            <FormGroup controlId="addAccountDlg_number" {...validationState(fields.number)}>
               <ControlLabel>{t("AddAccountDialog.numberLabel")}</ControlLabel>
               <FormControl
                 type="text"
                 ref="number"
                 placeholder={t("AddAccountDialog.numberPlaceholder")}
-                {...wrapError(fields.number)}
+                {...fields.number}
               />
+              <FormControl.Feedback/>
+              <HelpBlock>{validationHelpText(fields.number)}</HelpBlock>
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
