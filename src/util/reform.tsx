@@ -206,6 +206,12 @@ export namespace ReForm {
             };
           }
         } as Interface;
+      },
+
+      componentDidUpdate: function(prevProps: any, prevState: any) {
+        if (this.props !== prevProps) {
+          this.reForm.runValidate();
+        }
       }
     });
   }
