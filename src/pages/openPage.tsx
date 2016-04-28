@@ -8,7 +8,7 @@ import * as Icon from "react-fa";
 
 import { bindActionCreators, updraftOpen, OpenStoreInfo, Dispatch } from "../actions";
 import { history } from "../components";
-import { AppState, UpdraftState, StoreInfo, t } from "../state";
+import { AppState, StoreInfo, t } from "../state";
 import { OpenDbDialog } from "../dialogs";
 import { formatFilesize, formatRelativeTime } from "../i18n";
 

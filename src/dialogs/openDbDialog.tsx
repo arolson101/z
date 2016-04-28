@@ -50,15 +50,19 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
   validate(values: any): ReForm.Errors {
     const errors: ReForm.Errors = {};
     let v = new ValidateHelper(values, errors);
+    let create = !this.props.name;
 
     v.checkFilename("name");
-    const invalidNames = _.keyBy(this.props.stores, (store: StoreInfo) => store.name);
-    v.checkUnique("name", invalidNames);
+
+    if (create) {
+      const invalidNames = _.keyBy(this.props.stores, (store: StoreInfo) => store.name);
+      v.checkUnique("name", invalidNames);
+    }
 
     if ( sys.supportsPassword() ) {
       v.checkNonempty("password1");
 
-      if (!this.props.name) {
+      if (create) {
         v.checkNonempty("password2");
 
         if (!errors["password1"] && values["password1"] != values["password2"]) {
@@ -79,9 +83,10 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
   }
 
   @autobind
-  onEntering() {
+  setInitialFocus() {
     const { name } = this.props;
-    ReactDOM.findDOMNode<HTMLInputElement>(this.refs[name && sys.supportsPassword() ? "password" : "name"]).focus();
+    const ref = ((name && sys.supportsPassword()) ? "password1" : "name");
+    ReactDOM.findDOMNode<HTMLInputElement>(this.refs[ref]).focus();
   }
 
   render() {
@@ -101,7 +106,7 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
     };
 
     return (
-      <Modal show={this.props.show} onEntering={this.onEntering} onHide={this.onCancel}>
+      <Modal show={this.props.show} onEnter={this.setInitialFocus} onHide={this.onCancel}>
         <form onSubmit={this.reForm.handleSubmit(this.onSubmit)} ref="form">
           <Modal.Header closeButton>
             <Modal.Title>{name ? t("OpenDbDialog.openTitle") : t("OpenDbDialog.createTitle")}</Modal.Title>

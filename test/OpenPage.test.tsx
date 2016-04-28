@@ -139,7 +139,7 @@ describe("OpenPageDisplay", function() {
     });
 
     it("passwords must match", async function() {
-      const updraftOpen = sinon.spy(() => {throw new Error("no")});
+      const updraftOpen = sinon.spy();
       const onOpened = sinon.spy();
       setup(updraftOpen, onOpened, "en-US", []);
 
@@ -160,7 +160,6 @@ describe("OpenPageDisplay", function() {
         await simulateChangeValue(password1Input, "dummy password");
         await simulateChangeValue(password2Input, "different password");
       }
-      console.log("about to submit");
       await simulateSubmit(form);
 
       expect(updraftOpen).not.to.have.been.called;
@@ -168,7 +167,83 @@ describe("OpenPageDisplay", function() {
     });
   });
 
-  it("can open existing stores");
-  it("displays error message if open fails");
+  it("can open existing stores", async function() {
+    const updraftOpen = sinon.spy(() => Promise.resolve());
+    const onOpened = sinon.spy();
+    const stores: StoreInfo[] = [
+      dummyStoreInfo("store1"),
+      dummyStoreInfo("store2"),
+      dummyStoreInfo("store3"),
+    ];
+    setup(updraftOpen, onOpened, "en-US", stores);
+
+    const openIndex = 1;
+    const opts: OpenStoreInfo = {
+      name: stores[openIndex].name,
+      password: "dummy password",
+      create: false
+    };
+
+    let openItem = componentNode.querySelectorAll(".openPageExistingItem")[openIndex];
+    await simulateClick(openItem);
+
+    const openDbDialog = component.refs["openDbDialog"] as OpenDbDialog;
+    let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["name"]);
+    let password1Input = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["password1"]);
+    let form = ReactDOM.findDOMNode<HTMLFormElement>(openDbDialog.refs["form"]);
+
+    expect(nameInput.value).to.equal(opts.name);
+
+    if (sys.supportsPassword()) {
+      await simulateChangeValue(password1Input, opts.password);
+    }
+    else {
+      delete opts.password;
+    }
+    await simulateSubmit(form);
+
+    expect(updraftOpen).to.have.callCount(1);
+    expect(updraftOpen).to.have.been.calledWith(opts);
+    expect(onOpened).to.have.callCount(1);
+  });
+
+  it("displays error message if open fails", async function() {
+    const errmsg = "test error message";
+    const updraftOpen = sinon.spy(() => Promise.reject(new Error(errmsg)));
+    const onOpened = sinon.spy();
+    const stores: StoreInfo[] = [
+      dummyStoreInfo("store1"),
+    ];
+    setup(updraftOpen, onOpened, "en-US", stores);
+
+    const openIndex = 0;
+    const opts: OpenStoreInfo = {
+      name: stores[openIndex].name,
+      password: "dummy password",
+      create: false
+    };
+
+    let openItem = componentNode.querySelectorAll(".openPageExistingItem")[openIndex];
+    await simulateClick(openItem);
+
+    const openDbDialog = component.refs["openDbDialog"] as OpenDbDialog;
+    let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["name"]);
+    let password1Input = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["password1"]);
+    let form = ReactDOM.findDOMNode<HTMLFormElement>(openDbDialog.refs["form"]);
+
+    expect(nameInput.value).to.equal(opts.name);
+
+    if (sys.supportsPassword()) {
+      await simulateChangeValue(password1Input, opts.password);
+    }
+    else {
+      delete opts.password;
+    }
+    await simulateSubmit(form);
+
+    expect(updraftOpen).to.have.callCount(0);
+    expect(updraftOpen).to.have.been.calledWith(opts);
+    expect(onOpened).to.have.callCount(0);
+  });
 
 });
