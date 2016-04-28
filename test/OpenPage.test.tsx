@@ -241,7 +241,6 @@ describe("OpenPageDisplay", function() {
     }
     await simulateSubmit(form);
 
-    expect(updraftOpen).to.have.callCount(0);
     expect(updraftOpen).to.have.been.calledWith(opts);
     expect(onOpened).to.have.callCount(0);
   });
