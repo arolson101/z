@@ -53,7 +53,7 @@ export function simulateSubmit(form: HTMLFormElement) {
 }
 
 
-export function simulateClick(element: HTMLButtonElement) {
+export function simulateClick(element: Element) {
   TestUtils.Simulate.click(element);
   return frame();
 }

@@ -19,3 +19,7 @@ global.Updraft = require("updraft");
 
 require("jsdom-global")();
 delete global["XMLHttpRequest"]; // mysterious fix: https://github.com/TypeStrong/ts-node/issues/92
+
+var chai = require("chai");
+var sinonChai = require("sinon-chai");
+chai.use(sinonChai);

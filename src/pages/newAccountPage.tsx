@@ -441,7 +441,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
                   active={this.state.gettingAccounts}
                   disabled={!canGetAccounts}
                   onClick={this.onGetAccountList}
-                  id="submit"
+                  id="getAccountList"
                   >
                     <Icon name={this.state.gettingAccounts ? "fa-spinner fa-pulse" : "download"}/>
                     {" " + t("NewAccountPage.getAccountList")}

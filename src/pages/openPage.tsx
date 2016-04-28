@@ -6,63 +6,90 @@ import { connect } from "react-redux";
 import { Grid, Col, ListGroup, ListGroupItem } from "react-bootstrap";
 import * as Icon from "react-fa";
 
+import { bindActionCreators, updraftOpen, OpenStoreInfo, Dispatch } from "../actions";
+import { history } from "../components";
 import { AppState, UpdraftState, StoreInfo, t } from "../state";
 import { OpenDbDialog } from "../dialogs";
 import { formatFilesize, formatRelativeTime } from "../i18n";
 
 
-interface Props extends React.Props<any> {
+
+interface PageProps {
+  updraftOpen?(info: OpenStoreInfo): Promise<any>;
+
   locale: string;
-  updraft: UpdraftState;
   stores: StoreInfo[];
-}
-
-interface State {
-  dialogIsVisible?: boolean;
-  dialogOpenMode?: boolean;
-  dialogStoreName?: string;
-}
-
-
-interface OpenItemProps extends React.Props<any> {
-  icon: string;
-  header: string;
-  onClick: Function;
-}
-
-class OpenItem extends React.Component<OpenItemProps, any> {
-  render() {
-    return <ListGroupItem
-      onClick={this.props.onClick}
-      header={[
-        <Icon name={this.props.icon} fixedWidth size="lg" key="icon"/>,
-        " ",
-        this.props.header
-      ]}
-    >
-      <small className="text-muted">
-        {this.props.children}
-      </small>
-    </ListGroupItem>;
-  }
 }
 
 
 @connect(
   (state: AppState): Props => ({
     locale: state.locale,
-    updraft: state.updraft,
     stores: state.stores
-  })
+  }),
+  (dispatch: Dispatch) => bindActionCreators(
+    {
+      updraftOpen
+    },
+    dispatch
+  )
 )
-export class OpenPage extends React.Component<Props, State> {
+export class OpenPage extends React.Component<PageProps, any> {
+  render() {
+    return <OpenPageDisplay {...this.props} onOpened={this.onOpened}/>;
+  }
+
+  @autobind
+  onOpened() {
+    history.replace("/");
+  }
+}
+
+
+
+interface Props {
+  updraftOpen?(info: OpenStoreInfo): Promise<any>;
+  onOpened?: Function;
+
+  locale: string;
+  stores: StoreInfo[];
+}
+
+interface State {
+  dialogShow?: boolean;
+  dialogName?: string;
+}
+
+
+export class OpenPageDisplay extends React.Component<Props, State> {
   state: State = {
-    dialogIsVisible: false,
-    dialogOpenMode: false
+    dialogShow: false,
   };
 
   render() {
     const { stores } = this.props;
+
+    const OpenItem = (props: {
+      icon: string;
+      header: string;
+      onClick: Function;
+      className: string;
+    } & React.Props<any>) => (
+      <ListGroupItem
+        onClick={props.onClick}
+        header={[
+          <Icon name={props.icon} fixedWidth size="lg" key="icon"/>,
+          " ",
+          props.header
+        ]}
+        className={props.className}
+      >
+        <small className="text-muted">
+          {props.children}
+        </small>
+      </ListGroupItem>
+    );
+
     if (!this.props.locale) {
       return this.renderNoLocale();
     }
@@ -71,13 +98,16 @@ export class OpenPage extends React.Component<Props, State> {
         <Col>
           <ListGroup>
             <OpenDbDialog
-              show={this.state.dialogIsVisible}
-              open={this.state.dialogOpenMode}
-              name={this.state.dialogStoreName}
-              onCancel={this.onCancelDb}
+              ref="openDbDialog"
+              show={this.state.dialogShow}
+              name={this.state.dialogName}
+              onCancel={this.hideDialog}
+              performOpen={this.onOpenDb}
+              stores={this.props.stores}
             />
             <OpenItem
-              onClick={() => this.onShowCreate()}
+              className="openPageCreateItem"
+              onClick={() => this.showDialog()}
               icon="file-o"
               header={t("App.CreateDbHeader")}
             >
@@ -86,9 +116,10 @@ export class OpenPage extends React.Component<Props, State> {
             {stores.map((store: StoreInfo) =>
               <OpenItem
                 key={store.name}
+                className="openPageExistingItem"
                 icon="file-text-o"
                 header={store.name}
-                onClick={() => this.onOpenDb(store.name)}
+                onClick={() => this.showDialog(store.name)}
               >
                 {t("App.FileSize", {fileSize: formatFilesize(store.size)})}
                 <br/>
@@ -102,29 +133,43 @@ export class OpenPage extends React.Component<Props, State> {
   }
 
   renderNoLocale() {
-    return <div>...</div>;
+    return <div id="waiting">
+      <i className="fa fa-spinner fa-pulse fa-3x fa-fw margin-bottom"/>
+      <span className="sr-only">Loading...</span>
+    </div>;
   }
 
-  showCreateDb(name: string, show: boolean, open: boolean = false) {
+  @autobind
+  showDialog(name?: string) {
     this.setState({
-      dialogIsVisible: show,
-      dialogOpenMode: open,
-      dialogStoreName: name
+      dialogShow: true,
+      dialogName: name
     });
   }
 
   @autobind
-  onShowCreate() {
-    this.showCreateDb(undefined, true, false);
+  hideDialog() {
+    this.setState({dialogShow: false});
   }
 
   @autobind
-  onCancelDb() {
-    this.showCreateDb(undefined, false);
-  }
+  onOpenDb(name: string, password: string, failureCallback: (message: string) => any) {
+    const { updraftOpen } = this.props;
+    const opts = {
+      name,
+      password,
+      create: !this.state.dialogName
+    };
 
-  @autobind
-  onOpenDb(name: string) {
-    this.showCreateDb(name, true, true);
+    updraftOpen(opts)
+    .then(
+      () => {
+        this.hideDialog();
+        this.props.onOpened();
+      },
+      (err: Error) => {
+        failureCallback(err.message);
+      }
+    );
   }
 }

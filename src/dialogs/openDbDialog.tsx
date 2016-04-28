@@ -4,27 +4,22 @@ import { autobind } from "core-decorators";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Alert, Button, ControlLabel, FormGroup, FormControl, HelpBlock, Modal } from "react-bootstrap";
-import { connect } from "react-redux";
 
-import { history } from "../components";
 import { ValidateHelper, ReForm } from "../util";
-import { t } from "../state";
-import { bindActionCreators, updraftOpen, OpenStoreInfo, Dispatch } from "../actions";
+import { t, StoreInfo } from "../state";
 import { sys } from "../system";
 
 
 interface Props extends React.Props<any> {
-  updraftOpen?(info: OpenStoreInfo): Promise<any>;
-
+  stores: StoreInfo[];
+  performOpen(name: string, password: string, failureCallback: (message: string) => any): any;
   show: boolean;
-  open: boolean;
   name: string;
   onCancel: Function;
 }
 
 
 interface State extends ReForm.State {
-  opening?: boolean;
   errorMessage?: string;
 
   fields?: {
@@ -38,16 +33,6 @@ interface State extends ReForm.State {
 }
 
 
-
-@connect(
-  null,
-  (dispatch: Dispatch) => bindActionCreators(
-    {
-      updraftOpen
-    },
-    dispatch
-  )
-)
 @ReForm({
   defaultValues: {
     name: "",
@@ -59,7 +44,6 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
   reForm: ReForm.Interface;
 
   state = {
-    opening: false,
     errorMessage: ""
   } as State;
 
@@ -68,11 +52,13 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
     let v = new ValidateHelper(values, errors);
 
     v.checkFilename("name");
+    const invalidNames = _.keyBy(this.props.stores, (store: StoreInfo) => store.name);
+    v.checkUnique("name", invalidNames);
 
     if ( sys.supportsPassword() ) {
       v.checkNonempty("password1");
 
-      if (!this.props.open) {
+      if (!this.props.name) {
         v.checkNonempty("password2");
 
         if (!errors["password1"] && values["password1"] != values["password2"]) {
@@ -92,16 +78,15 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
     });
   }
 
-  componentDidUpdate(prevProps: Props, prevState: State) {
-    if (this.props.show && (this.props.show != prevProps.show)) {
-      const { open } = this.props;
-      ReactDOM.findDOMNode<HTMLInputElement>(this.refs[open && sys.supportsPassword() ? "password" : "name"]).focus();
-    }
+  @autobind
+  onEntering() {
+    const { name } = this.props;
+    ReactDOM.findDOMNode<HTMLInputElement>(this.refs[name && sys.supportsPassword() ? "password" : "name"]).focus();
   }
 
   render() {
     const { fields, submitFailed } = this.state;
-    const { open } = this.props;
+    const { name } = this.props;
 
     const validationState = (field: ReForm.Field<string>): Object => {
       if (field.error && submitFailed) {
@@ -116,10 +101,10 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
     };
 
     return (
-      <Modal show={this.props.show} onHide={this.onCancel}>
-        <form onSubmit={this.reForm.handleSubmit(this.onSubmit)}>
+      <Modal show={this.props.show} onEntering={this.onEntering} onHide={this.onCancel}>
+        <form onSubmit={this.reForm.handleSubmit(this.onSubmit)} ref="form">
           <Modal.Header closeButton>
-            <Modal.Title>{open ? t("OpenDbDialog.openTitle") : t("OpenDbDialog.createTitle")}</Modal.Title>
+            <Modal.Title>{name ? t("OpenDbDialog.openTitle") : t("OpenDbDialog.createTitle")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <FormGroup controlId="name" {...validationState(fields.name)}>
@@ -129,7 +114,7 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
                 ref="name"
                 placeholder={t("OpenDbDialog.namePlaceholder")}
                 {...fields.name}
-                readOnly={open}
+                readOnly={name}
               />
               <FormControl.Feedback/>
               <HelpBlock>{validationHelpText(fields.name)}</HelpBlock>
@@ -139,7 +124,7 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
                 <ControlLabel>{t("OpenDbDialog.passwordLabel")}</ControlLabel>
                 <FormControl
                   type="password"
-                  ref="password"
+                  ref="password1"
                   placeholder={t("OpenDbDialog.passwordPlaceholder")}
                   {...fields.password1}
                 />
@@ -147,11 +132,12 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
                 <HelpBlock>{validationHelpText(fields.password1)}</HelpBlock>
               </FormGroup>
             }
-            {sys.supportsPassword() && !open &&
+            {sys.supportsPassword() && !name &&
               <FormGroup controlId="password2" {...validationState(fields.password2)}>
                 <ControlLabel>{t("OpenDbDialog.confirmPasswordLabel")}</ControlLabel>
                 <FormControl
                   type="password"
+                  ref="password2"
                   placeholder={t("OpenDbDialog.confirmPasswordPlaceholder")}
                   {...fields.password2}
                 />
@@ -164,7 +150,7 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
                 bsStyle="danger"
                 onDismiss={() => this.setState({errorMessage: undefined})}
                 >
-                <h4>{open ? t("OpenDbDialog.errorOpening") : t("OpenDbDialog.errorCreating")}</h4>
+                <h4>{name ? t("OpenDbDialog.errorOpening") : t("OpenDbDialog.errorCreating")}</h4>
                 <p>{this.state.errorMessage}</p>
               </Alert>
             }
@@ -172,16 +158,14 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
           <Modal.Footer>
             <Button
               onClick={this.onCancel}
-              disabled={this.state.opening}
             >
               {t("OpenDbDialog.cancel")}
             </Button>
             <Button
               bsStyle="primary"
               type="submit"
-              disabled={!!fields.name.error && this.state.opening}
             >
-              {open ? t("OpenDbDialog.open") : t("OpenDbDialog.create")}
+              {name ? t("OpenDbDialog.open") : t("OpenDbDialog.create")}
             </Button>
           </Modal.Footer>
         </form>
@@ -191,23 +175,13 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
 
   @autobind
   onSubmit() {
-    const { open, updraftOpen } = this.props;
+    const { performOpen } = this.props;
     const { fields } = this.state;
-    const opts = {
-      name: fields.name.value,
-      password: fields.password1.value,
-      create: !open
-    };
-    this.setState({ opening: true, errorMessage: undefined });
-    const p = updraftOpen(opts);
-    p.then(
-      () => {
-        this.setState({ opening: false });
-        this.onCancel();
-        history.replace("/");
-      },
-      (err: Error) => {
-        this.setState({ opening: false, errorMessage: err.message });
+    performOpen(
+      fields.name.value,
+      fields.password1.value,
+      (message: string) => {
+        this.setState({ errorMessage: message });
       }
     );
   }

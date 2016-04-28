@@ -5,11 +5,12 @@ import { createStore } from "redux";
 import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-addons-test-utils";
 import * as sinon from "sinon";
-require("sinon-chai");
 
 import { dummyFI, findNode, simulateChangeValue, simulateClick, simulateSubmit, frame } from "./util";
 
-import { appState,
+import {
+  appState,
+  loadLocale,
   NewAccountPageDisplay,
   FI,
   AccountType
@@ -25,6 +26,10 @@ const simulateChangeInstitution = async function(institution: HTMLInputElement, 
 
 
 describe("NewAccountPageDisplay", function() {
+  before(function() {
+    return loadLocale("en-US");
+  });
+
   let component: NewAccountPageDisplay;
   let componentNode: Element;
   let filist: FI[];
