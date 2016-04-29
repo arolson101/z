@@ -15,7 +15,7 @@ import {
   OpenStoreInfo,
   StoreInfo
  } from "../src/index";
-import { OpenDbDialog } from "../src/dialogs";
+import { OpenDialog } from "../src/dialogs";
 
 
 function dummyStoreInfo(name: string): StoreInfo {
@@ -86,11 +86,11 @@ describe("OpenPageDisplay", function() {
       let createItem = componentNode.querySelector(".openPageCreateItem");
       await simulateClick(createItem);
 
-      const openDbDialog = component.refs["openDbDialog"] as OpenDbDialog;
-      let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["name"]);
-      let password1Input = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["password1"]);
-      let password2Input = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["password2"]);
-      let form = ReactDOM.findDOMNode<HTMLFormElement>(openDbDialog.refs["form"]);
+      const openDialog = component.refs["openDialog"] as OpenDialog;
+      let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(openDialog.refs["name"]);
+      let password1Input = ReactDOM.findDOMNode<HTMLInputElement>(openDialog.refs["password1"]);
+      let password2Input = ReactDOM.findDOMNode<HTMLInputElement>(openDialog.refs["password2"]);
+      let form = ReactDOM.findDOMNode<HTMLFormElement>(openDialog.refs["form"]);
 
       const opts: OpenStoreInfo = {
         name: "dummy name",
@@ -121,11 +121,11 @@ describe("OpenPageDisplay", function() {
       let createItem = componentNode.querySelector(".openPageCreateItem");
       await simulateClick(createItem);
 
-      const openDbDialog = component.refs["openDbDialog"] as OpenDbDialog;
-      let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["name"]);
-      let password1Input = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["password1"]);
-      let password2Input = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["password2"]);
-      let form = ReactDOM.findDOMNode<HTMLFormElement>(openDbDialog.refs["form"]);
+      const openDialog = component.refs["openDialog"] as OpenDialog;
+      let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(openDialog.refs["name"]);
+      let password1Input = ReactDOM.findDOMNode<HTMLInputElement>(openDialog.refs["password1"]);
+      let password2Input = ReactDOM.findDOMNode<HTMLInputElement>(openDialog.refs["password2"]);
+      let form = ReactDOM.findDOMNode<HTMLFormElement>(openDialog.refs["form"]);
 
       await simulateChangeValue(nameInput, existingDbName);
       if (sys.supportsPassword()) {
@@ -149,11 +149,11 @@ describe("OpenPageDisplay", function() {
       let createItem = componentNode.querySelector(".openPageCreateItem");
       await simulateClick(createItem);
 
-      const openDbDialog = component.refs["openDbDialog"] as OpenDbDialog;
-      let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["name"]);
-      let password1Input = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["password1"]);
-      let password2Input = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["password2"]);
-      let form = ReactDOM.findDOMNode<HTMLFormElement>(openDbDialog.refs["form"]);
+      const openDialog = component.refs["openDialog"] as OpenDialog;
+      let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(openDialog.refs["name"]);
+      let password1Input = ReactDOM.findDOMNode<HTMLInputElement>(openDialog.refs["password1"]);
+      let password2Input = ReactDOM.findDOMNode<HTMLInputElement>(openDialog.refs["password2"]);
+      let form = ReactDOM.findDOMNode<HTMLFormElement>(openDialog.refs["form"]);
 
       await simulateChangeValue(nameInput, "dummy store");
       if (sys.supportsPassword()) {
@@ -187,10 +187,10 @@ describe("OpenPageDisplay", function() {
     let openItem = componentNode.querySelectorAll(".openPageExistingItem")[openIndex];
     await simulateClick(openItem);
 
-    const openDbDialog = component.refs["openDbDialog"] as OpenDbDialog;
-    let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["name"]);
-    let password1Input = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["password1"]);
-    let form = ReactDOM.findDOMNode<HTMLFormElement>(openDbDialog.refs["form"]);
+    const openDialog = component.refs["openDialog"] as OpenDialog;
+    let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(openDialog.refs["name"]);
+    let password1Input = ReactDOM.findDOMNode<HTMLInputElement>(openDialog.refs["password1"]);
+    let form = ReactDOM.findDOMNode<HTMLFormElement>(openDialog.refs["form"]);
 
     expect(nameInput.value).to.equal(opts.name);
 
@@ -226,10 +226,10 @@ describe("OpenPageDisplay", function() {
     let openItem = componentNode.querySelectorAll(".openPageExistingItem")[openIndex];
     await simulateClick(openItem);
 
-    const openDbDialog = component.refs["openDbDialog"] as OpenDbDialog;
-    let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["name"]);
-    let password1Input = ReactDOM.findDOMNode<HTMLInputElement>(openDbDialog.refs["password1"]);
-    let form = ReactDOM.findDOMNode<HTMLFormElement>(openDbDialog.refs["form"]);
+    const openDialog = component.refs["openDialog"] as OpenDialog;
+    let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(openDialog.refs["name"]);
+    let password1Input = ReactDOM.findDOMNode<HTMLInputElement>(openDialog.refs["password1"]);
+    let form = ReactDOM.findDOMNode<HTMLFormElement>(openDialog.refs["form"]);
 
     expect(nameInput.value).to.equal(opts.name);
 

@@ -1,3 +1,3 @@
 export * from "./accountEditDialog";
 export * from "./addScheduleDialog";
-export * from "./openDbDialog";
+export * from "./openDialog";

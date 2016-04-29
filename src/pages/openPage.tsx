@@ -3,13 +3,13 @@
 import { autobind } from "core-decorators";
 import * as React from "react";
 import { connect } from "react-redux";
-import { Grid, Col, ListGroup, ListGroupItem } from "react-bootstrap";
+import { Grid, Col, ListGroup, ListGroupItem, ListGroupItemProps } from "react-bootstrap";
 import * as Icon from "react-fa";
 
 import { bindActionCreators, updraftOpen, OpenStoreInfo, Dispatch } from "../actions";
 import { history } from "../components";
 import { AppState, StoreInfo, t } from "../state";
-import { OpenDbDialog } from "../dialogs";
+import { OpenDialog } from "../dialogs";
 import { formatFilesize, formatRelativeTime } from "../i18n";
 
 
@@ -69,20 +69,18 @@ export class OpenPageDisplay extends React.Component<Props, State> {
   render() {
     const { stores } = this.props;
 
-    const OpenItem = (props: {
+    const OpenItem = (props: ListGroupItemProps & {
       icon: string;
       header: string;
       onClick: Function;
-      className: string;
-    } & React.Props<any>) => (
+    }) => (
       <ListGroupItem
-        onClick={props.onClick}
+        {...props.className}
         header={[
           <Icon name={props.icon} fixedWidth size="lg" key="icon"/>,
           " ",
           props.header
         ]}
-        className={props.className}
       >
         <small className="text-muted">
           {props.children}
@@ -97,12 +95,12 @@ export class OpenPageDisplay extends React.Component<Props, State> {
       <Grid>
         <Col>
           <ListGroup>
-            <OpenDbDialog
-              ref="openDbDialog"
+            <OpenDialog
+              ref="openDialog"
               show={this.state.dialogShow}
               name={this.state.dialogName}
               onCancel={this.hideDialog}
-              performOpen={this.onOpenDb}
+              performOpen={this.onOpen}
               stores={this.props.stores}
             />
             <OpenItem
@@ -153,7 +151,7 @@ export class OpenPageDisplay extends React.Component<Props, State> {
   }
 
   @autobind
-  onOpenDb(name: string, password: string, failureCallback: (message: string) => any) {
+  onOpen(name: string, password: string, failureCallback: (message: string) => any) {
     const { updraftOpen } = this.props;
     const opts = {
       name,

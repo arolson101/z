@@ -21,7 +21,7 @@ import { CurrencyChart, CurrencyChartDataset, CurrencyChartPoint } from "../comp
 
 
 
-interface Props extends React.Props<any> {
+interface Props {
   nextBills: NextBill[];
   accounts: AccountCollection;
   updraft: UpdraftState;

@@ -146,9 +146,9 @@
     "save": "Save Budget Item"
   },
   
-  "OpenDbDialog": {
-    "createTitle": "New Datastore",
-    "openTitle": "Open Datastore",
+  "OpenDialog": {
+    "createTitle": "New File",
+    "openTitle": "Open File",
     "nameLabel": "Name",
     "namePlaceholder": "File name",
     "passwordLabel": "Password",

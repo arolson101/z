@@ -10,7 +10,7 @@ import { t, StoreInfo } from "../state";
 import { sys } from "../system";
 
 
-interface Props extends React.Props<any> {
+interface Props {
   stores: StoreInfo[];
   performOpen(name: string, password: string, failureCallback: (message: string) => any): any;
   show: boolean;
@@ -40,7 +40,7 @@ interface State extends ReForm.State {
     password2: ""
   }
 })
-export class OpenDbDialog extends React.Component<Props, State> implements ReForm.Component {
+export class OpenDialog extends React.Component<Props, State> implements ReForm.Component {
   reForm: ReForm.Interface;
 
   state = {
@@ -109,15 +109,15 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
       <Modal show={this.props.show} onEnter={this.setInitialFocus} onHide={this.onCancel}>
         <form onSubmit={this.reForm.handleSubmit(this.onSubmit)} ref="form">
           <Modal.Header closeButton>
-            <Modal.Title>{name ? t("OpenDbDialog.openTitle") : t("OpenDbDialog.createTitle")}</Modal.Title>
+            <Modal.Title>{name ? t("OpenDialog.openTitle") : t("OpenDialog.createTitle")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <FormGroup controlId="name" {...validationState(fields.name)}>
-              <ControlLabel>{t("OpenDbDialog.nameLabel")}</ControlLabel>
+              <ControlLabel>{t("OpenDialog.nameLabel")}</ControlLabel>
               <FormControl
                 type="text"
                 ref="name"
-                placeholder={t("OpenDbDialog.namePlaceholder")}
+                placeholder={t("OpenDialog.namePlaceholder")}
                 {...fields.name}
                 readOnly={name}
               />
@@ -126,11 +126,11 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
             </FormGroup>
             {sys.supportsPassword() &&
               <FormGroup controlId="password1" {...validationState(fields.password1)}>
-                <ControlLabel>{t("OpenDbDialog.passwordLabel")}</ControlLabel>
+                <ControlLabel>{t("OpenDialog.passwordLabel")}</ControlLabel>
                 <FormControl
                   type="password"
                   ref="password1"
-                  placeholder={t("OpenDbDialog.passwordPlaceholder")}
+                  placeholder={t("OpenDialog.passwordPlaceholder")}
                   {...fields.password1}
                 />
                 <FormControl.Feedback/>
@@ -139,11 +139,11 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
             }
             {sys.supportsPassword() && !name &&
               <FormGroup controlId="password2" {...validationState(fields.password2)}>
-                <ControlLabel>{t("OpenDbDialog.confirmPasswordLabel")}</ControlLabel>
+                <ControlLabel>{t("OpenDialog.confirmPasswordLabel")}</ControlLabel>
                 <FormControl
                   type="password"
                   ref="password2"
-                  placeholder={t("OpenDbDialog.confirmPasswordPlaceholder")}
+                  placeholder={t("OpenDialog.confirmPasswordPlaceholder")}
                   {...fields.password2}
                 />
                 <FormControl.Feedback/>
@@ -155,7 +155,7 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
                 bsStyle="danger"
                 onDismiss={() => this.setState({errorMessage: undefined})}
                 >
-                <h4>{name ? t("OpenDbDialog.errorOpening") : t("OpenDbDialog.errorCreating")}</h4>
+                <h4>{name ? t("OpenDialog.errorOpening") : t("OpenDialog.errorCreating")}</h4>
                 <p>{this.state.errorMessage}</p>
               </Alert>
             }
@@ -164,13 +164,13 @@ export class OpenDbDialog extends React.Component<Props, State> implements ReFor
             <Button
               onClick={this.onCancel}
             >
-              {t("OpenDbDialog.cancel")}
+              {t("OpenDialog.cancel")}
             </Button>
             <Button
               bsStyle="primary"
               type="submit"
             >
-              {name ? t("OpenDbDialog.open") : t("OpenDbDialog.create")}
+              {name ? t("OpenDialog.open") : t("OpenDialog.create")}
             </Button>
           </Modal.Footer>
         </form>
