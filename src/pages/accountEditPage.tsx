@@ -17,7 +17,7 @@ import {
   FadeTransitionGroup,
   ImageCheckbox,
  } from "../components";
-import { AddAccountDialog } from "../dialogs";
+import { AccountEditDialog } from "../dialogs";
 import { ValidateHelper, ReForm } from "../util";
 import { bindActionCreators, Dispatch, updraftAdd } from "../actions";
 import { readAccountProfiles } from "../online";
@@ -393,14 +393,14 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
             </FadeTransitionGroup>
           </Table>
 
-          <AddAccountDialog
+          <AccountEditDialog
             show={this.state.adding || this.state.editing != -1}
             editing={this.state.editing}
             accounts={this.state.accounts}
             onCancel={this.onModalHide}
             onSave={this.onAccountSave}
             onDelete={this.onAccountDelete}
-            ref="addAccountDialog"
+            ref="accountEditDialog"
           />
 
           {this.state.gettingAccountsSuccess &&

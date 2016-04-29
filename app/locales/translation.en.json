@@ -99,7 +99,7 @@
     "delete": "Delete Accounts"
   },
 
-  "AddAccountDialog": {
+  "AccountEditDialog": {
     "addTitle": "Add Account",
     "editTitle": "Edit Account",
     "typeLabel": "Type",

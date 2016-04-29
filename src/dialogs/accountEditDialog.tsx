@@ -40,7 +40,7 @@ interface State extends ReForm.State, React.Props<any> {
     visible: true
   }
 })
-export class AddAccountDialog extends React.Component<Props, State> implements ReForm.Component {
+export class AccountEditDialog extends React.Component<Props, State> implements ReForm.Component {
   reForm: ReForm.Interface;
 
   componentWillReceiveProps(nextProps: Props) {
@@ -112,27 +112,27 @@ export class AddAccountDialog extends React.Component<Props, State> implements R
       <Modal show={this.props.show} onHide={this.onCancel}>
         <form onSubmit={handleSubmit(this.onSave)} ref="form">
           <Modal.Header closeButton>
-            <Modal.Title>{adding ? t("AddAccountDialog.addTitle") : t("AddAccountDialog.editTitle")}</Modal.Title>
+            <Modal.Title>{adding ? t("AccountEditDialog.addTitle") : t("AccountEditDialog.editTitle")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <EnumSelect label={t("AddAccountDialog.typeLabel")} {...fields.type as any} enum={AccountType}/>
-            <FormGroup controlId="addAccountDlg_name" {...validationState(fields.name)}>
-              <ControlLabel>{t("AddAccountDialog.nameLabel")}</ControlLabel>
+            <EnumSelect label={t("AccountEditDialog.typeLabel")} {...fields.type as any} enum={AccountType}/>
+            <FormGroup controlId="accountEditDlg_name" {...validationState(fields.name)}>
+              <ControlLabel>{t("AccountEditDialog.nameLabel")}</ControlLabel>
               <FormControl
                 type="text"
                 ref="name"
-                placeholder={t("AddAccountDialog.namePlaceholder")}
+                placeholder={t("AccountEditDialog.namePlaceholder")}
                 {...fields.name}
               />
               <FormControl.Feedback/>
               <HelpBlock>{validationHelpText(fields.name)}</HelpBlock>
             </FormGroup>
-            <FormGroup controlId="addAccountDlg_number" {...validationState(fields.number)}>
-              <ControlLabel>{t("AddAccountDialog.numberLabel")}</ControlLabel>
+            <FormGroup controlId="accountEditDlg_number" {...validationState(fields.number)}>
+              <ControlLabel>{t("AccountEditDialog.numberLabel")}</ControlLabel>
               <FormControl
                 type="text"
                 ref="number"
-                placeholder={t("AddAccountDialog.numberPlaceholder")}
+                placeholder={t("AccountEditDialog.numberPlaceholder")}
                 {...fields.number}
               />
               <FormControl.Feedback/>
@@ -141,14 +141,14 @@ export class AddAccountDialog extends React.Component<Props, State> implements R
           </Modal.Body>
           <Modal.Footer>
             {this.props.editing != -1 &&
-              <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("AddAccountDialog.delete")}</Button>
+              <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("AccountEditDialog.delete")}</Button>
             }
-            <Button onClick={this.onCancel}>{t("AddAccountDialog.cancel")}</Button>
+            <Button onClick={this.onCancel}>{t("AccountEditDialog.cancel")}</Button>
             <Button
               bsStyle="primary"
               type="submit"
             >
-              {adding ? t("AddAccountDialog.add") : t("AddAccountDialog.save")}
+              {adding ? t("AccountEditDialog.add") : t("AccountEditDialog.save")}
             </Button>
           </Modal.Footer>
         </form>

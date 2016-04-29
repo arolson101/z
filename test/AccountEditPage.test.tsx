@@ -15,7 +15,7 @@ import {
   FI,
   AccountType
  } from "../src/index";
-import { AddAccountDialog } from "../src/dialogs";
+import { AccountEditDialog } from "../src/dialogs";
 
 
 const simulateChangeInstitution = async function(institution: HTMLInputElement, value: string) {
@@ -166,10 +166,10 @@ describe("AccountEditPage", function() {
       await frame();
       await frame();
       findNodes();
-      let addAccountDialog = component.refs["addAccountDialog"] as AddAccountDialog;
-      let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(addAccountDialog.refs["name"]);
-      let numberInput = ReactDOM.findDOMNode<HTMLInputElement>(addAccountDialog.refs["number"]);
-      let form = ReactDOM.findDOMNode<HTMLFormElement>(addAccountDialog.refs["form"]);
+      let accountEditDialog = component.refs["accountEditDialog"] as AccountEditDialog;
+      let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(accountEditDialog.refs["name"]);
+      let numberInput = ReactDOM.findDOMNode<HTMLInputElement>(accountEditDialog.refs["number"]);
+      let form = ReactDOM.findDOMNode<HTMLFormElement>(accountEditDialog.refs["form"]);
       await simulateChangeValue(nameInput, "checking");
       await simulateChangeValue(numberInput, "12345");
       await simulateSubmit(form);
