@@ -1,4 +1,4 @@
-- fix clunkly modal opening
+- rename bill -> event?
 - branch react-bootstrap typings
 - more tests
 - tests should verify string exists

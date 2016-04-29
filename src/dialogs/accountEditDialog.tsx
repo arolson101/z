@@ -11,7 +11,7 @@ import { EnumSelect } from "../components";
 
 
 interface Props {
-  editing: number;
+  editIndex: number;
   show: boolean;
   onCancel: Function;
   onSave: (account: Account) => any;
@@ -44,9 +44,9 @@ export class AccountEditDialog extends React.Component<Props, State> implements 
   reForm: ReForm.Interface;
 
   componentWillReceiveProps(nextProps: Props) {
-    if (this.props.editing != nextProps.editing) {
-      if (nextProps.editing != -1) {
-        const src = nextProps.accounts[nextProps.editing];
+    if (this.props.editIndex != nextProps.editIndex) {
+      if (nextProps.editIndex) {
+        const src = nextProps.accounts[nextProps.editIndex];
         this.reForm.setValues(src);
       }
       else {
@@ -58,7 +58,7 @@ export class AccountEditDialog extends React.Component<Props, State> implements 
   validate(values: ReForm.Values): ReForm.Values {
     const errors: any = { accounts: [] as any[] };
     let v = new ValidateHelper(values, errors);
-    const { accounts, editing } = this.props;
+    const { accounts, editIndex } = this.props;
 
     v.checkNonempty("name");
     v.checkNonempty("number");
@@ -66,7 +66,7 @@ export class AccountEditDialog extends React.Component<Props, State> implements 
     const names = _.reduce(
       accounts,
       (set: any, account: Account, i: number) => {
-        if (i != editing) {
+        if (i != editIndex) {
           set[account.name] = true;
         }
         return set;
@@ -78,7 +78,7 @@ export class AccountEditDialog extends React.Component<Props, State> implements 
     const numbers = _.reduce(
       accounts,
       (set: any, account: Account, i: number) => {
-        if (i != editing) {
+        if (i != editIndex) {
           set[account.number] = true;
         }
         return set;
@@ -106,7 +106,7 @@ export class AccountEditDialog extends React.Component<Props, State> implements 
       }
     };
 
-    const adding = this.props.editing == -1;
+    const adding = !this.props.editIndex;
 
     return (
       <Modal show={this.props.show} onHide={this.onCancel}>
@@ -140,7 +140,7 @@ export class AccountEditDialog extends React.Component<Props, State> implements 
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
-            {this.props.editing != -1 &&
+            {!this.props.editIndex &&
               <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("AccountEditDialog.delete")}</Button>
             }
             <Button onClick={this.onCancel}>{t("AccountEditDialog.cancel")}</Button>
@@ -158,15 +158,15 @@ export class AccountEditDialog extends React.Component<Props, State> implements 
 
   @autobind
   onSave(values: ReForm.Values) {
-    const adding = this.props.editing == -1;
-    const src = adding ? { balance: 0 } : this.props.accounts[this.props.editing];
+    const adding = !this.props.editIndex;
+    const src = adding ? { balance: 0 } : this.props.accounts[this.props.editIndex];
     const account: Account = _.assign({}, src, values);
     this.props.onSave(account);
   }
 
   @autobind
   onDelete() {
-    this.props.onDelete(this.props.editing);
+    this.props.onDelete(this.props.editIndex);
   }
 
   @autobind

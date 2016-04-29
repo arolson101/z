@@ -31,8 +31,8 @@ interface Props {
 }
 
 interface State {
-  dialogIsShown?: boolean;
-  dialogEditing?: number;
+  dialogShow?: boolean;
+  dialogEditBillId?: number;
 }
 
 
@@ -146,8 +146,8 @@ function insertNewlines(str: string): any {
 )
 export class SchedulePage extends React.Component<Props, State> {
   state = {
-    dialogIsShown: false,
-    dialogEditing: -1
+    dialogShow: false,
+    dialogEditBillId: -1
   };
 
   render() {
@@ -187,8 +187,8 @@ export class SchedulePage extends React.Component<Props, State> {
         })}
       </ListGroup>
       <ScheduleEditDialog
-        show={this.state.dialogIsShown}
-        editing={this.state.dialogEditing}
+        show={this.state.dialogShow}
+        editBillId={this.state.dialogEditBillId}
         onSave={this.onBillSave}
         onEdit={this.onBillEdit}
         onCancel={this.onModalHide}
@@ -205,17 +205,17 @@ export class SchedulePage extends React.Component<Props, State> {
 
   @autobind
   onAddBill() {
-    this.setState({dialogIsShown: true, dialogEditing: -1});
+    this.setState({dialogShow: true, dialogEditBillId: -1});
   }
 
   @autobind
   onEditBill(dbid: number) {
-    this.setState({dialogIsShown: true, dialogEditing: dbid});
+    this.setState({dialogShow: true, dialogEditBillId: dbid});
   }
 
   @autobind
   onModalHide() {
-    this.setState({dialogIsShown: false});
+    this.setState({dialogShow: false});
   }
 
   @autobind

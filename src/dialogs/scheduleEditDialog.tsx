@@ -22,7 +22,7 @@ enum Recurrance {
 interface Props {
   bills?: BillCollection;
 
-  editing?: number; // dbid of bill
+  editBillId?: number; // dbid of bill
   show?: boolean;
   onCancel?: Function;
   onSave?: (account: Bill) => any;
@@ -68,10 +68,10 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
   reForm: ReForm.Interface;
 
   componentWillReceiveProps(nextProps: Props) {
-    if (this.props.editing != nextProps.editing) {
-      if (nextProps.editing != -1) {
-        verify(nextProps.editing in nextProps.bills, "invalid dbid");
-        const src = nextProps.bills[nextProps.editing];
+    if (this.props.editBillId != nextProps.editBillId) {
+      if (nextProps.editBillId != -1) {
+        verify(nextProps.editBillId in nextProps.bills, "invalid dbid");
+        const src = nextProps.bills[nextProps.editBillId];
         const rrule = RRule.fromString(src.rruleString);
         const values = _.assign({}, src, {
           recurring: (rrule.options.count != 1) ? Recurrance.Repeat : Recurrance.Once,
@@ -117,7 +117,7 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
       }
     };
 
-    const adding = this.props.editing == -1;
+    const adding = !this.props.editBillId;
     const recurring = fields.recurring.value == Recurrance.Repeat;
 
     return (
@@ -194,7 +194,7 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
-            {this.props.editing != -1 &&
+            {this.props.editBillId &&
               <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("ScheduleEditDialog.delete")}</Button>
             }
             {__DEVELOPMENT__ &&
@@ -215,8 +215,8 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
 
   makeBill(props: Props, state: State): Bill {
     const { fields } = state;
-    const { editing } = props;
-    const dbid = (editing == -1) ? Date.now() : editing;
+    const { editBillId } = props;
+    const dbid = editBillId || Date.now();
     let bill: Bill = {
       dbid,
       name: fields.name.value,
@@ -247,14 +247,14 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
 
   @autobind
   onSave() {
-    const { onSave, onEdit, editing } = this.props;
+    const { onSave, onEdit, editBillId } = this.props;
     const bill = this.makeBill(this.props, this.state);
-    if (editing == -1) {
+    if (!editBillId) {
       onSave(bill);
     }
     else {
-      verify(editing in this.props.bills, "invalid dbid");
-      const src = this.props.bills[editing];
+      verify(editBillId in this.props.bills, "invalid dbid");
+      const src = this.props.bills[editBillId];
       let change: BillChange = { dbid: src.dbid };
       _.forEach(bill, (value: any, key: string) => {
         if (value != (src as any)[key]) {
@@ -293,7 +293,7 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
 
   @autobind
   onDelete() {
-    this.props.onDelete(this.props.editing);
+    this.props.onDelete(this.props.editBillId);
   }
 
   @autobind

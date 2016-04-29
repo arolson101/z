@@ -103,8 +103,8 @@ interface State extends ReForm.State {
 
   accounts?: Account[];
 
-  adding?: boolean;
-  editing?: number;
+  dialogShow?: boolean;
+  dialogEditIndex?: number;
   gettingAccounts?: boolean;
   gettingAccountsSuccess?: number;
   gettingAccountsError?: string;
@@ -136,8 +136,8 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
 
   state = {
     accounts: [],
-    adding: false,
-    editing: -1,
+    dialogShow: false,
+    dialogEditIndex: undefined,
     gettingAccounts: false,
     gettingAccountsSuccess: null,
     gettingAccountsError: null
@@ -394,8 +394,8 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
           </Table>
 
           <AccountEditDialog
-            show={this.state.adding || this.state.editing != -1}
-            editing={this.state.editing}
+            show={this.state.dialogShow}
+            editIndex={this.state.dialogEditIndex}
             accounts={this.state.accounts}
             onCancel={this.onModalHide}
             onSave={this.onAccountSave}
@@ -532,27 +532,28 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
 
   @autobind
   onAddAccount() {
-    this.setState({ adding: true });
+    this.setState({ dialogShow: true, dialogEditIndex: undefined });
   }
 
   @autobind
-  onEditAccount(editing: number) {
-    this.setState({ editing });
+  onEditAccount(editIndex: number) {
+    console.assert(editIndex as any);
+    this.setState({ dialogEditIndex: editIndex });
   }
 
   @autobind
   onModalHide() {
-    this.setState({ adding: false, editing: -1 });
+    this.setState({ dialogShow: false, dialogEditIndex: undefined });
   }
 
   @autobind
   onAccountSave(account: Account) {
     let change: any = {};
-    if (this.state.editing == -1) {
-      change = { $push: [account] };
+    if (account.dbid) {
+      change = { [account.dbid]: { $set: account } };
     }
     else {
-      change = { [this.state.editing]: { $set: account } };
+      change = { $push: [account] };
     }
     this.setState(
       {
