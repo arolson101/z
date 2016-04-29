@@ -75,7 +75,7 @@ export class OpenPageDisplay extends React.Component<Props, State> {
       onClick: Function;
     }) => (
       <ListGroupItem
-        {...props.className}
+        {...props}
         header={[
           <Icon name={props.icon} fixedWidth size="lg" key="icon"/>,
           " ",
