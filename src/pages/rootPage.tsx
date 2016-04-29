@@ -26,7 +26,7 @@ export class RootPage extends React.Component<Props, any> {
       <div>
         <Breadcrumbs items={[
           {href: "/", title: "Home"},
-          {href: "/accounts", title: "accounts"},
+          {href: "/institutions", title: "institutions"},
           {href: "/schedule", title: "schedule"}
         ]}/>
         {this.props.children}

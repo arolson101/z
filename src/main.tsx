@@ -105,10 +105,10 @@ export function main(root: HTMLElement) {
 
         <Router history={history}>
           <Route path="/" component={Pages.RootPage} onEnter={requireUpdraftStore}>
-            <Route path="accounts" component={Pages.AccountsPage}/>
-            <Route path="accounts/new" component={Pages.AccountEditPage}/>
             <Route path="accounts/:accountId" component={Pages.AccountDetailPage}/>
-            <Route path="accounts/edit/:institutionId" component={Pages.AccountEditPage}/>
+            <Route path="institutions" component={Pages.InstitutionListPage}/>
+            <Route path="institutions/new" component={Pages.InstitutionEditPage}/>
+            <Route path="institutions/edit/:institutionId" component={Pages.InstitutionEditPage}/>
             <Route path="schedule" component={Pages.SchedulePage}/>
           </Route>
           <Route path="/open" component={Pages.OpenPage}/>

@@ -16,7 +16,7 @@ interface Props {
 @connect(
   (state: AppState) => ({accountGroups: accountGroups(state)})
 )
-export class AccountsPage extends StatelessComponent<Props> {
+export class InstitutionListPage extends StatelessComponent<Props> {
   render() {
     return <Grid>
       <Row>
@@ -27,7 +27,7 @@ export class AccountsPage extends StatelessComponent<Props> {
               <h3>
                 <Icon name="university" />
                 {group.institution.name}
-                <Link to={`/accounts/edit/${group.institution.dbid}`} className="pull-right">
+                <Link to={`/institutions/edit/${group.institution.dbid}`} className="pull-right">
                   <Icon name="edit"/>
                 </Link>
               </h3>
@@ -42,10 +42,10 @@ export class AccountsPage extends StatelessComponent<Props> {
         )}
       </Row>
       <Row>
-        <LinkButton to="/accounts/new">
+        <LinkButton to="/institutions/new">
           <Icon name="plus"/>
           {t(" ")}
-          {t("AccountsPage.add")}
+          {t("InstitutionListPage.add")}
         </LinkButton>
       </Row>
     </Grid>;

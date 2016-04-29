@@ -11,7 +11,7 @@ import { dummyFI, findNode, simulateChangeValue, simulateClick, simulateSubmit, 
 import {
   appState,
   loadLocale,
-  AccountEditPageDisplay,
+  InstitutionEditPageDisplay,
   FI,
   AccountType
  } from "../src/index";
@@ -25,12 +25,12 @@ const simulateChangeInstitution = async function(institution: HTMLInputElement, 
 };
 
 
-describe("AccountEditPage", function() {
+describe("InstitutionEditPage", function() {
   before(function() {
     return loadLocale("en-US");
   });
 
-  let component: AccountEditPageDisplay;
+  let component: InstitutionEditPageDisplay;
   let componentNode: Element;
   let filist: FI[];
   let institution: HTMLInputElement;
@@ -69,7 +69,7 @@ describe("AccountEditPage", function() {
     ];
 
     component = TestUtils.renderIntoDocument(
-      <AccountEditPageDisplay
+      <InstitutionEditPageDisplay
         filist={filist}
         institutions={state.institutions}
         accounts={state.accounts}

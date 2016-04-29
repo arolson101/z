@@ -52,16 +52,16 @@ function isNew(institutionId: number): boolean {
     },
     dispatch)
 )
-export class AccountEditPage extends React.Component<PageProps, any> {
+export class InstitutionEditPage extends React.Component<PageProps, any> {
   render() {
-    return <AccountEditPageDisplay {...this.props} institutionId={this.props.params.institutionId} updraftAdd={this.onUpdraftAdd}/>;
+    return <InstitutionEditPageDisplay {...this.props} institutionId={this.props.params.institutionId} updraftAdd={this.onUpdraftAdd}/>;
   }
 
   @autobind
   onUpdraftAdd(state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]): Promise<any> {
     let p = this.props.updraftAdd.apply(this, arguments) as Promise<any>;
     return p.then(() => {
-      history.replace("/accounts");
+      history.replace("/institutions");
     });
   }
 }
@@ -131,7 +131,7 @@ interface State extends ReForm.State {
     accountsValid: ""
   },
 })
-export class AccountEditPageDisplay extends React.Component<Props, State> implements ReForm.Component {
+export class InstitutionEditPageDisplay extends React.Component<Props, State> implements ReForm.Component {
   reForm: ReForm.Interface;
 
   state = {
@@ -218,7 +218,7 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
       let helpText = "";
       if (expectedValue && expectedValue != field.value) {
         validationStateProp = { validationState: "warning" };
-        helpText = t("AccountEditPage.differentWarning", {expectedValue});
+        helpText = t("InstitutionEditPage.differentWarning", {expectedValue});
       }
 
       return (
@@ -241,10 +241,10 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
         <Row>
           <Col xs={12}>
             <FormGroup controlId="institution">
-              <ControlLabel>{t("AccountEditPage.institutionLabel")}</ControlLabel>
+              <ControlLabel>{t("InstitutionEditPage.institutionLabel")}</ControlLabel>
               <ReactSelect
                 inputProps={{id: "institution"}}
-                placeholder={t("AccountEditPage.institutionPlaceholder")}
+                placeholder={t("InstitutionEditPage.institutionPlaceholder")}
                 {...fields.institution}
                 onChange={this.onInstitutionChange}
                 options={_.map(filist, fi => ({
@@ -253,7 +253,7 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
                 }))}
               >
               </ReactSelect>
-              <HelpBlock>{t("AccountEditPage.institutionHelp")}</HelpBlock>
+              <HelpBlock>{t("InstitutionEditPage.institutionHelp")}</HelpBlock>
             </FormGroup>
           </Col>
         </Row>
@@ -261,10 +261,10 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
         <Row>
           <Col xs={12} md={6}>
             <FormGroup controlId="name" {...validationState(fields.name)}>
-              <ControlLabel>{t("AccountEditPage.nameLabel")}</ControlLabel>
+              <ControlLabel>{t("InstitutionEditPage.nameLabel")}</ControlLabel>
               <FormControl
                 type="text"
-                placeholder={t("AccountEditPage.namePlaceholder")}
+                placeholder={t("InstitutionEditPage.namePlaceholder")}
                 {...fields.name}
               />
               <FormControl.Feedback/>
@@ -274,10 +274,10 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
 
           <Col xs={12} md={6}>
             <FormGroup controlId="web">
-              <ControlLabel>{t("AccountEditPage.webLabel")}</ControlLabel>
+              <ControlLabel>{t("InstitutionEditPage.webLabel")}</ControlLabel>
               <FormControl
                 type="text"
-                placeholder={t("AccountEditPage.webPlaceholder")}
+                placeholder={t("InstitutionEditPage.webPlaceholder")}
                 {...fields.web}
               />
             </FormGroup>
@@ -287,11 +287,11 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
         <Row>
           <Col xs={12} md={6}>
             <FormGroup controlId="address">
-              <ControlLabel>{t("AccountEditPage.addressLabel")}</ControlLabel>
+              <ControlLabel>{t("InstitutionEditPage.addressLabel")}</ControlLabel>
               <FormControl
                 componentClass="textarea"
                 rows={4}
-                placeholder={t("AccountEditPage.addressPlaceholder")}
+                placeholder={t("InstitutionEditPage.addressPlaceholder")}
                 {...fields.address}
               />
             </FormGroup>
@@ -299,11 +299,11 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
 
           <Col xs={12} md={6}>
             <FormGroup controlId="notes">
-              <ControlLabel>{t("AccountEditPage.notesLabel")}</ControlLabel>
+              <ControlLabel>{t("InstitutionEditPage.notesLabel")}</ControlLabel>
               <FormControl
                 componentClass="textarea"
                 rows={4}
-                placeholder={t("AccountEditPage.notesPlaceholder")}
+                placeholder={t("InstitutionEditPage.notesPlaceholder")}
                 {...fields.notes}
               />
             </FormGroup>
@@ -311,32 +311,32 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
         </Row>
 
         <Checkbox id="online" {...fields.online as any}>
-          {t("AccountEditPage.enableOnline")}
+          {t("InstitutionEditPage.enableOnline")}
         </Checkbox>
 
         <Collapse in={fields.online.checked}>
           <div>
-            <Panel header={t("AccountEditPage.ofxInfo")}>
+            <Panel header={t("InstitutionEditPage.ofxInfo")}>
               <Row>
                 <Col xs={6} md={3}>
-                  {renderFidOrgOfx("fid", t("AccountEditPage.fidLabel"))}
+                  {renderFidOrgOfx("fid", t("InstitutionEditPage.fidLabel"))}
                 </Col>
 
                 <Col xs={6} md={3}>
-                  {renderFidOrgOfx("org", t("AccountEditPage.orgLabel"))}
+                  {renderFidOrgOfx("org", t("InstitutionEditPage.orgLabel"))}
                 </Col>
 
                 <Col xs={12} md={6}>
-                  {renderFidOrgOfx("ofx", t("AccountEditPage.ofxLabel"))}
+                  {renderFidOrgOfx("ofx", t("InstitutionEditPage.ofxLabel"))}
                 </Col>
               </Row>
             </Panel>
 
-            <Panel header={t("AccountEditPage.userpassInfo")}>
+            <Panel header={t("InstitutionEditPage.userpassInfo")}>
               <Row>
                 <Col xs={6}>
                   <FormGroup controlId="username">
-                    <ControlLabel>{t("AccountEditPage.usernameLabel")}</ControlLabel>
+                    <ControlLabel>{t("InstitutionEditPage.usernameLabel")}</ControlLabel>
                     <FormControl
                       type="text"
                       {...fields.username}
@@ -346,7 +346,7 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
 
                 <Col xs={6}>
                   <FormGroup controlId="password">
-                    <ControlLabel>{t("AccountEditPage.passwordLabel")}</ControlLabel>
+                    <ControlLabel>{t("InstitutionEditPage.passwordLabel")}</ControlLabel>
                     <FormControl
                       type="text"
                       {...fields.password}
@@ -358,14 +358,14 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
           </div>
         </Collapse>
 
-        <Panel header={t("AccountEditPage.accounts")}>
+        <Panel header={t("InstitutionEditPage.accounts")}>
           <Table>
             <thead>
               <tr>
-                <th>{t("AccountEditPage.accountVisible")}</th>
-                <th>{t("AccountEditPage.accountType")}</th>
-                <th>{t("AccountEditPage.accountName")}</th>
-                <th>{t("AccountEditPage.accountNumber")}</th>
+                <th>{t("InstitutionEditPage.accountVisible")}</th>
+                <th>{t("InstitutionEditPage.accountType")}</th>
+                <th>{t("InstitutionEditPage.accountName")}</th>
+                <th>{t("InstitutionEditPage.accountNumber")}</th>
                 <th></th>
               </tr>
             </thead>
@@ -409,8 +409,8 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
               onDismiss={() => this.setState({gettingAccountsSuccess: null})}
               dismissAfter={2000}
               >
-              <h4>{t("AccountEditPage.successGettingAccounts")}</h4>
-              <p>{t("AccountEditPage.successGettingAccountsMessage", {numAccounts: this.state.gettingAccountsSuccess})}</p>
+              <h4>{t("InstitutionEditPage.successGettingAccounts")}</h4>
+              <p>{t("InstitutionEditPage.successGettingAccountsMessage", {numAccounts: this.state.gettingAccountsSuccess})}</p>
             </Alert>
           }
           {this.state.gettingAccountsError &&
@@ -418,7 +418,7 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
               bsStyle="danger"
               onDismiss={() => this.setState({gettingAccountsError: null})}
               >
-              <h4>{t("AccountEditPage.errorGettingAccounts")}</h4>
+              <h4>{t("InstitutionEditPage.errorGettingAccounts")}</h4>
               <p>{this.state.gettingAccountsError}</p>
             </Alert>
           }
@@ -432,7 +432,7 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
                 type="button"
                 id="addAccount"
                 bsStyle="success"
-                onClick={this.onAddAccount}>{t("AccountEditPage.addAccount")}
+                onClick={this.onAddAccount}>{t("InstitutionEditPage.addAccount")}
               </Button>
               {" "}
               {fields.online.checked &&
@@ -444,7 +444,7 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
                   id="getAccountList"
                   >
                     <Icon name={this.state.gettingAccounts ? "fa-spinner fa-pulse" : "download"}/>
-                    {" " + t("AccountEditPage.getAccountList")}
+                    {" " + t("InstitutionEditPage.getAccountList")}
                 </Button>
               }
             </Col>
@@ -453,18 +453,18 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
 
         <div className="modal-footer">
           {editing &&
-            <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("AccountEditPage.delete")}</Button>
+            <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("InstitutionEditPage.delete")}</Button>
           }
           {__DEVELOPMENT__ &&
             <Button onClick={this.onRandom}><Icon name="random"/> random</Button>
           }
-          <Button onClick={this.onClose}>{t("AccountEditPage.close")}</Button>
+          <Button onClick={this.onClose}>{t("InstitutionEditPage.close")}</Button>
           <Button
             bsStyle="primary"
             id="submit"
             onClick={this.reForm.handleSubmit(editing ? this.onSave : this.onCreate)}
           >
-            {editing ? t("AccountEditPage.save") : t("AccountEditPage.create")}
+            {editing ? t("InstitutionEditPage.save") : t("InstitutionEditPage.create")}
           </Button>
         </div>
 
@@ -731,10 +731,7 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
       ...accountsRemoved.map(Updraft.makeDelete(updraft.accountTable, time)),
       ...accountsChanges.map(Updraft.makeChange(updraft.accountTable, time)),
       ...accountsAdded.map(Updraft.makeSave(updraft.accountTable, time))
-    )
-    .then(() => {
-      history.replace("/accounts");
-    });
+    );
   }
 
   @autobind
@@ -748,10 +745,7 @@ export class AccountEditPageDisplay extends React.Component<Props, State> implem
       updraft,
       Updraft.makeDelete(updraft.institutionTable, time)(institutionId),
       ...accountIds.map(Updraft.makeDelete(updraft.accountTable, time))
-    )
-    .then(() => {
-      history.replace("/accounts");
-    });
+    );
   }
 }
 

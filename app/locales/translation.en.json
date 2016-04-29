@@ -37,11 +37,11 @@
     "addAccountTooltip": "Add account"
   },
   
-  "AccountsPage": {
+  "InstitutionListPage": {
     "add": "Add Account"
   },
 
-  "AccountEditPage": {
+  "InstitutionEditPage": {
     "addTitle": "Add Accounts",
     "editTitle": "Edit Accounts",
     "institutionLabel": "Institution",
