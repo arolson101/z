@@ -2,3 +2,5 @@
 - branch react-bootstrap typings
 - more tests
 - tests should verify string exists
+- import json file of accounts, transactions
+- sqlcipher on windows

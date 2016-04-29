@@ -129,7 +129,7 @@
     "noAccount": ""
   },
   
-  "AddBillDialog": {
+  "ScheduleEditDialog": {
     "addTitle": "Add Budget Item",
     "editTitle": "Edit Budget Item",
     "nameLabel": "Name",

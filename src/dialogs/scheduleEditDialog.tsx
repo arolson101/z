@@ -64,7 +64,7 @@ interface State extends ReForm.State {
     notes: ""
   },
 })
-export class AddScheduleDialog extends React.Component<Props, State> implements ReForm.Component {
+export class ScheduleEditDialog extends React.Component<Props, State> implements ReForm.Component {
   reForm: ReForm.Interface;
 
   componentWillReceiveProps(nextProps: Props) {
@@ -124,11 +124,11 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
       <Modal show={this.props.show} onHide={this.onCancel}>
         <form onSubmit={handleSubmit(this.onSave)}>
           <Modal.Header closeButton>
-            <Modal.Title>{adding ? t("AddBillDialog.addTitle") : t("AddBillDialog.editTitle")}</Modal.Title>
+            <Modal.Title>{adding ? t("ScheduleEditDialog.addTitle") : t("ScheduleEditDialog.editTitle")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <FormGroup controlId="name" {...validationState(fields.name)}>
-              <ControlLabel>{t("AddBillDialog.nameLabel")}</ControlLabel>
+              <ControlLabel>{t("ScheduleEditDialog.nameLabel")}</ControlLabel>
               <FormControl
                 type="text"
                 {...fields.name}
@@ -137,12 +137,12 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
               <HelpBlock>{validationHelpText(fields.name)}</HelpBlock>
             </FormGroup>
             <FormGroup controlId="name" {...validationState(fields.amount)}>
-              <ControlLabel>{t("AddBillDialog.amountLabel")}</ControlLabel>
+              <ControlLabel>{t("ScheduleEditDialog.amountLabel")}</ControlLabel>
               <CurrencyInput {...fields.amount as any}/>
               <HelpBlock>{validationHelpText(fields.amount)}</HelpBlock>
             </FormGroup>
             <FormGroup controlId="notes"  {...validationState(fields.recurring)}>
-              <ControlLabel>{t("AddBillDialog.recurLabel")}</ControlLabel>
+              <ControlLabel>{t("ScheduleEditDialog.recurLabel")}</ControlLabel>
               <Row>
                 <Col xs={4}>
                   <DatePicker
@@ -151,8 +151,8 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
                 </Col>
                 <Col xs={3}>
                   <FormControl componentClass="select" {...fields.recurring as any}>
-                    <option value="0">{t("AddBillDialog.once")}</option>
-                    <option value="1">{t("AddBillDialog.repeatEvery")}</option>
+                    <option value="0">{t("ScheduleEditDialog.once")}</option>
+                    <option value="1">{t("ScheduleEditDialog.repeatEvery")}</option>
                   </FormControl>
                 </Col>
                 {recurring &&
@@ -179,11 +179,11 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
               </Row>
             </FormGroup>
             <FormGroup controlId="account" {...validationState(fields.account)}>
-              <ControlLabel>{t("AddBillDialog.accountLabel")}</ControlLabel>
+              <ControlLabel>{t("ScheduleEditDialog.accountLabel")}</ControlLabel>
               <AccountSelect {...fields.account as any}/>
             </FormGroup>
             <FormGroup controlId="notes" {...validationState(fields.notes)}>
-              <ControlLabel>{t("AddBillDialog.notesLabel")}</ControlLabel>
+              <ControlLabel>{t("ScheduleEditDialog.notesLabel")}</ControlLabel>
               <FormControl
                 componentClass="textarea"
                 rows={4}
@@ -195,17 +195,17 @@ export class AddScheduleDialog extends React.Component<Props, State> implements 
           </Modal.Body>
           <Modal.Footer>
             {this.props.editing != -1 &&
-              <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("AddBillDialog.delete")}</Button>
+              <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("ScheduleEditDialog.delete")}</Button>
             }
             {__DEVELOPMENT__ &&
               <Button onClick={this.onRandom}><Icon name="random"/> random</Button>
             }
-            <Button onClick={this.onCancel}>{t("AddBillDialog.cancel")}</Button>
+            <Button onClick={this.onCancel}>{t("ScheduleEditDialog.cancel")}</Button>
             <Button
               bsStyle="primary"
               type="submit"
             >
-              {adding ? t("AddBillDialog.add") : t("AddBillDialog.save")}
+              {adding ? t("ScheduleEditDialog.add") : t("ScheduleEditDialog.save")}
             </Button>
           </Modal.Footer>
         </form>

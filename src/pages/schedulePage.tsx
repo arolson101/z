@@ -13,7 +13,7 @@ import { RRule } from "rrule";
 import { Account, Bill, BillChange, NextBill, makeNextBill } from "../types";
 import { colorHash } from "../util";
 import { bindActionCreators, Dispatch, updraftAdd } from "../actions";
-import { AddScheduleDialog } from "../dialogs";
+import { ScheduleEditDialog } from "../dialogs";
 import { AppState, UpdraftState, BillCollection, AccountCollection } from "../state";
 import { formatCurrency, formatDate, t } from "../i18n";
 import { CurrencyChart, CurrencyChartDataset, CurrencyChartPoint } from "../components";
@@ -31,8 +31,8 @@ interface Props {
 }
 
 interface State {
-  add?: boolean;
-  editing?: number;
+  dialogIsShown?: boolean;
+  dialogEditing?: number;
 }
 
 
@@ -146,8 +146,8 @@ function insertNewlines(str: string): any {
 )
 export class SchedulePage extends React.Component<Props, State> {
   state = {
-    add: false,
-    editing: -1
+    dialogIsShown: false,
+    dialogEditing: -1
   };
 
   render() {
@@ -186,9 +186,9 @@ export class SchedulePage extends React.Component<Props, State> {
           </ListGroupItem>;
         })}
       </ListGroup>
-      <AddScheduleDialog
-        show={this.state.add || this.state.editing != -1}
-        editing={this.state.editing}
+      <ScheduleEditDialog
+        show={this.state.dialogIsShown}
+        editing={this.state.dialogEditing}
         onSave={this.onBillSave}
         onEdit={this.onBillEdit}
         onCancel={this.onModalHide}
@@ -205,17 +205,17 @@ export class SchedulePage extends React.Component<Props, State> {
 
   @autobind
   onAddBill() {
-    this.setState({add: true});
+    this.setState({dialogIsShown: true, dialogEditing: -1});
   }
 
   @autobind
   onEditBill(dbid: number) {
-    this.setState({ editing: dbid });
+    this.setState({dialogIsShown: true, dialogEditing: dbid});
   }
 
   @autobind
   onModalHide() {
-    this.setState({ add: false, editing: -1 });
+    this.setState({dialogIsShown: false});
   }
 
   @autobind
