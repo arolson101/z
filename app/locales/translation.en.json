@@ -41,7 +41,7 @@
     "add": "Add Account"
   },
 
-  "NewAccountPage": {
+  "AccountEditPage": {
     "addTitle": "Add Accounts",
     "editTitle": "Edit Accounts",
     "institutionLabel": "Institution",

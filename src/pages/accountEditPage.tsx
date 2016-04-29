@@ -52,9 +52,9 @@ function isNew(institutionId: number): boolean {
     },
     dispatch)
 )
-export class NewAccountPage extends React.Component<PageProps, any> {
+export class AccountEditPage extends React.Component<PageProps, any> {
   render() {
-    return <NewAccountPageDisplay {...this.props} institutionId={this.props.params.institutionId} updraftAdd={this.onUpdraftAdd}/>;
+    return <AccountEditPageDisplay {...this.props} institutionId={this.props.params.institutionId} updraftAdd={this.onUpdraftAdd}/>;
   }
 
   @autobind
@@ -131,7 +131,7 @@ interface State extends ReForm.State {
     accountsValid: ""
   },
 })
-export class NewAccountPageDisplay extends React.Component<Props, State> implements ReForm.Component {
+export class AccountEditPageDisplay extends React.Component<Props, State> implements ReForm.Component {
   reForm: ReForm.Interface;
 
   state = {
@@ -218,7 +218,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
       let helpText = "";
       if (expectedValue && expectedValue != field.value) {
         validationStateProp = { validationState: "warning" };
-        helpText = t("NewAccountPage.differentWarning", {expectedValue});
+        helpText = t("AccountEditPage.differentWarning", {expectedValue});
       }
 
       return (
@@ -241,10 +241,10 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
         <Row>
           <Col xs={12}>
             <FormGroup controlId="institution">
-              <ControlLabel>{t("NewAccountPage.institutionLabel")}</ControlLabel>
+              <ControlLabel>{t("AccountEditPage.institutionLabel")}</ControlLabel>
               <ReactSelect
                 inputProps={{id: "institution"}}
-                placeholder={t("NewAccountPage.institutionPlaceholder")}
+                placeholder={t("AccountEditPage.institutionPlaceholder")}
                 {...fields.institution}
                 onChange={this.onInstitutionChange}
                 options={_.map(filist, fi => ({
@@ -253,7 +253,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
                 }))}
               >
               </ReactSelect>
-              <HelpBlock>{t("NewAccountPage.institutionHelp")}</HelpBlock>
+              <HelpBlock>{t("AccountEditPage.institutionHelp")}</HelpBlock>
             </FormGroup>
           </Col>
         </Row>
@@ -261,10 +261,10 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
         <Row>
           <Col xs={12} md={6}>
             <FormGroup controlId="name" {...validationState(fields.name)}>
-              <ControlLabel>{t("NewAccountPage.nameLabel")}</ControlLabel>
+              <ControlLabel>{t("AccountEditPage.nameLabel")}</ControlLabel>
               <FormControl
                 type="text"
-                placeholder={t("NewAccountPage.namePlaceholder")}
+                placeholder={t("AccountEditPage.namePlaceholder")}
                 {...fields.name}
               />
               <FormControl.Feedback/>
@@ -274,10 +274,10 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
 
           <Col xs={12} md={6}>
             <FormGroup controlId="web">
-              <ControlLabel>{t("NewAccountPage.webLabel")}</ControlLabel>
+              <ControlLabel>{t("AccountEditPage.webLabel")}</ControlLabel>
               <FormControl
                 type="text"
-                placeholder={t("NewAccountPage.webPlaceholder")}
+                placeholder={t("AccountEditPage.webPlaceholder")}
                 {...fields.web}
               />
             </FormGroup>
@@ -287,11 +287,11 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
         <Row>
           <Col xs={12} md={6}>
             <FormGroup controlId="address">
-              <ControlLabel>{t("NewAccountPage.addressLabel")}</ControlLabel>
+              <ControlLabel>{t("AccountEditPage.addressLabel")}</ControlLabel>
               <FormControl
                 componentClass="textarea"
                 rows={4}
-                placeholder={t("NewAccountPage.addressPlaceholder")}
+                placeholder={t("AccountEditPage.addressPlaceholder")}
                 {...fields.address}
               />
             </FormGroup>
@@ -299,11 +299,11 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
 
           <Col xs={12} md={6}>
             <FormGroup controlId="notes">
-              <ControlLabel>{t("NewAccountPage.notesLabel")}</ControlLabel>
+              <ControlLabel>{t("AccountEditPage.notesLabel")}</ControlLabel>
               <FormControl
                 componentClass="textarea"
                 rows={4}
-                placeholder={t("NewAccountPage.notesPlaceholder")}
+                placeholder={t("AccountEditPage.notesPlaceholder")}
                 {...fields.notes}
               />
             </FormGroup>
@@ -311,32 +311,32 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
         </Row>
 
         <Checkbox id="online" {...fields.online as any}>
-          {t("NewAccountPage.enableOnline")}
+          {t("AccountEditPage.enableOnline")}
         </Checkbox>
 
         <Collapse in={fields.online.checked}>
           <div>
-            <Panel header={t("NewAccountPage.ofxInfo")}>
+            <Panel header={t("AccountEditPage.ofxInfo")}>
               <Row>
                 <Col xs={6} md={3}>
-                  {renderFidOrgOfx("fid", t("NewAccountPage.fidLabel"))}
+                  {renderFidOrgOfx("fid", t("AccountEditPage.fidLabel"))}
                 </Col>
 
                 <Col xs={6} md={3}>
-                  {renderFidOrgOfx("org", t("NewAccountPage.orgLabel"))}
+                  {renderFidOrgOfx("org", t("AccountEditPage.orgLabel"))}
                 </Col>
 
                 <Col xs={12} md={6}>
-                  {renderFidOrgOfx("ofx", t("NewAccountPage.ofxLabel"))}
+                  {renderFidOrgOfx("ofx", t("AccountEditPage.ofxLabel"))}
                 </Col>
               </Row>
             </Panel>
 
-            <Panel header={t("NewAccountPage.userpassInfo")}>
+            <Panel header={t("AccountEditPage.userpassInfo")}>
               <Row>
                 <Col xs={6}>
                   <FormGroup controlId="username">
-                    <ControlLabel>{t("NewAccountPage.usernameLabel")}</ControlLabel>
+                    <ControlLabel>{t("AccountEditPage.usernameLabel")}</ControlLabel>
                     <FormControl
                       type="text"
                       {...fields.username}
@@ -346,7 +346,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
 
                 <Col xs={6}>
                   <FormGroup controlId="password">
-                    <ControlLabel>{t("NewAccountPage.passwordLabel")}</ControlLabel>
+                    <ControlLabel>{t("AccountEditPage.passwordLabel")}</ControlLabel>
                     <FormControl
                       type="text"
                       {...fields.password}
@@ -358,14 +358,14 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
           </div>
         </Collapse>
 
-        <Panel header={t("NewAccountPage.accounts")}>
+        <Panel header={t("AccountEditPage.accounts")}>
           <Table>
             <thead>
               <tr>
-                <th>{t("NewAccountPage.accountVisible")}</th>
-                <th>{t("NewAccountPage.accountType")}</th>
-                <th>{t("NewAccountPage.accountName")}</th>
-                <th>{t("NewAccountPage.accountNumber")}</th>
+                <th>{t("AccountEditPage.accountVisible")}</th>
+                <th>{t("AccountEditPage.accountType")}</th>
+                <th>{t("AccountEditPage.accountName")}</th>
+                <th>{t("AccountEditPage.accountNumber")}</th>
                 <th></th>
               </tr>
             </thead>
@@ -409,8 +409,8 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
               onDismiss={() => this.setState({gettingAccountsSuccess: null})}
               dismissAfter={2000}
               >
-              <h4>{t("NewAccountPage.successGettingAccounts")}</h4>
-              <p>{t("NewAccountPage.successGettingAccountsMessage", {numAccounts: this.state.gettingAccountsSuccess})}</p>
+              <h4>{t("AccountEditPage.successGettingAccounts")}</h4>
+              <p>{t("AccountEditPage.successGettingAccountsMessage", {numAccounts: this.state.gettingAccountsSuccess})}</p>
             </Alert>
           }
           {this.state.gettingAccountsError &&
@@ -418,7 +418,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
               bsStyle="danger"
               onDismiss={() => this.setState({gettingAccountsError: null})}
               >
-              <h4>{t("NewAccountPage.errorGettingAccounts")}</h4>
+              <h4>{t("AccountEditPage.errorGettingAccounts")}</h4>
               <p>{this.state.gettingAccountsError}</p>
             </Alert>
           }
@@ -432,7 +432,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
                 type="button"
                 id="addAccount"
                 bsStyle="success"
-                onClick={this.onAddAccount}>{t("NewAccountPage.addAccount")}
+                onClick={this.onAddAccount}>{t("AccountEditPage.addAccount")}
               </Button>
               {" "}
               {fields.online.checked &&
@@ -444,7 +444,7 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
                   id="getAccountList"
                   >
                     <Icon name={this.state.gettingAccounts ? "fa-spinner fa-pulse" : "download"}/>
-                    {" " + t("NewAccountPage.getAccountList")}
+                    {" " + t("AccountEditPage.getAccountList")}
                 </Button>
               }
             </Col>
@@ -453,18 +453,18 @@ export class NewAccountPageDisplay extends React.Component<Props, State> impleme
 
         <div className="modal-footer">
           {editing &&
-            <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("NewAccountPage.delete")}</Button>
+            <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("AccountEditPage.delete")}</Button>
           }
           {__DEVELOPMENT__ &&
             <Button onClick={this.onRandom}><Icon name="random"/> random</Button>
           }
-          <Button onClick={this.onClose}>{t("NewAccountPage.close")}</Button>
+          <Button onClick={this.onClose}>{t("AccountEditPage.close")}</Button>
           <Button
             bsStyle="primary"
             id="submit"
             onClick={this.reForm.handleSubmit(editing ? this.onSave : this.onCreate)}
           >
-            {editing ? t("NewAccountPage.save") : t("NewAccountPage.create")}
+            {editing ? t("AccountEditPage.save") : t("AccountEditPage.create")}
           </Button>
         </div>
 
