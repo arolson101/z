@@ -19,7 +19,7 @@ enum Recurrance {
 }
 
 
-interface Props extends React.Props<any> {
+interface Props {
   bills?: BillCollection;
 
   editing?: number; // dbid of bill

@@ -1,6 +1,4 @@
-- remove inheriting React.Props<any>
 - fix clunkly modal opening
 - branch react-bootstrap typings
-- fix i18next on tests
 - more tests
 - tests should verify string exists

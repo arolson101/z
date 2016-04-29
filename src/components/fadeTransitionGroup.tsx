@@ -6,7 +6,7 @@ import * as ReactCSSTransitionGroup from "react-addons-css-transition-group";
 
 require("./fadeTransitionGroup.css");
 
-interface Props extends React.TransitionGroupProps, React.Props<any> {}
+interface Props extends React.TransitionGroupProps {}
 
 export class FadeTransitionGroup extends React.Component<Props, any> {
   render() {

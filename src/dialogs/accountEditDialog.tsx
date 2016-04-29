@@ -10,7 +10,7 @@ import { Account, AccountType } from "../types";
 import { EnumSelect } from "../components";
 
 
-interface Props extends React.Props<any> {
+interface Props {
   editing: number;
   show: boolean;
   onCancel: Function;
@@ -19,7 +19,7 @@ interface Props extends React.Props<any> {
   accounts: Account[];
 }
 
-interface State extends ReForm.State, React.Props<any> {
+interface State extends ReForm.State {
   fields?: {
     visible: ReForm.Field<boolean>;
     type: ReForm.Field<number>;

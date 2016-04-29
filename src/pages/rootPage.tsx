@@ -8,7 +8,7 @@ import { Breadcrumbs } from "../components";
 import { AppState, UpdraftState } from "../state";
 
 
-interface Props extends React.Props<any> {
+interface Props {
   locale: string;
   updraft: UpdraftState;
   history: ReactRouter.History;
