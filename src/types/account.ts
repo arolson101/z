@@ -1,6 +1,6 @@
 ///<reference path="../project.d.ts"/>
 
-import { Column, Mutate as M, Query as Q } from "updraft";
+import { Column, Delta as D, Query as Q } from "updraft";
 import { t } from "../i18n";
 
 // see ofx4js.domain.data.banking.AccountType
@@ -31,9 +31,9 @@ export interface Account extends _Account<number, number, string, AccountType, b
   [key: string]: any;
 }
 export interface AccountQuery extends _Account<Q.num, Q.num, Q.str, Q.enm<AccountType>, Q.bool, Q.num> {}
-export interface AccountChange extends _Account<number, M.num, M.str, M.enm<AccountType>, M.bool, M.num> {}
-export type AccountTable = Updraft.Table<Account, AccountChange, AccountQuery>;
-export type AccountTableSpec = Updraft.TableSpec<Account, AccountChange, AccountQuery>;
+export interface AccountDelta extends _Account<number, D.num, D.str, D.enm<AccountType>, D.bool, D.num> {}
+export type AccountTable = Updraft.Table<Account, AccountDelta, AccountQuery>;
+export type AccountTableSpec = Updraft.TableSpec<Account, AccountDelta, AccountQuery>;
 
 export const accountSpec: AccountTableSpec = {
   name: "accounts",

@@ -81,7 +81,7 @@
     "sortablejs": "^1.4.2",
     "sqlite3": "^3.1.3",
     "string-hash": "^1.1.0",
-    "updraft": "^0.7.11",
+    "updraft": "^0.8.0",
     "x-editable": "^1.5.1"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 ///<reference path="../project.d.ts"/>
 
-import { Column, Mutate as M, Query as Q } from "updraft";
+import { Column, Delta as D, Query as Q } from "updraft";
 import { RRule } from "rrule";
 import { rruleFixText } from "../util";
 
@@ -16,9 +16,9 @@ export interface _Bill<key, id, str, date, num> {
 
 export interface Bill extends _Bill<number, number, string, Date, number> {}
 export interface BillQuery extends _Bill<Q.num, Q.num, Q.str, Q.date, Q.num> {}
-export interface BillChange extends _Bill<number, M.num, M.str, M.date, M.num> {}
-export type BillTable = Updraft.Table<Bill, BillChange, BillQuery>;
-export type BillTableSpec = Updraft.TableSpec<Bill, BillChange, BillQuery>;
+export interface BillDelta extends _Bill<number, D.num, D.str, D.date, D.num> {}
+export type BillTable = Updraft.Table<Bill, BillDelta, BillQuery>;
+export type BillTableSpec = Updraft.TableSpec<Bill, BillDelta, BillQuery>;
 
 export const billSpec: BillTableSpec = {
   name: "bills",

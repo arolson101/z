@@ -1,6 +1,6 @@
 ///<reference path="../project.d.ts"/>
 
-import { Column, Mutate as M, Query as Q } from "updraft";
+import { Column, Delta as D, Query as Q } from "updraft";
 
 interface _Institution<id, str, bool> {
   dbid?: id;
@@ -21,9 +21,9 @@ interface _Institution<id, str, bool> {
 
 export interface Institution extends _Institution<number, string, boolean> {}
 export interface InstitutionQuery extends _Institution<Q.num, Q.str, Q.bool> {}
-export interface InstitutionChange extends _Institution<number, M.str, M.bool> {}
-export type InstitutionTable = Updraft.Table<Institution, InstitutionChange, InstitutionQuery>;
-export type InstitutionTableSpec = Updraft.TableSpec<Institution, InstitutionChange, InstitutionQuery>;
+export interface InstitutionDelta extends _Institution<number, D.str, D.bool> {}
+export type InstitutionTable = Updraft.Table<Institution, InstitutionDelta, InstitutionQuery>;
+export type InstitutionTableSpec = Updraft.TableSpec<Institution, InstitutionDelta, InstitutionQuery>;
 
 export const institutionSpec: InstitutionTableSpec = {
   name: "institutions",

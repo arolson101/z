@@ -1,7 +1,7 @@
 ///<reference path="../project.d.ts"/>
 
 import * as reactMixin from "react-mixin";
-import { mutate } from "updraft";
+import { update } from "updraft";
 
 
 export function ReForm(options: ReForm.Options) {
@@ -121,12 +121,12 @@ export namespace ReForm {
                   }
                 }
               };
-              const nextState = mutate(this.state, stateChange);
+              const nextState = update(this.state, stateChange);
               if (nextState !== this.state) {
                 const nextValues = valuesForState(nextState);
                 const validate = getValidator(this);
                 const errors = runValidate(validate, nextValues, nextState);
-                const finalState = mutate(nextState, errors);
+                const finalState = update(nextState, errors);
                 this.setState(finalState);
               }
             },
@@ -138,7 +138,7 @@ export namespace ReForm {
 
         const validate = getValidator(this);
         const errors = runValidate(validate, options.defaultValues, state);
-        state = mutate(state, errors);
+        state = update(state, errors);
 
         return state;
       },
@@ -159,12 +159,12 @@ export namespace ReForm {
                 };
               }
             }
-            const nextState = mutate(this.state, stateChange);
+            const nextState = update(this.state, stateChange);
             if (nextState !== this.state) {
               const nextValues = valuesForState(nextState);
               const validate = getValidator(this);
               const errors = runValidate(validate, nextValues, nextState);
-              const finalState = mutate(nextState, errors);
+              const finalState = update(nextState, errors);
               this.setState(finalState);
             }
           },
@@ -175,7 +175,7 @@ export namespace ReForm {
             const nextValues = valuesForState(this.state);
             const validate = getValidator(this);
             const errors = runValidate(validate, nextValues, this.state);
-            const nextState = mutate(this.state, errors);
+            const nextState = update(this.state, errors);
             this.setState(nextState);
           },
           isValid: (): boolean => {

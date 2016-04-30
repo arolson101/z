@@ -10,7 +10,7 @@ import { verify } from "updraft";
 import { EnumSelect, CurrencyInput, AccountSelect, DatePicker } from "../components";
 import { today } from "../actions";
 import { ValidateHelper, ReForm, rruleFixEndOfMonth } from "../util";
-import { Bill, BillChange, Frequency, RRule } from "../types";
+import { Bill, BillDelta, Frequency, RRule } from "../types";
 import { AppState, BillCollection, t } from "../state";
 
 enum Recurrance {
@@ -26,7 +26,7 @@ interface Props {
   show?: boolean;
   onCancel?: Function;
   onSave?: (account: Bill) => any;
-  onEdit?: (change: BillChange) => any;
+  onEdit?: (change: BillDelta) => any;
   onDelete?: Function;
 }
 
@@ -255,10 +255,10 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
     else {
       verify(editBillId in this.props.bills, "invalid dbid");
       const src = this.props.bills[editBillId];
-      let change: BillChange = { dbid: src.dbid };
+      let change: BillDelta = { dbid: src.dbid };
       _.forEach(bill, (value: any, key: string) => {
         if (value != (src as any)[key]) {
-          (change as any)[key] = { $set: value } as Updraft.Mutate.setter<any>;
+          (change as any)[key] = { $set: value } as Updraft.Delta.setter<any>;
         }
       });
       onEdit(change);

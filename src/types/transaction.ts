@@ -1,6 +1,6 @@
 ///<reference path="../project.d.ts"/>
 
-import { Column, Mutate as M, Query as Q } from "updraft";
+import { Column, Delta as D, Query as Q } from "updraft";
 
 export enum TransactionStatus {
   None = 0,
@@ -21,9 +21,9 @@ export interface Transaction extends _Transaction<number, number, string, Date, 
   [key: string]: any;
 }
 export interface TransactionQuery extends _Transaction<Q.num, Q.num, Q.str, Q.date, Q.num, Q.enm<TransactionStatus>> {}
-export interface TransactionChange extends _Transaction<number, M.num, M.str, M.date, M.num, M.enm<TransactionStatus>> {}
-export type TransactionTable = Updraft.Table<Transaction, TransactionChange, TransactionQuery>;
-export type TransactionTableSpec = Updraft.TableSpec<Transaction, TransactionChange, TransactionQuery>;
+export interface TransactionDelta extends _Transaction<number, D.num, D.str, D.date, D.num, D.enm<TransactionStatus>> {}
+export type TransactionTable = Updraft.Table<Transaction, TransactionDelta, TransactionQuery>;
+export type TransactionTableSpec = Updraft.TableSpec<Transaction, TransactionDelta, TransactionQuery>;
 
 export const transactionSpec: TransactionTableSpec = {
   name: "transactions",

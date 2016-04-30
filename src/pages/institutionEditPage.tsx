@@ -7,7 +7,7 @@ import * as Icon from "react-fa";
 //import * as LaddaButton from "react-ladda";
 import { connect } from "react-redux";
 import hash = require("string-hash");
-import { mutate, verify } from "updraft";
+import { update, verify } from "updraft";
 
 import { AppState, FI, UpdraftState, t, InstitutionCollection, AccountCollection } from "../state";
 import { Account, accountSpec, AccountType, Institution, institutionSpec } from "../types";
@@ -557,7 +557,7 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
     }
     this.setState(
       {
-        accounts: mutate(this.state.accounts, change)
+        accounts: update(this.state.accounts, change)
       },
       () => {
         this.reForm.runValidate();
@@ -569,7 +569,7 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
   @autobind
   onAccountDelete(index: number) {
     this.setState(
-      mutate(this.state, {
+      update(this.state, {
         accounts: { $splice: [[index, 1]] }
       }),
       () => {
@@ -687,8 +687,8 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
 
     this.props.updraftAdd(
       updraft,
-      Updraft.makeSave(updraft.institutionTable, time)(institution),
-      ...accounts.map(Updraft.makeSave(updraft.accountTable, time))
+      Updraft.makeCreate(updraft.institutionTable, time)(institution),
+      ...accounts.map(Updraft.makeCreate(updraft.accountTable, time))
     );
   }
 
@@ -728,10 +728,10 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
 
     this.props.updraftAdd(
       updraft,
-      ...institutionChanges.map(Updraft.makeChange(updraft.institutionTable, time)),
+      ...institutionChanges.map(Updraft.makeUpdate(updraft.institutionTable, time)),
       ...accountsRemoved.map(Updraft.makeDelete(updraft.accountTable, time)),
-      ...accountsChanges.map(Updraft.makeChange(updraft.accountTable, time)),
-      ...accountsAdded.map(Updraft.makeSave(updraft.accountTable, time))
+      ...accountsChanges.map(Updraft.makeUpdate(updraft.accountTable, time)),
+      ...accountsAdded.map(Updraft.makeCreate(updraft.accountTable, time))
     );
   }
 

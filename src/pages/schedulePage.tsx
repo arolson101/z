@@ -10,7 +10,7 @@ import * as Icon from "react-fa";
 import { createSelector } from "reselect";
 import { RRule } from "rrule";
 
-import { Account, Bill, BillChange, NextBill, makeNextBill } from "../types";
+import { Account, Bill, BillDelta, NextBill, makeNextBill } from "../types";
 import { colorHash } from "../util";
 import { bindActionCreators, Dispatch, updraftAdd } from "../actions";
 import { ScheduleEditDialog } from "../dialogs";
@@ -221,14 +221,14 @@ export class SchedulePage extends React.Component<Props, State> {
   @autobind
   onBillSave(bill: Bill) {
     const { updraft, updraftAdd } = this.props;
-    updraftAdd(updraft, Updraft.makeSave(updraft.billTable, Date.now())(bill));
+    updraftAdd(updraft, Updraft.makeCreate(updraft.billTable, Date.now())(bill));
     this.onModalHide();
   }
 
   @autobind
-  onBillEdit(change: BillChange) {
+  onBillEdit(change: BillDelta) {
     const { updraft, updraftAdd } = this.props;
-    updraftAdd(updraft, Updraft.makeChange(updraft.billTable, Date.now())(change));
+    updraftAdd(updraft, Updraft.makeUpdate(updraft.billTable, Date.now())(change));
     this.onModalHide();
   }
 

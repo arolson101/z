@@ -340,7 +340,7 @@ export class AccountDetailPage extends React.Component<Props, State> {
 
         updraftAdd(
           updraft,
-          ...transactions.map(Updraft.makeSave(updraft.transactionTable, time))
+          ...transactions.map(Updraft.makeCreate(updraft.transactionTable, time))
         ).then(() => {
           this.setState({forceRefresh: true}, () => {
             this.$table().DataTable().ajax.reload();

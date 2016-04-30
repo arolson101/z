@@ -46,7 +46,7 @@ export function defineUpdraftCollection<Element, Mutator, Query>(tableSpec: Updr
     return (dispatch: Dispatch) => {
       return table.add({
         time: Date.now(),
-        save: item
+        create: item
       })
       .then(() => table.find(query))
       .then((items: Element[]) => {

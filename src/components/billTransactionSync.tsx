@@ -82,7 +82,7 @@ export class BillTransactionSync extends React.Component<Props, State> {
       const changes: Updraft.TableChange<any, any>[] = [];
       const table = this.props.updraft.transactionTable;
       const now = Date.now();
-      const saver = Updraft.makeSave(table, now);
+      const creator = Updraft.makeCreate(table, now);
       const deleter = Updraft.makeDelete(table, now);
       _.forEach(this.props.bills, (bill: Bill, billId: string) => {
         if (bill.account) {
@@ -95,7 +95,7 @@ export class BillTransactionSync extends React.Component<Props, State> {
           const noTransactionForDates = _.reject(occurrences, hasTransactionForDate);
           const toAdd = _.map(noTransactionForDates, (date: Date) => transactionFromBill(bill, date));
           const toDelete = _.reject(transactions, (tx: Transaction) => _.some(occurrences, (occurrence: Date) => occurrence.getTime() == tx.date.getTime()));
-          changes.push(...toAdd.map(saver));
+          changes.push(...toAdd.map(creator));
           changes.push(...toDelete.map(tx => tx.dbid).map(deleter));
         }
       });
