@@ -4,7 +4,7 @@ import { expect } from "chai";
 import * as ReactDOM from "react-dom";
 import TestUtils = require("react-addons-test-utils");
 
-import { FI } from "../src/index";
+import { FI, AccountType, Account } from "../src/index";
 
 
 export function dummyFI(id: number, name: string): FI {
@@ -29,6 +29,16 @@ export function dummyFI(id: number, name: string): FI {
       financialInstitutionName: name + "financialInstitutionName",
       siteURL: name + "siteURL",
     }
+  };
+}
+
+
+export function dummyAcount(type: AccountType, name: string, number: string): Account {
+  return {
+    name,
+    number,
+    type,
+    balance: 100.25
   };
 }
 

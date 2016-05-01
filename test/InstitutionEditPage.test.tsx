@@ -6,16 +6,18 @@ import * as ReactDOM from "react-dom";
 import * as TestUtils from "react-addons-test-utils";
 import * as sinon from "sinon";
 
-import { dummyFI, findNode, simulateChangeValue, simulateClick, simulateSubmit, frame } from "./util";
+import { dummyFI, dummyAcount, findNode, simulateChangeValue, simulateClick, simulateSubmit, frame } from "./util";
 
 import {
   appState,
   loadLocale,
   InstitutionEditPageDisplay,
   FI,
-  AccountType
- } from "../src/index";
-import { AccountEditDialog } from "../src/dialogs";
+  Account,
+  AccountType,
+  ReadAccountProfilesParams,
+  AccountEditDialog
+ } from "../src";
 
 
 const simulateChangeInstitution = async function(institution: HTMLInputElement, value: string) {
@@ -41,8 +43,13 @@ describe("InstitutionEditPage", function() {
   let fid: HTMLInputElement;
   let org: HTMLInputElement;
   let ofx: HTMLInputElement;
+  let username: HTMLInputElement;
+  let password: HTMLInputElement;
+  let getAccountList: HTMLButtonElement;
   let addAccount: HTMLButtonElement;
   let updraftAdd: Sinon.SinonSpy;
+  let readAccountProfiles: Sinon.SinonSpy;
+  let readAccountProfiles_return: Promise<Account[]>;
 
   const findNodes = () => {
     componentNode = ReactDOM.findDOMNode(component);
@@ -54,6 +61,9 @@ describe("InstitutionEditPage", function() {
     fid = findNode<HTMLInputElement>(componentNode, "input#fid");
     org = findNode<HTMLInputElement>(componentNode, "input#org");
     ofx = findNode<HTMLInputElement>(componentNode, "input#ofx");
+    username = findNode<HTMLInputElement>(componentNode, "input#username");
+    password = findNode<HTMLInputElement>(componentNode, "input#password");
+    getAccountList = findNode<HTMLButtonElement>(componentNode, "button#getAccountList");
     addAccount = findNode<HTMLButtonElement>(componentNode, "button#addAccount");
   };
 
@@ -61,6 +71,7 @@ describe("InstitutionEditPage", function() {
     let store = createStore(appState);
     let state = store.getState();
     updraftAdd = sinon.spy();
+    readAccountProfiles = sinon.spy(() => readAccountProfiles_return);
 
     filist = [
       dummyFI(0, "fi0"),
@@ -75,6 +86,7 @@ describe("InstitutionEditPage", function() {
         accounts={state.accounts}
         updraft={state.updraft}
         updraftAdd={updraftAdd}
+        readAccountProfiles={readAccountProfiles}
       />
     ) as any;
 
@@ -163,8 +175,6 @@ describe("InstitutionEditPage", function() {
 
     it("adds accounts", async function() {
       await simulateClick(addAccount);
-      await frame();
-      await frame();
       findNodes();
       let accountEditDialog = component.refs["accountEditDialog"] as AccountEditDialog;
       let nameInput = ReactDOM.findDOMNode<HTMLInputElement>(accountEditDialog.refs["name"]);
@@ -177,7 +187,63 @@ describe("InstitutionEditPage", function() {
     });
 
 
-    it("downloads account list from server");
+    it("downloads account list from server", async function() {
+      const params: ReadAccountProfilesParams = {
+        fid: "dummy fid",
+        org: "dummy org",
+        ofx: "dummy ofx",
+        name: "dummy name",
+        username: "dummy username",
+        password: "dummy password",
+      };
+      const accounts = [
+        dummyAcount(AccountType.CHECKING, "Dummy Checking", "0001230"),
+        dummyAcount(AccountType.SAVINGS, "Dummy Savings", "0001231"),
+        dummyAcount(AccountType.CREDITCARD, "Dummy Credit", "0001232"),
+      ];
+      readAccountProfiles_return = Promise.resolve(accounts);
+      await simulateChangeValue(name, params.name);
+      await simulateChangeValue(fid, params.fid);
+      await simulateChangeValue(org, params.org);
+      await simulateChangeValue(ofx, params.ofx);
+      await simulateChangeValue(username, params.username);
+      await simulateChangeValue(password, params.password);
+      await simulateClick(getAccountList);
+      expect(readAccountProfiles).to.have.been.calledOnce;
+      expect(readAccountProfiles).to.have.been.calledWith(params);
+      expect(component.state.accounts).to.have.length(accounts.length);
+      for (let i = 0; i < accounts.length; i++) {
+        expect(component.state.accounts[i].name).to.equal(accounts[i].name);
+        expect(component.state.accounts[i].number).to.equal(accounts[i].number);
+        expect(component.state.accounts[i].type).to.equal(accounts[i].type);
+      }
+    });
+
+
+    it("displays error if account list download failed", async function() {
+      const params: ReadAccountProfilesParams = {
+        fid: "dummy fid",
+        org: "dummy org",
+        ofx: "dummy ofx",
+        name: "dummy name",
+        username: "dummy username",
+        password: "dummy password",
+      };
+      const err = new Error("dummy error message");
+      readAccountProfiles_return = Promise.reject(err);
+      await simulateChangeValue(name, params.name);
+      await simulateChangeValue(fid, params.fid);
+      await simulateChangeValue(org, params.org);
+      await simulateChangeValue(ofx, params.ofx);
+      await simulateChangeValue(username, params.username);
+      await simulateChangeValue(password, params.password);
+      await simulateClick(getAccountList);
+      expect(readAccountProfiles).to.have.been.calledOnce;
+      expect(component.state.accounts).to.have.length(0);
+      expect(component.state.gettingAccountsError).to.equal(err.toString());
+      const msgnode = findNode<HTMLElement>(componentNode, "#gettingAccountsErrorMessage");
+      expect(msgnode.textContent).to.equal(err.toString());
+    });
   });
 
 

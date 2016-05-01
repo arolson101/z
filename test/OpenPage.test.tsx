@@ -13,9 +13,9 @@ import {
   loadLocale,
   OpenPageDisplay,
   OpenStoreInfo,
-  StoreInfo
- } from "../src/index";
-import { OpenDialog } from "../src/dialogs";
+  StoreInfo,
+  OpenDialog
+ } from "../src";
 
 
 function dummyStoreInfo(name: string): StoreInfo {

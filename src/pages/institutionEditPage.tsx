@@ -20,7 +20,7 @@ import {
 import { AccountEditDialog } from "../dialogs";
 import { ValidateHelper, ReForm } from "../util";
 import { bindActionCreators, Dispatch, updraftAdd } from "../actions";
-import { readAccountProfiles } from "../online";
+import { readAccountProfiles, ReadAccountProfilesParams } from "../online";
 
 
 interface PageProps {
@@ -54,7 +54,14 @@ function isNew(institutionId: number): boolean {
 )
 export class InstitutionEditPage extends React.Component<PageProps, any> {
   render() {
-    return <InstitutionEditPageDisplay {...this.props} institutionId={this.props.params.institutionId} updraftAdd={this.onUpdraftAdd}/>;
+    return (
+      <InstitutionEditPageDisplay
+        {...this.props}
+        institutionId={this.props.params.institutionId}
+        updraftAdd={this.onUpdraftAdd}
+        readAccountProfiles={readAccountProfiles}
+      />
+    );
   }
 
   @autobind
@@ -70,7 +77,8 @@ export class InstitutionEditPage extends React.Component<PageProps, any> {
 
 interface Props {
   institutionId?: number;
-  updraftAdd?: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
+  updraftAdd: (state: UpdraftState, ...changes: Updraft.TableChange<any, any>[]) => Promise<any>;
+  readAccountProfiles: (params: ReadAccountProfilesParams) => Promise<Account[]>;
   filist: FI[];
   institutions: InstitutionCollection;
   accounts: AccountCollection;
@@ -192,6 +200,9 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
     const { fields, submitFailed, accounts } = this.state;
     const { filist } = this.props;
     const canGetAccounts: boolean = (
+      !!fields.name.value &&
+      !!fields.fid.value &&
+      !!fields.org.value &&
       !!fields.ofx.value &&
       !!fields.username.value &&
       !!fields.password.value
@@ -407,7 +418,6 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
             <Alert
               bsStyle="success"
               onDismiss={() => this.setState({gettingAccountsSuccess: null})}
-              dismissAfter={2000}
               >
               <h4>{t("InstitutionEditPage.successGettingAccounts")}</h4>
               <p>{t("InstitutionEditPage.successGettingAccountsMessage", {numAccounts: this.state.gettingAccountsSuccess})}</p>
@@ -419,7 +429,7 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
               onDismiss={() => this.setState({gettingAccountsError: null})}
               >
               <h4>{t("InstitutionEditPage.errorGettingAccounts")}</h4>
-              <p>{this.state.gettingAccountsError}</p>
+              <p id="gettingAccountsErrorMessage">{this.state.gettingAccountsError}</p>
             </Alert>
           }
           {submitFailed && fields.accountsValid.error &&
@@ -462,6 +472,7 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
           <Button
             bsStyle="primary"
             id="submit"
+            disabled={this.state.gettingAccounts}
             onClick={this.reForm.handleSubmit(editing ? this.onSave : this.onCreate)}
           >
             {editing ? t("InstitutionEditPage.save") : t("InstitutionEditPage.create")}
@@ -589,7 +600,7 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
       gettingAccountsError: null
     });
 
-    readAccountProfiles({
+    this.props.readAccountProfiles({
       name: fields.name.value,
       fid: fields.fid.value,
       org: fields.org.value,

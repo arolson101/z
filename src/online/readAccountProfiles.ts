@@ -8,7 +8,7 @@ import OFXV1Connection = ofx4js.client.net.OFXV1Connection;
 import AccountProfile = ofx4js.domain.data.signup.AccountProfile;
 
 
-export interface ReadAccountProfiles {
+export interface ReadAccountProfilesParams {
   fid: string;
   org: string;
   ofx: string;
@@ -19,7 +19,7 @@ export interface ReadAccountProfiles {
 }
 
 
-export function readAccountProfiles(params: ReadAccountProfiles): Promise<Account[]> {
+export function readAccountProfiles(params: ReadAccountProfilesParams): Promise<Account[]> {
   let bank = new BaseFinancialInstitutionData();
   bank.setFinancialInstitutionId(params.fid);
   bank.setOrganization(params.org);
