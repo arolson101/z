@@ -57,6 +57,7 @@ describe("InstitutionEditPage", function() {
   let password: HTMLInputElement;
   let getAccountList: HTMLButtonElement;
   let addAccount: HTMLButtonElement;
+  let submit: HTMLButtonElement;
   let updraftAdd: Sinon.SinonSpy;
   let readAccountProfiles: Sinon.SinonSpy;
   let readAccountProfiles_return: Promise<Account[]>;
@@ -75,6 +76,7 @@ describe("InstitutionEditPage", function() {
     password = findNode<HTMLInputElement>(componentNode, "input#password");
     getAccountList = findNode<HTMLButtonElement>(componentNode, "button#getAccountList");
     addAccount = findNode<HTMLButtonElement>(componentNode, "button#addAccount");
+    submit = findNode<HTMLButtonElement>(componentNode, "button#submit");
   };
 
   describe("create accounts", function() {
@@ -161,22 +163,27 @@ describe("InstitutionEditPage", function() {
       });
 
       it("submit does nothing when name or accounts are empty", async function() {
-        const submit = findNode<HTMLButtonElement>(componentNode, "button#submit");
-
         // saving initially does nothing
         await simulateClick(submit);
         expect(updraftAdd).to.have.not.been.called;
 
         // set name
-        await simulateChangeValue(name, "dummy name");
+        const institutionName = "dummy institution";
+        await simulateChangeValue(name, institutionName);
         await simulateClick(submit);
         expect(updraftAdd).to.have.not.been.called;
 
         // add account
-        component.onAccountSave({type: AccountType.CHECKING, name: "dummy account name", number: "1234"});
+        const accountName = "dummy account";
+        component.onAccountSave({type: AccountType.CHECKING, name: accountName, number: "1234"});
         await frame();
         await simulateClick(submit);
         expect(updraftAdd).to.have.been.calledOnce;
+
+        let changes = updraftAdd.args[0] as Updraft.TableChange<any, any>[];
+        expect(changes).to.have.length(3);
+        expect(changes[1].create.name).to.equal(institutionName);
+        expect(changes[2].create.name).to.equal(accountName);
       });
 
       it("adds accounts", async function() {
@@ -298,7 +305,17 @@ describe("InstitutionEditPage", function() {
       expect(label.textContent).to.equal(filist[fiIdx].name);
     });
 
-    it("change name");
+    it("change name", async function() {
+      const newName = "new name";
+      await simulateChangeValue(name, newName);
+      await simulateClick(submit);
+      expect(updraftAdd).to.have.callCount(1);
+      let changes = updraftAdd.args[0] as Updraft.TableChange<any, any>[];
+      console.log(changes);
+      expect(changes).to.have.length(2);
+      expect(changes[1].update.name.$set).to.equal(newName);
+    });
+
     it("change details");
 
     describe("accounts", function() {
