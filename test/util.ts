@@ -1,10 +1,9 @@
 ///<reference path="../typings/main.d.ts"/>
 "use strict";
 import { expect } from "chai";
-import * as ReactDOM from "react-dom";
 import TestUtils = require("react-addons-test-utils");
 
-import { FI, AccountType, Account } from "../src/index";
+import { FI, AccountType, Account, AccountCollection, Institution, InstitutionCollection } from "../src/index";
 
 
 export function dummyFI(id: number, name: string): FI {
@@ -33,13 +32,78 @@ export function dummyFI(id: number, name: string): FI {
 }
 
 
-export function dummyAcount(type: AccountType, name: string, number: string): Account {
-  return {
+export function dummyAccount(type: AccountType, name: string, number: string, id?: number, institutionId?: number): Account {
+  let acct: Account = {
     name,
     number,
     type,
     balance: 100.25
   };
+
+  if (id) {
+    acct.dbid = id;
+  }
+
+  if (institutionId) {
+    acct.institution = institutionId;
+  }
+
+  return acct;
+}
+
+
+export function dummyInstitution(id: number, name: string): Institution {
+  return {
+    dbid: id,
+    name,
+    web: "http://" + name,
+    address: "123 " + name + " st\n" + name + " City, ZZ, 12345",
+    notes: "notes about " + name,
+    online: true,
+    fid: name + " fid",
+    org: name + " org",
+    ofx: name + " ofx",
+    username: name + " username",
+    password: name + " password"
+  };
+}
+
+
+export function dummyInstitutionCollection(fis: FI[]): InstitutionCollection {
+  const icol: InstitutionCollection = {};
+  fis.forEach((fi: FI, idx: number) => {
+    const id = idx + 100;
+    icol[id] = {
+      dbid: id,
+      name: fi.name,
+      web: fi.profile.siteURL,
+      address: fi.profile.address1,
+      notes: "notes about " + fi.name,
+      online: true,
+      fid: fi.fid,
+      org: fi.org,
+      ofx: fi.ofx,
+      username: name + " username",
+      password: name + " password"
+    };
+  });
+  return icol;
+}
+
+
+export function dummyAccountsCollection(icol: InstitutionCollection): AccountCollection {
+  const acol: AccountCollection = {};
+  let id = 1000;
+  _.forEach(icol, (institution: Institution) => {
+    let acct = dummyAccount(AccountType.CHECKING, institution.name + " checking", institution.dbid + "001", id, institution.dbid);
+    acol[acct.dbid] = acct;
+    id++;
+
+    acct = dummyAccount(AccountType.SAVINGS, institution.name + " savings", institution.dbid + "002", id, institution.dbid);
+    acol[acct.dbid] = acct;
+    id++;
+  });
+  return acol;
 }
 
 

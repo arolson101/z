@@ -254,6 +254,7 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
             <FormGroup controlId="institution">
               <ControlLabel>{t("InstitutionEditPage.institutionLabel")}</ControlLabel>
               <ReactSelect
+                className="institution"
                 inputProps={{id: "institution"}}
                 placeholder={t("InstitutionEditPage.institutionPlaceholder")}
                 {...fields.institution}
