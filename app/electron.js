@@ -50,6 +50,7 @@ app.on('ready', function() {
   var configPath = path.join(app.getPath("userData"), "config.json");
   
   var config = readConfig(configPath);
+  config.webPreferences = {webSecurity: false};
   
 	// Create the browser window.
 	mainWindow = new BrowserWindow(config);
