@@ -20,6 +20,10 @@ export interface ReadAccountProfilesParams {
 
 
 export function readAccountProfiles(params: ReadAccountProfilesParams): Promise<Account[]> {
+  let DefaultApplicationContext = ofx4js.client.context.DefaultApplicationContext;
+  let OFXApplicationContextHolder = ofx4js.client.context.OFXApplicationContextHolder;
+  OFXApplicationContextHolder.setCurrentContext(new DefaultApplicationContext("QWIN", "2300"));
+
   let bank = new BaseFinancialInstitutionData();
   bank.setFinancialInstitutionId(params.fid);
   bank.setOrganization(params.org);
