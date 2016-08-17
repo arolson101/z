@@ -549,8 +549,7 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
 
   @autobind
   onEditAccount(editIndex: number) {
-    console.assert(editIndex as any);
-    this.setState({ dialogEditIndex: editIndex });
+    this.setState({ dialogShow: true, dialogEditIndex: editIndex });
   }
 
   @autobind
@@ -559,10 +558,10 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
   }
 
   @autobind
-  onAccountSave(account: Account) {
+  onAccountSave(editIndex: number, account: Account) {
     let change: any = {};
-    if (account.dbid) {
-      change = { [account.dbid]: { $set: account } };
+    if (editIndex != undefined) {
+      change = { [editIndex]: { $set: account } };
     }
     else {
       change = { $push: [account] };
@@ -612,8 +611,11 @@ export class InstitutionEditPageDisplay extends React.Component<Props, State> im
     .then(
       (accounts: Account[]) => {
         accounts.forEach((account: Account) => {
-          if (!_.some(this.state.accounts, (a) => a.number == account.number)) {
-            this.onAccountSave(account);
+          if (!account.name) {
+            account.name = AccountType.tr(AccountType[account.type]);
+          }
+          if (!_.some(this.state.accounts, (a) => a.number == account.number && a.type == account.type)) {
+            this.onAccountSave(undefined, account);
           }
         });
 

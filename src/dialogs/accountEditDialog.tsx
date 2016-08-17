@@ -14,7 +14,7 @@ interface Props {
   editIndex: number;
   show: boolean;
   onCancel: Function;
-  onSave: (account: Account) => any;
+  onSave: (editIndex: number, account: Account) => any;
   onDelete: Function;
   accounts: Account[];
 }
@@ -45,7 +45,7 @@ export class AccountEditDialog extends React.Component<Props, State> implements 
 
   componentWillReceiveProps(nextProps: Props) {
     if (this.props.editIndex != nextProps.editIndex) {
-      if (nextProps.editIndex) {
+      if (nextProps.editIndex != undefined) {
         const src = nextProps.accounts[nextProps.editIndex];
         this.reForm.setValues(src);
       }
@@ -106,7 +106,7 @@ export class AccountEditDialog extends React.Component<Props, State> implements 
       }
     };
 
-    const adding = !this.props.editIndex;
+    const adding = this.props.editIndex == undefined;
 
     return (
       <Modal show={this.props.show} onHide={this.onCancel}>
@@ -140,7 +140,7 @@ export class AccountEditDialog extends React.Component<Props, State> implements 
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
-            {!this.props.editIndex &&
+            {!adding &&
               <Button onClick={this.onDelete} bsStyle="danger" className="pull-left">{t("AccountEditDialog.delete")}</Button>
             }
             <Button onClick={this.onCancel}>{t("AccountEditDialog.cancel")}</Button>
@@ -158,10 +158,10 @@ export class AccountEditDialog extends React.Component<Props, State> implements 
 
   @autobind
   onSave(values: ReForm.Values) {
-    const adding = !this.props.editIndex;
+    const adding = this.props.editIndex == undefined;
     const src = adding ? { balance: 0 } : this.props.accounts[this.props.editIndex];
     const account: Account = _.assign({}, src, values);
-    this.props.onSave(account);
+    this.props.onSave(this.props.editIndex, account);
   }
 
   @autobind
