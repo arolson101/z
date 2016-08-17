@@ -147,8 +147,8 @@ function insertNewlines(str: string): any {
 export class SchedulePage extends React.Component<Props, State> {
   state = {
     dialogShow: false,
-    dialogEditBillId: -1
-  };
+    dialogEditBillId: undefined
+  } as State;
 
   render() {
     return <div>
@@ -205,7 +205,7 @@ export class SchedulePage extends React.Component<Props, State> {
 
   @autobind
   onAddBill() {
-    this.setState({dialogShow: true, dialogEditBillId: -1});
+    this.setState({dialogShow: true, dialogEditBillId: undefined});
   }
 
   @autobind

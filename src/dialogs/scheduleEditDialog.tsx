@@ -69,7 +69,7 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
 
   componentWillReceiveProps(nextProps: Props) {
     if (this.props.editBillId != nextProps.editBillId) {
-      if (nextProps.editBillId != -1) {
+      if (nextProps.editBillId) {
         verify(nextProps.editBillId in nextProps.bills, "invalid dbid");
         const src = nextProps.bills[nextProps.editBillId];
         const rrule = RRule.fromString(src.rruleString);
