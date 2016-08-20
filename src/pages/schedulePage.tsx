@@ -32,6 +32,7 @@ interface Props {
 
 interface State {
   dialogShow?: boolean;
+  dialogNegative?: boolean;
   dialogEditBillId?: number;
 }
 
@@ -147,6 +148,7 @@ function insertNewlines(str: string): any {
 export class SchedulePage extends React.Component<Props, State> {
   state = {
     dialogShow: false,
+    dialogNegative: false,
     dialogEditBillId: undefined
   } as State;
 
@@ -159,17 +161,16 @@ export class SchedulePage extends React.Component<Props, State> {
           const date = next.next || next.last;
           return <ListGroupItem key={next.bill.dbid}>
             <Row>
-              <Col xs={3} className="text-right">
-                {formatDate(date)}
-                <br/>
-                <small className="text-muted">{next.rruleFixedText}</small>
+              <Col xs={6}>
+                <div>{next.bill.name}</div>
+                <small className="text-muted">{insertNewlines(next.bill.notes)}</small>
               </Col>
               <Col xs={3}>
                 <span style={{color: income ? "darkgreen" : "darkred"}}>{formatCurrency(next.bill.amount)}</span>
                 <br/>
                 <div className="text-muted">{account ? account.name : t("SchedulePage.noAccount")}</div>
               </Col>
-              <Col xs={6}>
+              <Col xs={3} className="text-right">
                 <Button
                   className="pull-right"
                   type="button"
@@ -179,8 +180,9 @@ export class SchedulePage extends React.Component<Props, State> {
                   <Icon name="edit"/>
                 </Button>
 
-                <div>{next.bill.name}</div>
-                <small className="text-muted">{insertNewlines(next.bill.notes)}</small>
+                {formatDate(date)}
+                <br/>
+                <small className="text-muted">{next.rruleFixedText}</small>
               </Col>
             </Row>
           </ListGroupItem>;
@@ -188,24 +190,36 @@ export class SchedulePage extends React.Component<Props, State> {
       </ListGroup>
       <ScheduleEditDialog
         show={this.state.dialogShow}
+        negative={this.state.dialogNegative}
         editBillId={this.state.dialogEditBillId}
         onSave={this.onBillSave}
         onEdit={this.onBillEdit}
         onCancel={this.onModalHide}
         onDelete={this.onDelete}
       />
-      <Button onClick={this.onAddBill}>
+      <Button onClick={this.onAddExpense}>
+        <Icon name="calendar-plus-o"/>
+        {" "}
+        {t("SchedulePage.addExpense")}
+      </Button>
+      {" "}
+      <Button onClick={this.onAddIncome}>
         <Icon name="calendar-plus-o"/>
         {t(" ")}
-        {t("SchedulePage.add")}
+        {t("SchedulePage.addIncome")}
       </Button>
       <CurrencyChart height={400} datasets={this.props.chartData} />
     </div>;
   }
 
   @autobind
-  onAddBill() {
-    this.setState({dialogShow: true, dialogEditBillId: undefined});
+  onAddExpense() {
+    this.setState({dialogShow: true, dialogNegative: true, dialogEditBillId: undefined});
+  }
+
+  @autobind
+  onAddIncome() {
+    this.setState({dialogShow: true, dialogNegative: false, dialogEditBillId: undefined});
   }
 
   @autobind

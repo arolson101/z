@@ -124,14 +124,17 @@
     "amountHeader": "Amount",
     "once": "once",
     "repeatEvery": "repeat every",
-    "add": "Add Scheduled Item",
+    "addExpense": "Add Expense",
+    "addIncome": "Add Income",
     "editHeader": "Edit",
     "noAccount": ""
   },
   
   "ScheduleEditDialog": {
-    "addTitle": "Add Budget Item",
-    "editTitle": "Edit Budget Item",
+    "addExpenseTitle": "Add Expense",
+    "editExpenseTitle": "Edit Expense",
+    "addIncomeTitle": "Add Income",
+    "editIncomeTitle": "Edit Income",
     "nameLabel": "Name",
     "amountLabel": "Amount",
     "recurLabel": "Repeating",

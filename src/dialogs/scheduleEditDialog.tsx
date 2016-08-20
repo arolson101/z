@@ -3,6 +3,7 @@
 import { autobind } from "core-decorators";
 import * as React from "react";
 import { Button, FormGroup, FormControl, ControlLabel, HelpBlock, Modal, Row, Col } from "react-bootstrap";
+import * as ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import * as Icon from "react-fa";
 import { verify } from "updraft";
@@ -22,6 +23,7 @@ enum Recurrance {
 interface Props {
   bills?: BillCollection;
 
+  negative?: boolean;
   editBillId?: number; // dbid of bill
   show?: boolean;
   onCancel?: Function;
@@ -74,6 +76,7 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
         const src = nextProps.bills[nextProps.editBillId];
         const rrule = RRule.fromString(src.rruleString);
         const values = _.assign({}, src, {
+          amount: (nextProps.negative ? -1 : 1) *  src.amount,
           recurring: (rrule.options.count != 1) ? Recurrance.Repeat : Recurrance.Once,
           recurrenceMultiple: rrule.options.interval,
           frequency: Frequency.fromRRuleFreq(rrule.options.freq),
@@ -101,6 +104,11 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
     return errors;
   }
 
+  @autobind
+  setInitialFocus() {
+    ReactDOM.findDOMNode<HTMLInputElement>(this.refs["name"]).focus();
+  }
+
   render() {
     const { fields, submitFailed } = this.state;
     const { handleSubmit } = this.reForm;
@@ -119,18 +127,23 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
 
     const adding = !this.props.editBillId;
     const recurring = fields.recurring.value == Recurrance.Repeat;
+    const bill = this.props.negative;
+
+    const title = bill ? (adding ? t("ScheduleEditDialog.addExpenseTitle") : t("ScheduleEditDialog.editExpenseTitle"))
+                       : (adding ? t("ScheduleEditDialog.addIncomeTitle") : t("ScheduleEditDialog.editIncomeTitle"));
 
     return (
-      <Modal show={this.props.show} onHide={this.onCancel}>
+      <Modal show={this.props.show} onEnter={this.setInitialFocus} onHide={this.onCancel}>
         <form onSubmit={handleSubmit(this.onSave)}>
           <Modal.Header closeButton>
-            <Modal.Title>{adding ? t("ScheduleEditDialog.addTitle") : t("ScheduleEditDialog.editTitle")}</Modal.Title>
+            <Modal.Title>{title}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <FormGroup controlId="name" {...validationState(fields.name)}>
               <ControlLabel>{t("ScheduleEditDialog.nameLabel")}</ControlLabel>
               <FormControl
                 type="text"
+                ref="name"
                 {...fields.name}
               />
               <FormControl.Feedback/>
@@ -138,7 +151,7 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
             </FormGroup>
             <FormGroup controlId="name" {...validationState(fields.amount)}>
               <ControlLabel>{t("ScheduleEditDialog.amountLabel")}</ControlLabel>
-              <CurrencyInput {...fields.amount as any}/>
+              <CurrencyInput {...fields.amount as any} min="0"/>
               <HelpBlock>{validationHelpText(fields.amount)}</HelpBlock>
             </FormGroup>
             <FormGroup controlId="notes"  {...validationState(fields.recurring)}>
@@ -215,13 +228,13 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
 
   makeBill(props: Props, state: State): Bill {
     const { fields } = state;
-    const { editBillId } = props;
+    const { editBillId, negative } = props;
     const dbid = editBillId || Date.now();
     let bill: Bill = {
       dbid,
       name: fields.name.value,
       account: fields.account.value,
-      amount: fields.amount.value,
+      amount: (negative ? -1 : 1) * fields.amount.value,
       notes: fields.notes.value
     };
 
@@ -281,7 +294,7 @@ export class ScheduleEditDialog extends React.Component<Props, State> implements
       }
       this.reForm.setValues({
         name: faker.company.companyName(),
-        amount: faker.finance.amount(-500, 500),
+        amount: faker.finance.amount(1, 500),
         startingOn: faker.date.future(),
         recurring,
         frequency,
